@@ -23,7 +23,7 @@
     "@storybook/addon-onboarding": "8.6.4",
     "@storybook/blocks": "8.6.4",
     "@storybook/experimental-addon-test": "8.6.4",
-    "@storybook/experimental-nextjs-vite": "8.6.4",
+    "@storybook/nextjs": "^8.6.4",
     "@storybook/react": "8.6.4",
     "@storybook/test": "8.6.4",
     "@types/node": "^20",
@@ -38,7 +38,8 @@
     "sb": "^8.6.4",
     "storybook": "8.6.4",
     "typescript": "^5",
-    "vitest": "^3.0.8"
+    "vitest": "^3.0.8",
+    "webpack": "^5.98.0"
   },
   "eslintConfig": {
     "extends": [

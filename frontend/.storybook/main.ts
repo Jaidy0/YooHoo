@@ -1,4 +1,4 @@
-import type { StorybookConfig } from "@storybook/experimental-nextjs-vite";
+import type { StorybookConfig } from "@storybook/nextjs";
 
 const config: StorybookConfig = {
   "stories": [
@@ -12,11 +12,16 @@ const config: StorybookConfig = {
     "@storybook/experimental-addon-test"
   ],
   "framework": {
-    "name": "@storybook/experimental-nextjs-vite",
+    "name": "@storybook/nextjs",
     "options": {}
   },
   "staticDirs": [
-    "..\\public"
-  ]
+    "../public"
+  ],
+  // Next.js 통합을 위한 추가 설정
+  "docs": {
+    "autodocs": "tag"
+  }
 };
+
 export default config;
