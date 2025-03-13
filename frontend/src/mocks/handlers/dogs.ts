@@ -46,6 +46,3 @@ export const dogsHandlers = [
     });
   }),
 ];
-
-// EXPORT
-export const handlers = [...dogsHandlers];
