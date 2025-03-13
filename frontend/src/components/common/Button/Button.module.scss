@@ -1,0 +1,135 @@
+@use '../../../styles/abstracts/variables' as *;
+
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $border-radius-md;
+  font-family: $font-family-base;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  // 버튼 스타일 변형
+  &--primary {
+    background-color: $color-primary;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: darken($color-primary, 10%);
+    }
+  }
+
+  &--secondary {
+    background-color: $color-secondary;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: darken($color-secondary, 10%);
+    }
+  }
+
+  &--outline {
+    background-color: transparent;
+    border: 1px solid $color-primary;
+    color: $color-primary;
+
+    &:hover:not(:disabled) {
+      background-color: rgba($color-primary, 0.1);
+    }
+  }
+
+  &--text {
+    background-color: transparent;
+    color: $color-primary;
+    padding-left: 0;
+    padding-right: 0;
+
+    &:hover:not(:disabled) {
+      color: darken($color-primary, 10%);
+      background-color: transparent;
+      text-decoration: underline;
+    }
+  }
+
+  // 버튼 크기
+  &--sm {
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.875rem;
+    height: 32px;
+  }
+
+  &--md {
+    padding: $spacing-sm $spacing-md;
+    font-size: 1rem;
+    height: 40px;
+  }
+
+  &--lg {
+    padding: $spacing-md $spacing-lg;
+    font-size: 1.125rem;
+    height: 48px;
+  }
+
+  &--fullWidth {
+    width: 100%;
+  }
+
+  // 로딩 상태
+  &--loading {
+    .content {
+      visibility: hidden;
+    }
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+
+  .button--outline &,
+  .button--text & {
+    border: 2px solid rgba($color-primary, 0.3);
+    border-top-color: $color-primary;
+  }
+}
+
+.leftIcon,
+.rightIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leftIcon {
+  margin-right: $spacing-xs;
+}
+
+.rightIcon {
+  margin-left: $spacing-xs;
+}
+
+.content {
+  position: relative;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
