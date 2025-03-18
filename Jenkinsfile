@@ -1,42 +1,44 @@
 pipeline {
-    agent none
+    agent none  // 최상위 에이전트를 지정하지 않아 각 단계에서 개별적으로 노드를 선택
     options {
-        disableConcurrentBuilds()
+        disableConcurrentBuilds()  // 동시 빌드를 비활성화하여 빌드 충돌 방지
+    }
+    parameters {
+        string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')  // 카나리 배포에서 새 버전으로 보낼 트래픽 비율 설정
     }
     environment {
-        DOCKER_IMAGE_PREFIX = "murhyun2"
-        EC2_PUBLIC_HOST = "j12b209.p.ssafy.io"
-        EC2_BACKEND_HOST = "backend.j12b209.p.ssafy.io"
-        EC2_FRONTEND_HOST = "frontend.j12b209.p.ssafy.io"
-        COMPOSE_PROJECT_NAME = "yoohoo"
-        EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"
-        EC2_BACKEND_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"
-        EC2_FRONTEND_SSH_CREDENTIALS_ID = "ec2-frontend-ssh-key"
-        GIT_CREDENTIALS_ID = "gitlab-token"
-        GIT_REPOSITORY_URL = "https://lab.ssafy.com/s12-fintech-finance-sub1/S12P21B209"
-        PROJECT_DIRECTORY = "jenkins"
-        EC2_USER = "ubuntu"
-        DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
-        STABLE_TAG = "stable-${env.BUILD_NUMBER}"
-        CANARY_TAG = "canary-${env.BUILD_NUMBER}"
-        TRAFFIC_SPLIT = 10
+        DOCKER_IMAGE_PREFIX = "${env.DOCKER_IMAGE_PREFIX}"  // 도커 이미지 접두사 (예: murhyun2/yoohoo-canary-backend)
+        EC2_PUBLIC_HOST = "${env.EC2_PUBLIC_HOST}"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
+        EC2_BACKEND_HOST = "${env.EC2_BACKEND_HOST}"  // 백엔드 서버 주소
+        EC2_FRONTEND_HOST = "${env.EC2_FRONTEND_HOST}"  // 프론트엔드 서버 주소
+        COMPOSE_PROJECT_NAME = "${env.COMPOSE_PROJECT_NAME}"  // 도커 컴포즈 프로젝트 이름
+        EC2_PUBLIC_SSH_CREDENTIALS_ID = "${env.EC2_PUBLIC_SSH_CREDENTIALS_ID}"  // 공용 EC2 SSH 키
+        EC2_BACKEND_SSH_CREDENTIALS_ID = "${env.EC2_BACKEND_SSH_CREDENTIALS_ID}"  // 백엔드 EC2 SSH 키
+        EC2_FRONTEND_SSH_CREDENTIALS_ID = "${env.EC2_FRONTEND_SSH_CREDENTIALS_ID}"  // 프론트엔드 EC2 SSH 키
+        GIT_CREDENTIALS_ID = "${env.GIT_CREDENTIALS_ID}"  // GitLab 인증 토큰
+        GIT_REPOSITORY_URL = "${env.GIT_REPOSITORY_URL}"  // Git 저장소 URL
+        PROJECT_DIRECTORY = "${env.PROJECT_DIRECTORY}"  // 프로젝트 디렉토리
+        EC2_USER = "${env.EC2_USER}"  // EC2 사용자 이름
+        DOCKER_HUB_CREDENTIALS_ID = "${env.DOCKER_HUB_CREDENTIALS_ID}"  // Docker Hub 인증 정보
+        STABLE_TAG = "stable-${env.BUILD_NUMBER}"  // 안정 버전 태그
+        CANARY_TAG = "canary-${env.BUILD_NUMBER}"  // 카나리 버전 태그
     }
     stages {
         stage('Checkout') {
-            agent any
+            agent any  // 코드 체크아웃은 어느 노드에서든 실행 가능
             steps {
-                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"  // GitLab에서 develop 브랜치 소스코드를 가져옴
             }
         }
 
         stage('Prepare Environment') {
-            agent any
+            agent any  // 환경 준비는 특정 노드에 의존하지 않음
             steps {
-                withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {
+                withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {  // Jenkins에 저장된 환경 파일을 가져옴
                     script {
-                        def envContent = readFile(ENV_FILE_PATH)
+                        def envContent = readFile(ENV_FILE_PATH)  // 환경 파일 내용을 읽음
                         dir("${PROJECT_DIRECTORY}") {
-                            writeFile file: '.env', text: envContent
+                            writeFile file: '.env', text: envContent  // 프로젝트 디렉토리에 .env 파일 생성
                         }
                     }
                 }
@@ -44,17 +46,16 @@ pipeline {
         }
 
         stage('Build & Push Images') {
-            parallel {
+            parallel {  // 병렬로 작업을 실행하여 시간 절약
                 stage('Build Backend') {
-                    agent { label 'backend-dev' }
+                    agent { label 'backend-dev' }  // 백엔드 빌드는 backend-dev 노드에서 실행
                     steps {
                         script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                dir("${PROJECT_DIRECTORY}") {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
+                                dir("${PROJECT_DIRECTORY}/backend") {
                                     sh """
-                                        docker compose build --no-cache canary_backend
-                                        docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:latest ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG}
-                                        docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG}
+                                        docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG} .  // 백엔드 카나리 이미지 빌드
+                                        docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG}  // 빌드한 이미지를 Docker Hub에 업로드
                                     """
                                 }
                             }
@@ -62,15 +63,14 @@ pipeline {
                     }
                 }
                 stage('Build Frontend') {
-                    agent { label 'frontend-dev' }
+                    agent { label 'frontend-dev' }  // 프론트엔드 빌드는 frontend-dev 노드에서 실행
                     steps {
                         script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                dir("${PROJECT_DIRECTORY}") {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
+                                dir("${PROJECT_DIRECTORY}/frontend") {
                                     sh """
-                                        docker compose build --no-cache canary_frontend
-                                        docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:latest ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG}
-                                        docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG}
+                                        docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  // 프론트엔드 카나리 이미지 빌드
+                                        docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG}  // 빌드한 이미지를 Docker Hub에 업로드
                                     """
                                 }
                             }
@@ -78,34 +78,34 @@ pipeline {
                     }
                 }
                 stage('Configure Nginx') {
-                    agent { label 'public-dev' }
+                    agent { label 'public-dev' }  // Nginx 설정은 public-dev 노드에서 실행
                     steps {
                         script {
                             dir("${PROJECT_DIRECTORY}/nginx") {
                                 def nginxConfig = """
                                     upstream backend {
-                                        server ${EC2_BACKEND_HOST}:8080 weight=${100 - TRAFFIC_SPLIT};
-                                        server ${EC2_BACKEND_HOST}:8081 weight=${TRAFFIC_SPLIT};
+                                        server ${EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
+                                        server ${EC2_BACKEND_HOST}:8081 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 백엔드 서버로 가는 트래픽 비율
                                     }
                                     upstream frontend {
-                                        server ${EC2_FRONTEND_HOST}:80 weight=${100 - TRAFFIC_SPLIT};
-                                        server ${EC2_FRONTEND_HOST}:81 weight=${TRAFFIC_SPLIT};
+                                        server ${EC2_FRONTEND_HOST}:3000 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 프론트엔드 서버로 가는 트래픽 비율
+                                        server ${EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
                                     }
                                     server {
-                                        listen 80;
+                                        listen 80;  // 80번 포트에서 요청 수신
                                         location /api {
-                                            proxy_pass http://backend;
-                                            proxy_set_header Host \$host;
-                                            proxy_set_header X-Real-IP \$remote_addr;
+                                            proxy_pass http://backend;  // /api 요청을 백엔드로 전달
+                                            proxy_set_header Host \$host;  // 호스트 헤더 설정
+                                            proxy_set_header X-Real-IP \$remote_addr;  // 클라이언트 IP 전달
                                         }
                                         location / {
-                                            proxy_pass http://frontend;
-                                            proxy_set_header Host \$host;
-                                            proxy_set_header X-Real-IP \$remote_addr;
+                                            proxy_pass http://frontend;  // 기본 요청을 프론트엔드로 전달
+                                            proxy_set_header Host \$host;  // 호스트 헤더 설정
+                                            proxy_set_header X-Real-IP \$remote_addr;  // 클라이언트 IP 전달
                                         }
                                     }
                                 """
-                                writeFile file: 'nginx.conf', text: nginxConfig
+                                writeFile file: 'nginx.conf', text: nginxConfig  // Nginx 설정 파일 생성
                             }
                         }
                     }
@@ -114,44 +114,41 @@ pipeline {
         }
 
         stage('Deploy Canary') {
-            agent none
-            options {
-                lock('ec2-deployment-lock')
-            }
+            agent { label 'public-dev' }  // 배포 작업은 public-dev 노드에서 실행
             steps {
                 script {
-                    parallel(
+                    parallel(  // 백엔드와 프론트엔드 배포를 병렬로 실행
                         "Backend Deployment": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
                                     ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                        docker compose pull canary_backend
-                                        docker compose up -d --no-deps canary_backend
+                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        docker compose pull canary_backend &&  // 카나리 백엔드 이미지 다운로드
+                                        docker compose up -d --no-deps canary_backend  // 카나리 백엔드 컨테이너 실행
                                     "
                                 """
                             }
                         },
                         "Frontend Deployment": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
                                     ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
-                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                        docker compose pull canary_frontend
-                                        docker compose up -d --no-deps canary_frontend
+                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        docker compose pull canary_frontend &&  // 카나리 프론트엔드 이미지 다운로드
+                                        docker compose up -d --no-deps canary_frontend  // 카나리 프론트엔드 컨테이너 실행
                                     "
                                 """
                             }
                         }
                     )
 
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
                         sh """
-                            scp -i ${SSH_KEY} ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/
+                            scp -i ${SSH_KEY} ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  // Nginx 설정 파일 업로드
                             ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                docker compose up -d nginx
-                                docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                docker compose up -d nginx &&  // Nginx 컨테이너 실행
+                                docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload  // Nginx 설정 리로드
                             "
                         """
                     }
@@ -159,48 +156,62 @@ pipeline {
             }
         }
 
-        stage('Approval') {
-            agent any
+        stage('Health Check') {
+            agent { label 'public-dev' }  // 헬스 체크는 public-dev 노드에서 실행
             steps {
-                input message: '카나리 테스트를 승인하시겠습니까?', ok: '프로덕션 배포'
+                script {
+                    def backendHealth = sh(script: "curl -f http://${EC2_BACKEND_HOST}:8081/health", returnStatus: true)  // 백엔드 카나리 버전 헬스 체크
+                    def frontendHealth = sh(script: "curl -f http://${EC2_FRONTEND_HOST}:3001/health", returnStatus: true)  // 프론트엔드 카나리 버전 헬스 체크
+                    if (backendHealth != 0 || frontendHealth != 0) {
+                        error("헬스 체크 실패: 카나리 배포가 정상적으로 실행되지 않았습니다.")  // 헬스 체크 실패 시 에러 발생
+                    }
+                }
+            }
+        }
+
+        stage('Approval') {
+            agent any  // 수동 승인은 특정 노드 필요 없음
+            steps {
+                input message: '카나리 테스트를 승인하시겠습니까?', ok: '프로덕션 배포'  // 관리자의 수동 승인 대기
             }
         }
 
         stage('Promote to Stable') {
+            agent { label 'public-dev' }  // 안정 버전 승격은 public-dev 노드에서 실행
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
                         sh """
-                            docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG} ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-backend:${STABLE_TAG}
-                            docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-frontend:${STABLE_TAG}
-                            docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-backend:${STABLE_TAG}
-                            docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-frontend:${STABLE_TAG}
+                            docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG} ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-backend:${STABLE_TAG}  // 카나리 백엔드 이미지를 안정 버전으로 태깅
+                            docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-frontend:${STABLE_TAG}  // 카나리 프론트엔드 이미지를 안정 버전으로 태깅
+                            docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-backend:${STABLE_TAG}  // 안정 백엔드 이미지 업로드
+                            docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-frontend:${STABLE_TAG}  // 안정 프론트엔드 이미지 업로드
                         """
                     }
 
-                    parallel(
+                    parallel(  // 백엔드와 프론트엔드 승격을 병렬로 실행
                         "Backend Promotion": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
                                     ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                        docker compose pull stable_backend
-                                        docker compose up -d --no-deps stable_backend
-                                        docker compose stop canary_backend
-                                        docker compose rm -f canary_backend
+                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        docker compose pull stable_backend &&  // 안정 백엔드 이미지 다운로드
+                                        docker compose up -d --no-deps stable_backend &&  // 안정 백엔드 컨테이너 실행
+                                        docker compose stop canary_backend &&  // 카나리 백엔드 중지
+                                        docker compose rm -f canary_backend  // 카나리 백엔드 컨테이너 삭제
                                     "
                                 """
                             }
                         },
                         "Frontend Promotion": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
                                     ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
-                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                        docker compose pull stable_frontend
-                                        docker compose up -d --no-deps stable_frontend
-                                        docker compose stop canary_frontend
-                                        docker compose rm -f canary_frontend
+                                        cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        docker compose pull stable_frontend &&  // 안정 프론트엔드 이미지 다운로드
+                                        docker compose up -d --no-deps stable_frontend &&  // 안정 프론트엔드 컨테이너 실행
+                                        docker compose stop canary_frontend &&  // 카나리 프론트엔드 중지
+                                        docker compose rm -f canary_frontend  // 카나리 프론트엔드 컨테이너 삭제
                                     "
                                 """
                             }
@@ -210,30 +221,34 @@ pipeline {
                     dir("${PROJECT_DIRECTORY}/nginx") {
                         writeFile file: 'nginx.conf', text: """
                             upstream backend {
-                                server ${EC2_BACKEND_HOST}:8080;
+                                server ${EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
                             }
                             upstream frontend {
-                                server ${EC2_FRONTEND_HOST}:80;
+                                server ${EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
                             }
                             server {
-                                listen 80;
+                                listen 80;  // 80번 포트에서 요청 수신
                                 location /api {
-                                    proxy_pass http://backend;
+                                    proxy_pass http://backend;  // /api 요청을 백엔드로 전달
+                                    proxy_set_header Host \$host;  // 호스트 헤더 설정
+                                    proxy_set_header X-Real-IP \$remote_addr;  // 클라이언트 IP 전달
                                 }
                                 location / {
-                                    proxy_pass http://frontend;
+                                    proxy_pass http://frontend;  // 기본 요청을 프론트엔드로 전달
+                                    proxy_set_header Host \$host;  // 호스트 헤더 설정
+                                    proxy_set_header X-Real-IP \$remote_addr;  // 클라이언트 IP 전달
                                 }
                             }
-                        """
+                        """  // 안정 버전으로 전환된 Nginx 설정 파일 생성
                     }
 
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
                         sh """
-                            scp -i ${SSH_KEY} ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/
+                            scp -i ${SSH_KEY} ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  // Nginx 설정 파일 업로드
                             ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                docker compose up -d nginx
-                                docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                docker compose up -d nginx &&  // Nginx 컨테이너 실행
+                                docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload  // Nginx 설정 리로드
                             "
                         """
                     }
@@ -242,6 +257,29 @@ pipeline {
         }
     }
     post {
+        failure {
+            echo "배포 실패: 롤백을 진행합니다."  // 파이프라인 실패 시 메시지 출력
+            script {
+                withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
+                    sh """
+                        ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                            cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                            docker compose pull stable_backend &&  // 안정 백엔드 이미지 다운로드
+                            docker compose up -d --no-deps stable_backend  // 안정 백엔드 컨테이너 실행
+                        "
+                    """
+                }
+                withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
+                    sh """
+                        ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                            cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                            docker compose pull stable_frontend &&  // 안정 프론트엔드 이미지 다운로드
+                            docker compose up -d --no-deps stable_frontend  // 안정 프론트엔드 컨테이너 실행
+                        "
+                    """
+                }
+            }
+        }
         always {
             script {
                 def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
