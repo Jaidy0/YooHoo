@@ -34,7 +34,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {  // Jenkins에 저장된 환경 파일을 가져옴
                     script {
-                        def envContent = readFile(ENV_FILE_PATH)  // 환경 파일 내용을 읽음
+                        def envContent = readFile(ENV_FILE_PATH).replaceAll('\r', '')  // 환경 파일 내용을 읽음
                         dir("${PROJECT_DIRECTORY}") {
                             writeFile file: '.env', text: envContent  // 프로젝트 디렉토리에 .env 파일 생성
                         }
