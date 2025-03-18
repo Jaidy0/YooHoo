@@ -4,8 +4,8 @@ const path = require('path');
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   sassOptions: {
-    includePaths: [path.join(__dirname, 'src/styles')],
-    prependData: `@use "abstracts/variables" as *; @use "abstracts/mixins" as *;`,
+    includePaths: [path.join(__dirname, 'src/assets/styles')],
+    prependData: `@use "abstracts/variables" as *;`,
   },
 };
 
