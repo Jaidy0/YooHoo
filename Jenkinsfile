@@ -7,21 +7,19 @@ pipeline {
         string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')  // 카나리 배포에서 새 버전으로 보낼 트래픽 비율 설정
     }
     environment {
-        DOCKER_IMAGE_PREFIX = "${env.DOCKER_IMAGE_PREFIX}"  // 도커 이미지 접두사 (예: murhyun2/yoohoo-canary-backend)
-        EC2_PUBLIC_HOST = "${env.EC2_PUBLIC_HOST}"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
-        EC2_BACKEND_HOST = "${env.EC2_BACKEND_HOST}"  // 백엔드 서버 주소
-        EC2_FRONTEND_HOST = "${env.EC2_FRONTEND_HOST}"  // 프론트엔드 서버 주소
-        COMPOSE_PROJECT_NAME = "${env.COMPOSE_PROJECT_NAME}"  // 도커 컴포즈 프로젝트 이름
-        EC2_PUBLIC_SSH_CREDENTIALS_ID = "${env.EC2_PUBLIC_SSH_CREDENTIALS_ID}"  // 공용 EC2 SSH 키
-        EC2_BACKEND_SSH_CREDENTIALS_ID = "${env.EC2_BACKEND_SSH_CREDENTIALS_ID}"  // 백엔드 EC2 SSH 키
-        EC2_FRONTEND_SSH_CREDENTIALS_ID = "${env.EC2_FRONTEND_SSH_CREDENTIALS_ID}"  // 프론트엔드 EC2 SSH 키
-        GIT_CREDENTIALS_ID = "${env.GIT_CREDENTIALS_ID}"  // GitLab 인증 토큰
-        GIT_REPOSITORY_URL = "${env.GIT_REPOSITORY_URL}"  // Git 저장소 URL
-        PROJECT_DIRECTORY = "${env.PROJECT_DIRECTORY}"  // 프로젝트 디렉토리
-        EC2_USER = "${env.EC2_USER}"  // EC2 사용자 이름
-        DOCKER_HUB_CREDENTIALS_ID = "${env.DOCKER_HUB_CREDENTIALS_ID}"  // Docker Hub 인증 정보
-        STABLE_TAG = "stable-${env.BUILD_NUMBER}"  // 안정 버전 태그
-        CANARY_TAG = "canary-${env.BUILD_NUMBER}"  // 카나리 버전 태그
+        DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
+        EC2_PUBLIC_HOST = "j12b209.p.ssafy.io"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
+        COMPOSE_PROJECT_NAME = "yoohoo"  // 도커 컴포즈 프로젝트 이름 (컨테이너 이름 등에 사용)
+        EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"  // 공용 EC2에 접속할 SSH 키의 Jenkins ID
+        EC2_BACKEND_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"  // 백엔드 EC2에 접속할 SSH 키의 Jenkins ID
+        EC2_FRONTEND_SSH_CREDENTIALS_ID = "ec2-frontend-ssh-key"  // 프론트엔드 EC2에 접속할 SSH 키의 Jenkins ID
+        GIT_CREDENTIALS_ID = "gitlab-token"  // GitLab에 접속할 인증 토큰의 Jenkins ID
+        GIT_REPOSITORY_URL = "https://lab.ssafy.com/s12-fintech-finance-sub1/S12P21B209"  // 소스코드를 가져올 Git 저장소 URL
+        PROJECT_DIRECTORY = "jenkins"  // 프로젝트 파일이 저장될 디렉토리 이름
+        EC2_USER = "ubuntu"  // EC2 서버의 사용자 이름 (SSH 접속 시 사용)
+        DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"  // Docker Hub에 로그인할 인증 정보의 Jenkins ID
+        STABLE_TAG = "stable-${env.BUILD_NUMBER}"  // 안정 버전 이미지 태그 (예: stable-1, 빌드 번호 포함)
+        CANARY_TAG = "canary-${env.BUILD_NUMBER}"  // 카나리 버전 이미지 태그 (예: canary-1, 빌드 번호 포함)
     }
     stages {
         stage('Checkout') {
@@ -84,12 +82,12 @@ pipeline {
                             dir("${PROJECT_DIRECTORY}/nginx") {
                                 def nginxConfig = """
                                     upstream backend {
-                                        server ${EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
-                                        server ${EC2_BACKEND_HOST}:8081 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 백엔드 서버로 가는 트래픽 비율
+                                        server ${env.EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
+                                        server ${env.EC2_BACKEND_HOST}:8081 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 백엔드 서버로 가는 트래픽 비율
                                     }
                                     upstream frontend {
-                                        server ${EC2_FRONTEND_HOST}:3000 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 프론트엔드 서버로 가는 트래픽 비율
-                                        server ${EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
+                                        server ${env.EC2_FRONTEND_HOST}:3000 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 프론트엔드 서버로 가는 트래픽 비율
+                                        server ${env.EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
                                     }
                                     server {
                                         listen 80;  // 80번 포트에서 요청 수신
@@ -121,7 +119,7 @@ pipeline {
                         "Backend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull canary_backend &&  // 카나리 백엔드 이미지 다운로드
                                         docker compose up -d --no-deps canary_backend  // 카나리 백엔드 컨테이너 실행
@@ -132,7 +130,7 @@ pipeline {
                         "Frontend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull canary_frontend &&  // 카나리 프론트엔드 이미지 다운로드
                                         docker compose up -d --no-deps canary_frontend  // 카나리 프론트엔드 컨테이너 실행
@@ -160,8 +158,8 @@ pipeline {
             agent { label 'public-dev' }  // 헬스 체크는 public-dev 노드에서 실행
             steps {
                 script {
-                    def backendHealth = sh(script: "curl -f http://${EC2_BACKEND_HOST}:8081/health", returnStatus: true)  // 백엔드 카나리 버전 헬스 체크
-                    def frontendHealth = sh(script: "curl -f http://${EC2_FRONTEND_HOST}:3001/health", returnStatus: true)  // 프론트엔드 카나리 버전 헬스 체크
+                    def backendHealth = sh(script: "curl -f http://${env.EC2_BACKEND_HOST}:8081/health", returnStatus: true)  // 백엔드 카나리 버전 헬스 체크
+                    def frontendHealth = sh(script: "curl -f http://${env.EC2_FRONTEND_HOST}:3001/health", returnStatus: true)  // 프론트엔드 카나리 버전 헬스 체크
                     if (backendHealth != 0 || frontendHealth != 0) {
                         error("헬스 체크 실패: 카나리 배포가 정상적으로 실행되지 않았습니다.")  // 헬스 체크 실패 시 에러 발생
                     }
@@ -193,7 +191,7 @@ pipeline {
                         "Backend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull stable_backend &&  // 안정 백엔드 이미지 다운로드
                                         docker compose up -d --no-deps stable_backend &&  // 안정 백엔드 컨테이너 실행
@@ -206,7 +204,7 @@ pipeline {
                         "Frontend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull stable_frontend &&  // 안정 프론트엔드 이미지 다운로드
                                         docker compose up -d --no-deps stable_frontend &&  // 안정 프론트엔드 컨테이너 실행
@@ -221,10 +219,10 @@ pipeline {
                     dir("${PROJECT_DIRECTORY}/nginx") {
                         writeFile file: 'nginx.conf', text: """
                             upstream backend {
-                                server ${EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
+                                server ${env.EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
                             }
                             upstream frontend {
-                                server ${EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
+                                server ${env.EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
                             }
                             server {
                                 listen 80;  // 80번 포트에서 요청 수신
@@ -258,11 +256,12 @@ pipeline {
     }
     post {
         failure {
+            agent any
             echo "배포 실패: 롤백을 진행합니다."  // 파이프라인 실패 시 메시지 출력
             script {
                 withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                     sh """
-                        ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                        ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                             cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                             docker compose pull stable_backend &&  // 안정 백엔드 이미지 다운로드
                             docker compose up -d --no-deps stable_backend  // 안정 백엔드 컨테이너 실행
@@ -271,7 +270,7 @@ pipeline {
                 }
                 withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                     sh """
-                        ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                        ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                             cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                             docker compose pull stable_frontend &&  // 안정 프론트엔드 이미지 다운로드
                             docker compose up -d --no-deps stable_frontend  // 안정 프론트엔드 컨테이너 실행
@@ -281,6 +280,7 @@ pipeline {
             }
         }
         always {
+            agent any
             script {
                 def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
                 def Author_Email = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
