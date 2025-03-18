@@ -256,59 +256,61 @@ pipeline {
     }
     post {
         failure {
-            agent any
-            echo "배포 실패: 롤백을 진행합니다."  // 파이프라인 실패 시 메시지 출력
-            script {
-                withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
-                    sh """
-                        ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
-                            cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                            docker compose pull stable_backend &&  // 안정 백엔드 이미지 다운로드
-                            docker compose up -d --no-deps stable_backend  // 안정 백엔드 컨테이너 실행
-                        "
-                    """
-                }
-                withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
-                    sh """
-                        ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
-                            cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                            docker compose pull stable_frontend &&  // 안정 프론트엔드 이미지 다운로드
-                            docker compose up -d --no-deps stable_frontend  // 안정 프론트엔드 컨테이너 실행
-                        "
-                    """
+            node('public-dev') {
+                echo "배포 실패: 롤백을 진행합니다."  // 파이프라인 실패 시 메시지 출력
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
+                        sh """
+                            ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                docker compose pull stable_backend &&  // 안정 백엔드 이미지 다운로드
+                                docker compose up -d --no-deps stable_backend  // 안정 백엔드 컨테이너 실행
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
+                        sh """
+                            ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                docker compose pull stable_frontend &&  // 안정 프론트엔드 이미지 다운로드
+                                docker compose up -d --no-deps stable_frontend  // 안정 프론트엔드 컨테이너 실행
+                            "
+                        """
+                    }
                 }
             }
         }
         always {
-            agent any
-            script {
-                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
-                def Author_Email = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
-                def Commit_Message = sh(script: "git log -1 --pretty=%s", returnStdout: true).trim()
-                def Branch_Name = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                def Build_Time = new Date(currentBuild.startTimeInMillis).format("yyyy년 MM월 dd일 HH시 mm분 ss초", TimeZone.getTimeZone("Asia/Seoul"))
-                def Duration = currentBuild.durationString.replace(' and counting', '')
-                def Status = currentBuild.result ?: "SUCCESS"
-                def Color = (Status == "SUCCESS") ? 'good' : 'danger'
-                def Icon = (Status == "SUCCESS") ? "✅" : "❌"
+            node('public-dev') {
+                script {
+                    def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                    def Author_Email = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                    def Commit_Message = sh(script: "git log -1 --pretty=%s", returnStdout: true).trim()
+                    def Branch_Name = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    def Build_Time = new Date(currentBuild.startTimeInMillis).format("yyyy년 MM월 dd일 HH시 mm분 ss초", TimeZone.getTimeZone("Asia/Seoul"))
+                    def Duration = currentBuild.durationString.replace(' and counting', '')
+                    def Status = currentBuild.result ?: "SUCCESS"
+                    def Color = (Status == "SUCCESS") ? 'good' : 'danger'
+                    def Icon = (Status == "SUCCESS") ? "✅" : "❌"
 
-                def Message = """\
-                ${Icon} *BUILD ${Status}*
-                - *Job:* ${env.JOB_NAME} #${env.BUILD_NUMBER}
-                - *Branch:* ${Branch_Name}
-                - *Author:* ${Author_ID} (${Author_Email})
-                - *Commit:* ${Commit_Message}
-                - *시작 시간:* ${Build_Time}
-                - *소요 시간:* ${Duration}
-                [🔍 *Details*](${env.BUILD_URL})
-                """.stripIndent()
+                    def Message = """\
+                    ${Icon} *BUILD ${Status}*
+                    - *Job:* ${env.JOB_NAME} #${env.BUILD_NUMBER}
+                    - *Branch:* ${Branch_Name}
+                    - *Author:* ${Author_ID} (${Author_Email})
+                    - *Commit:* ${Commit_Message}
+                    - *시작 시간:* ${Build_Time}
+                    - *소요 시간:* ${Duration}
+                    [🔍 *Details*](${env.BUILD_URL})
+                    """.stripIndent()
 
-                mattermostSend(
-                    color: Color,
-                    message: Message,
-                    endpoint: 'https://meeting.ssafy.com/hooks/3wgn4b8xz7nnpcfb7rkdrwr1mo',
-                    channel: 'B209-Jenkins-Result'
-                )
+                    mattermostSend(
+                        color: Color,
+                        message: Message,
+                        endpoint: 'https://meeting.ssafy.com/hooks/3wgn4b8xz7nnpcfb7rkdrwr1mo',
+                        channel: 'B209-Jenkins-Result'
+                    )
+                }
             }
         }
     }
