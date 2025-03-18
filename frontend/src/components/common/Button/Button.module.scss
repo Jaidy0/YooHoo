@@ -1,4 +1,4 @@
-@use '../../../assets/styles/abstracts/variables' as *;
+@import '../../../assets/styles/abstracts/variables';
 
 .button {
   position: relative;
@@ -6,80 +6,61 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: $border-radius-md;
-  font-family: $font-family-base;
-  font-weight: $font-weight-medium;
+  border-radius: 8px;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
   // 버튼 스타일 변형
   &--primary {
-    background-color: $color-primary;
-    color: white;
+    background-color: $yh-yellow;
+    color: $color-text;
 
-    &:hover:not(:disabled) {
-      background-color: darken($color-primary, 10%);
-    }
-  }
-
-  &--secondary {
-    background-color: $color-secondary;
-    color: white;
-
-    &:hover:not(:disabled) {
-      background-color: darken($color-secondary, 10%);
+    &:hover {
+      background-color: darken($yh-yellow, 10%);
     }
   }
 
   &--outline {
     background-color: transparent;
-    border: 1px solid $color-primary;
-    color: $color-primary;
+    border: 1.6px solid $color-text;
+    color: $color-text;
 
-    &:hover:not(:disabled) {
-      background-color: rgba($color-primary, 0.1);
+    &:hover {
+      background-color: rgba($color-text, 0.1);
     }
   }
 
-  &--text {
-    background-color: transparent;
-    color: $color-primary;
-    padding-left: 0;
-    padding-right: 0;
+  &--disabled {
+    background-color: $color-border;
+    color: $text-999;
 
-    &:hover:not(:disabled) {
-      color: darken($color-primary, 10%);
-      background-color: transparent;
-      text-decoration: underline;
+    &:hover {
+      background-color: darken($color-border, 10%);
     }
   }
 
   // 버튼 크기
   &--sm {
-    padding: $spacing-xs $spacing-sm;
+    padding: 0.375rem 0.75rem;
     font-size: 0.875rem;
+    min-width: 64px;
     height: 32px;
   }
 
   &--md {
-    padding: $spacing-sm $spacing-md;
+    padding: 0.5rem 1rem;
     font-size: 1rem;
-    height: 40px;
+    min-width: 73px;
+    height: 46px;
   }
 
   &--lg {
-    padding: $spacing-md $spacing-lg;
+    padding: 0.625rem 1.25rem;
     font-size: 1.125rem;
+    min-width: 100px;
     height: 48px;
-  }
-
-  &--fullWidth {
-    width: 100%;
   }
 
   // 로딩 상태
@@ -99,10 +80,9 @@
   border-top-color: white;
   animation: spin 1s linear infinite;
 
-  .button--outline &,
-  .button--text & {
-    border: 2px solid rgba($color-primary, 0.3);
-    border-top-color: $color-primary;
+  .button--outline & {
+    border: 2px solid rgba($color-text, 0.3);
+    border-top-color: $color-text;
   }
 }
 
@@ -114,11 +94,11 @@
 }
 
 .leftIcon {
-  margin-right: $spacing-xs;
+  margin-right: 0.5rem;
 }
 
 .rightIcon {
-  margin-left: $spacing-xs;
+  margin-left: 0.5rem;
 }
 
 .content {
