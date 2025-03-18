@@ -38,6 +38,13 @@ pipeline {
                         dir("${PROJECT_DIRECTORY}") {
                             writeFile file: '.env', text: envContent  // 프로젝트 디렉토리에 .env 파일 생성
                         }
+
+                        // .env 파일에서 환경 변수 읽기
+                        sh '''
+                            set -a  # 자동으로 변수를 export
+                            source .env
+                            set +a
+                        '''
                     }
                 }
             }
