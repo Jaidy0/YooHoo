@@ -42,7 +42,7 @@ pipeline {
                         // .env 파일에서 환경 변수 읽기
                         sh '''
                             set -a  # 자동으로 변수를 export
-                            . .env
+                            . ${PROJECT_DIRECTORY}/.env
                             set +a
                         '''
                     }
