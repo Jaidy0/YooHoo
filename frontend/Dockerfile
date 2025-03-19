@@ -9,6 +9,8 @@ WORKDIR /app
 # 의존성 파일 복사
 COPY package.json yarn.lock .yarnrc.yml ./
 
+COPY .yarn ./.yarn
+
 # Yarn 캐시 디렉토리 생성 및 의존성 설치
 RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
     yarn install --immutable
