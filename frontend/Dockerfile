@@ -39,8 +39,10 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.yarn ./  # 중요: Yarn 4 실행을 위해 .yarn 복사
-COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml  # Yarn 설정 파일 복사
+# 중요: Yarn 4 실행을 위해 .yarn 복사
+COPY --from=builder /app/.yarn ./
+# Yarn 설정 파일 복사
+COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
 
 # 환경 변수 설정
 ENV NODE_ENV=production
