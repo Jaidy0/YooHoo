@@ -8,14 +8,19 @@ services:
     ports:
       - "${MYSQL_PORT}:3306"
     volumes:
-      - mysql_data:/var/lib/mysql
+      - ./mysql_data:/var/lib/mysql  # 명시적 호스트 경로
+    healthcheck:  # 상태 확인 추가
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
   redis:
     image: redis:latest
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
-      - redis_data:/data
+      - ./redis_data:/data  # 명시적 호스트 경로
 
   nginx:
     image: nginx:alpine
@@ -23,7 +28,14 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx
+    depends_on:  # 의존성 설정
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
 volumes:
-  mysql_data:
-  redis_data:
+  mysql_data:  # 로컬 볼륨 사용
+  redis_data:  # 로컬 볼륨 사용

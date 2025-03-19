@@ -141,11 +141,15 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
                             ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} '
-                                sudo apt-get update && sudo apt-get install -y gettext
+                                if ! dpkg -s gettext > /dev/null 2>&1; then
+                                    sudo apt-get update && sudo apt-get install -y gettext
+                                fi
                             '
-                            envsubst < ${WORKSPACE}/nginx/nginx.conf.template > ${WORKSPACE}/nginx/nginx.conf
-                            cp ${WORKSPACE}/nginx/nginx.conf /etc/nginx/nginx.conf  # Nginx 설정 파일 교체
-                            nginx -s reload  # Nginx 설정 리로드
+                            set -a
+                            . ${WORKSPACE}/.env
+                            set +a
+                            envsubst < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            docker exec nginx_lb nginx -s reload
                         """
                     }
                 }
@@ -216,9 +220,11 @@ pipeline {
 
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            envsubst < ${WORKSPACE}/nginx/nginx.canary.conf.template > ${WORKSPACE}/nginx/nginx.conf
-                            cp ${WORKSPACE}/nginx/nginx.canary.conf /etc/nginx/nginx.conf  # Nginx 설정 파일 교체
-                            nginx -s reload  # Nginx 설정 리로드
+                            set -a
+                            . ${WORKSPACE}/.env
+                            set +a
+                            envsubst < ${WORKSPACE}/nginx/nginx.canary.conf.template > ./nginx/nginx.conf
+                            docker exec nginx_lb nginx -s reload
                         """
                     }
                 }
