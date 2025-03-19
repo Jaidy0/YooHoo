@@ -18,6 +18,6 @@ RUN mkdir -p /usr/share/nginx/html
 # builder 단계에서 생성한 정적 파일(out 폴더)을 Nginx의 HTML 폴더로 복사
 COPY --from=builder /app/out /usr/share/nginx/html
 # 프로젝트 루트의 nginx 폴더 안에 있는 nginx.conf 파일을 복사
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+# COPY nginx/nginx.conf /etc/nginx/nginx.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
