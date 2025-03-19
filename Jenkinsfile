@@ -30,8 +30,7 @@ pipeline {
         stage('Checkout') {
             agent any  // 코드 체크아웃은 어느 노드에서든 실행 가능
             steps {
-                withEnv(["BRANCH=${GIT_BRANCH}"]) {
-                    git branch: "${BRANCH}", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                   git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"  // GitLab에서 infra-dev 브랜치 소스코드를 가져옴
                 }
             }
         }
