@@ -150,11 +150,11 @@ pipeline {
                             # nginx_lb 컨테이너가 실행 중인지 확인하고 실행되지 않았다면 시작
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
-                                docker compose -f docker-compose.infra.yml up -d
+                                docker compose -f docker-compose.infra.yml up -d nginx_lb
+                            else
+                                echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."
+                                docker exec nginx_lb nginx -s reload
                             fi
-
-                            # nginx 리로드
-                            docker exec nginx_lb nginx -s reload
                         """
                     }
                 }
