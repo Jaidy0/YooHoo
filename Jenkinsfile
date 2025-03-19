@@ -140,11 +140,9 @@ pipeline {
 
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} '
-                                if ! dpkg -s gettext > /dev/null 2>&1; then
-                                    sudo apt-get update && sudo apt-get install -y gettext
-                                fi
-                            '
+                            if ! dpkg -s gettext > /dev/null 2>&1; then
+                                sudo apt-get update && sudo apt-get install -y gettext
+                            fi
                             set -a
                             . ${WORKSPACE}/.env
                             set +a
