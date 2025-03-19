@@ -3,9 +3,6 @@ pipeline {
     options {
         disableConcurrentBuilds()  // 동시 빌드를 비활성화하여 빌드 충돌 방지
     }
-    parameters {
-        string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')  // 카나리 배포에서 새 버전으로 보낼 트래픽 비율 설정
-    }
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
         GIT_BRANCH = "infra-dev"
@@ -103,62 +100,6 @@ pipeline {
                         }
                     }
                 }
-                stage('Configure Nginx') {
-                    agent { label 'public-dev' }  // Nginx 설정은 public-dev 노드에서 실행
-                    steps {
-                        script {
-                            dir("nginx") {
-                                def nginxConfig = """
-                                    upstream backend {
-                                        server ${EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
-                                        server ${EC2_BACKEND_HOST}:8081 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 백엔드 서버로 가는 트래픽 비율
-                                    }
-                                    upstream frontend {
-                                        server ${EC2_FRONTEND_HOST}:3000 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 프론트엔드 서버로 가는 트래픽 비율
-                                        server ${EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
-                                    }
-                                    server {
-                                        listen 80;
-
-                                        # Next.js 서버로 프록시
-                                        location / {
-                                            proxy_pass http://frontend;
-                                            proxy_http_version 1.1;
-                                            proxy_set_header Upgrade \$http_upgrade;
-                                            proxy_set_header Connection 'upgrade';
-                                            proxy_set_header Host \$host;
-                                            proxy_cache_bypass \$http_upgrade;
-                                            proxy_set_header X-Real-IP \$remote_addr;
-                                            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                                            proxy_set_header X-Forwarded-Proto \$scheme;
-                                        }
-
-                                        # 정적 파일 제공 (Next.js 빌드된 파일)
-                                        location /_next/ {
-                                            proxy_pass http://frontend;
-                                            proxy_cache_valid 200 1h;
-                                            proxy_set_header Cache-Control "public, max-age=31536000, immutable";
-                                        }
-
-                                        # API 요청을 백엔드로 전달
-                                        location /api/ {
-                                            proxy_pass http://backend;
-                                            proxy_http_version 1.1;
-                                            proxy_set_header Upgrade \$http_upgrade;
-                                            proxy_set_header Connection 'upgrade';
-                                            proxy_set_header Host \$host;
-                                            proxy_cache_bypass \$http_upgrade;
-                                            proxy_set_header X-Real-IP \$remote_addr;
-                                            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                                            proxy_set_header X-Forwarded-Proto \$scheme;
-                                        }
-                                    }
-                                """
-                                writeFile file: 'nginxx.conf', text: nginxConfig  // Nginx 설정 파일 생성
-                            }
-                        }
-                    }
-                }
             }
         }
 
@@ -250,7 +191,6 @@ pipeline {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                        mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.backend.yml pull stable_backend &&  # 안정 백엔드 이미지 다운로드
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
@@ -264,7 +204,6 @@ pipeline {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
-                                        mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.frontend.yml pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
@@ -276,62 +215,10 @@ pipeline {
                         }
                     )
 
-                    dir("swap") {
-                        writeFile file: 'nginx.conf', text: """
-                            upstream backend {
-                                server ${EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
-                            }
-                            upstream frontend {
-                                server ${EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
-                            }
-                            server {
-                                listen 80;
-
-                                # Next.js 서버로 프록시
-                                location / {
-                                    proxy_pass http://frontend;
-                                    proxy_http_version 1.1;
-                                    proxy_set_header Upgrade \$http_upgrade;
-                                    proxy_set_header Connection 'upgrade';
-                                    proxy_set_header Host \$host;
-                                    proxy_cache_bypass \$http_upgrade;
-                                    proxy_set_header X-Real-IP \$remote_addr;
-                                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                                    proxy_set_header X-Forwarded-Proto \$scheme;
-                                }
-
-                                # 정적 파일 제공 (Next.js 빌드된 파일)
-                                location /_next/ {
-                                    proxy_pass http://frontend;
-                                    proxy_cache_valid 200 1h;
-                                    proxy_set_header Cache-Control "public, max-age=31536000, immutable";
-                                }
-
-                                # API 요청을 백엔드로 전달
-                                location /api/ {
-                                    proxy_pass http://backend;
-                                    proxy_http_version 1.1;
-                                    proxy_set_header Upgrade \$http_upgrade;
-                                    proxy_set_header Connection 'upgrade';
-                                    proxy_set_header Host \$host;
-                                    proxy_cache_bypass \$http_upgrade;
-                                    proxy_set_header X-Real-IP \$remote_addr;
-                                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-                                    proxy_set_header X-Forwarded-Proto \$scheme;
-                                }
-                            }
-                        """  // 안정 버전으로 전환된 Nginx 설정 파일 생성
-                    }
-
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            scp -i \$SSH_KEY ${WORKSPACE}/swap/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose -f docker-compose.infra.yml up -d nginx &&  # Nginx 컨테이너 실행
-                                docker exec nginx_lb nginx -s reload  # Nginx 설정 리로드
-                            "
+                            cp ${WORKSPACE}/nginx/nginx.canary.conf /etc/nginx/nginx.conf  # Nginx 설정 파일 교체
+                            nginx -s reload  # Nginx 설정 리로드
                         """
                     }
                 }
