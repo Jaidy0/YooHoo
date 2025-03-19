@@ -2,7 +2,8 @@
 FROM node:18 AS builder
 WORKDIR /app
 # package-lock.json이 존재한다면 함께 복사 (없으면 package.json만 복사하거나 해당 부분을 수정)
-COPY package.json package-lock.json ./
+# COPY package.json package-lock.json ./
+COPY package.json ./
 # 의존성 설치 시 --legacy-peer-deps 옵션 사용
 RUN npm install --legacy-peer-deps
 COPY . .
