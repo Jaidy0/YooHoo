@@ -9,6 +9,8 @@ pipeline {
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
         EC2_PUBLIC_HOST = "j12b209.p.ssafy.io"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
+        EC2_BACKEND_HOST = ""
+        EC2_FRONTEND_HOST = ""
         COMPOSE_PROJECT_NAME = "yoohoo"  // 도커 컴포즈 프로젝트 이름 (컨테이너 이름 등에 사용)
         EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"  // 공용 EC2에 접속할 SSH 키의 Jenkins ID
         EC2_BACKEND_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"  // 백엔드 EC2에 접속할 SSH 키의 Jenkins ID
@@ -39,12 +41,17 @@ pipeline {
                             writeFile file: '.env', text: envContent  // 프로젝트 디렉토리에 .env 파일 생성
                         }
 
-                        // .env 파일에서 환경 변수 읽기
-                        sh '''
-                            set -a  # 자동으로 변수를 export
-                            . ${PROJECT_DIRECTORY}/.env
-                            set +a
-                        '''
+                        // .env 파일 내용을 Map으로 변환
+                        def envMap = [:]
+                        envContent.split('\n').each { line ->
+                            def keyValue = line.split('=', 2)
+                            if (keyValue.size() == 2) {
+                                envMap[keyValue[0].trim()] = keyValue[1].trim()
+                            }
+                        }
+
+                        EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
+                        EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
                     }
                 }
             }
@@ -76,7 +83,7 @@ pipeline {
                                 dir("frontend") {
                                     sh 'pwd && ls -al'
                                     sh """
-                                        docker build --no-cache -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
+                                        docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
                                         docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG}  # 빌드한 이미지를 Docker Hub에 업로드
                                     """
                                 }
@@ -91,12 +98,12 @@ pipeline {
                             dir("nginx") {
                                 def nginxConfig = """
                                     upstream backend {
-                                        server ${env.EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
-                                        server ${env.EC2_BACKEND_HOST}:8081 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 백엔드 서버로 가는 트래픽 비율
+                                        server ${EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
+                                        server ${EC2_BACKEND_HOST}:8081 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 백엔드 서버로 가는 트래픽 비율
                                     }
                                     upstream frontend {
-                                        server ${env.EC2_FRONTEND_HOST}:3000 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 프론트엔드 서버로 가는 트래픽 비율
-                                        server ${env.EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
+                                        server ${EC2_FRONTEND_HOST}:3000 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 프론트엔드 서버로 가는 트래픽 비율
+                                        server ${EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
                                     }
                                     server {
                                         listen 80;
@@ -151,7 +158,7 @@ pipeline {
                         "Backend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull canary_backend &&  # 카나리 백엔드 이미지 다운로드
                                         docker compose up -d --no-deps canary_backend  # 카나리 백엔드 컨테이너 실행
@@ -162,7 +169,7 @@ pipeline {
                         "Frontend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
                                         docker compose up -d --no-deps canary_frontend  # 카나리 프론트엔드 컨테이너 실행
@@ -190,8 +197,8 @@ pipeline {
             agent { label 'public-dev' }  // 헬스 체크는 public-dev 노드에서 실행
             steps {
                 script {
-                    def backendHealth = sh(script: "curl -f http://${env.EC2_BACKEND_HOST}:8081/health", returnStatus: true)  // 백엔드 카나리 버전 헬스 체크
-                    def frontendHealth = sh(script: "curl -f http://${env.EC2_FRONTEND_HOST}:3001/health", returnStatus: true)  // 프론트엔드 카나리 버전 헬스 체크
+                    def backendHealth = sh(script: "curl -f http://${EC2_BACKEND_HOST}:8081/health", returnStatus: true)  // 백엔드 카나리 버전 헬스 체크
+                    def frontendHealth = sh(script: "curl -f http://${EC2_FRONTEND_HOST}:3001/health", returnStatus: true)  // 프론트엔드 카나리 버전 헬스 체크
                     if (backendHealth != 0 || frontendHealth != 0) {
                         error("헬스 체크 실패: 카나리 배포가 정상적으로 실행되지 않았습니다.")  // 헬스 체크 실패 시 에러 발생
                     }
@@ -223,7 +230,7 @@ pipeline {
                         "Backend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull stable_backend &&  # 안정 백엔드 이미지 다운로드
                                         docker compose up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
@@ -236,7 +243,7 @@ pipeline {
                         "Frontend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
+                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
                                         docker compose up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
@@ -251,10 +258,10 @@ pipeline {
                     dir("${PROJECT_DIRECTORY}/nginx") {
                         writeFile file: 'nginx.conf', text: """
                             upstream backend {
-                                server ${env.EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
+                                server ${EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
                             }
                             upstream frontend {
-                                server ${env.EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
+                                server ${EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
                             }
                             server {
                                 listen 80;
@@ -316,7 +323,7 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                         sh """
-                            ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_BACKEND_HOST} "
+                            ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                 docker compose pull stable_backend &&  # 안정 백엔드 이미지 다운로드
                                 docker compose up -d --no-deps stable_backend  # 안정 백엔드 컨테이너 실행
@@ -325,7 +332,7 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                         sh """
-                            ssh -i ${SSH_KEY} ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
+                            ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                 docker compose pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
                                 docker compose up -d --no-deps stable_frontend  # 안정 프론트엔드 컨테이너 실행
