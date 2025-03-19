@@ -158,7 +158,7 @@ pipeline {
                         "Backend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull canary_backend &&  # 카나리 백엔드 이미지 다운로드
                                         docker compose up -d --no-deps canary_backend  # 카나리 백엔드 컨테이너 실행
@@ -169,7 +169,7 @@ pipeline {
                         "Frontend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
                                         docker compose up -d --no-deps canary_frontend  # 카나리 프론트엔드 컨테이너 실행
@@ -182,7 +182,7 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
                         sh """
                             scp -i ${SSH_KEY} ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
-                            ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                 docker compose up -d nginx &&  # Nginx 컨테이너 실행
                                 docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload  # Nginx 설정 리로드
@@ -230,7 +230,7 @@ pipeline {
                         "Backend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull stable_backend &&  # 안정 백엔드 이미지 다운로드
                                         docker compose up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
@@ -243,7 +243,7 @@ pipeline {
                         "Frontend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
                                         docker compose up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
@@ -305,7 +305,7 @@ pipeline {
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
                         sh """
                             scp -i ${SSH_KEY} ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
-                            ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                 docker compose up -d nginx &&  # Nginx 컨테이너 실행
                                 docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload  # Nginx 설정 리로드
@@ -323,7 +323,7 @@ pipeline {
                 script {
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                         sh """
-                            ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_BACKEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                 docker compose pull stable_backend &&  # 안정 백엔드 이미지 다운로드
                                 docker compose up -d --no-deps stable_backend  # 안정 백엔드 컨테이너 실행
@@ -332,7 +332,7 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                         sh """
-                            ssh -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i ${SSH_KEY} ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                 docker compose pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
                                 docker compose up -d --no-deps stable_frontend  # 안정 프론트엔드 컨테이너 실행
