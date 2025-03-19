@@ -174,12 +174,14 @@ pipeline {
             }
         }
 
+/*
         stage('Approval') {
             agent any  // 수동 승인은 특정 노드 필요 없음
             steps {
                 input message: '카나리 테스트를 승인하시겠습니까?', ok: '프로덕션 배포'  // 관리자의 수동 승인 대기
             }
         }
+ */
 
         stage('Promote to Stable') {
             agent { label 'public-dev' }  // 안정 버전 승격은 public-dev 노드에서 실행
