@@ -18,7 +18,7 @@ pipeline {
         EC2_FRONTEND_SSH_CREDENTIALS_ID = "ec2-frontend-ssh-key"  // 프론트엔드 EC2에 접속할 SSH 키의 Jenkins ID
         GIT_CREDENTIALS_ID = "gitlab-token"  // GitLab에 접속할 인증 토큰의 Jenkins ID
         GIT_REPOSITORY_URL = "https://lab.ssafy.com/s12-fintech-finance-sub1/S12P21B209"  // 소스코드를 가져올 Git 저장소 URL
-        PROJECT_DIRECTORY = "YooHoo"  // 프로젝트 파일이 저장될 디렉토리 이름
+        PROJECT_DIRECTORY = "yoohoo"  // 프로젝트 파일이 저장될 디렉토리 이름
         EC2_USER = "ubuntu"  // EC2 서버의 사용자 이름 (SSH 접속 시 사용)
         DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"  // Docker Hub에 로그인할 인증 정보의 Jenkins ID
         STABLE_TAG = "stable-${env.BUILD_NUMBER}"  // 안정 버전 이미지 태그 (예: stable-1, 빌드 번호 포함)
@@ -30,7 +30,9 @@ pipeline {
         stage('Checkout') {
             agent any  // 코드 체크아웃은 어느 노드에서든 실행 가능
             steps {
-                git branch: "${GIT_BRANCH}", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"  // GitLab에서 infra-dev 브랜치 소스코드를 가져옴
+                withEnv(["BRANCH=${GIT_BRANCH}"]) {
+                    git branch: "${BRANCH}", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                }
             }
         }
 
@@ -40,13 +42,26 @@ pipeline {
                 withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {  // Jenkins에 저장된 환경 파일을 가져옴
                     script {
                         def envContent = readFile(ENV_FILE_PATH).replaceAll('\r', '')  // 환경 파일 내용을 읽음
+
+                        // 기본 환경 변수 추가
+                        def extraEnv = """
+                        DOCKER_IMAGE_PREFIX=${DOCKER_IMAGE_PREFIX}
+                        STABLE_TAG=stable-${BUILD_NUMBER}
+                        CANARY_TAG=canary-${BUILD_NUMBER}
+                        BACKEND_IMAGE=${DOCKER_IMAGE_PREFIX}/yoohoo-backend
+                        FRONTEND_IMAGE=${DOCKER_IMAGE_PREFIX}/yoohoo-frontend
+                        """
+
+                        // 기존 .env 내용 + 추가 변수 저장
+                        def finalEnvContent = envContent + "\n" + extraEnv.trim()
+
                         dir("${PROJECT_DIRECTORY}") {
-                            writeFile file: '.env', text: envContent  // 프로젝트 디렉토리에 .env 파일 생성
+                            writeFile file: '.env', text: finalEnvContent // 프로젝트 디렉토리에 .env 파일 생성
                         }
 
                         // .env 파일 내용을 Map으로 변환
                         def envMap = [:]
-                        envContent.split('\n').each { line ->
+                        finalEnvContent.split('\n').each { line ->
                             def keyValue = line.split('=', 2)
                             if (keyValue.size() == 2) {
                                 envMap[keyValue[0].trim()] = keyValue[1].trim()
@@ -159,6 +174,9 @@ pipeline {
                         "Backend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
+                                    ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
+                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/docker-compose.backend.yml ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/.env ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
@@ -171,8 +189,10 @@ pipeline {
                         "Frontend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                        mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
+                                    ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
+                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/docker-compose.frontend.yml ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/.env ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.frontend.yml pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
                                         docker compose -f docker-compose.frontend.yml up -d canary_frontend  # 카나리 프론트엔드 컨테이너 실행
@@ -223,10 +243,10 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
                         sh """
-                            docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG} ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-backend:${STABLE_TAG}  # 카나리 백엔드 이미지를 안정 버전으로 태깅
-                            docker tag ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-frontend:${STABLE_TAG}  # 카나리 프론트엔드 이미지를 안정 버전으로 태깅
-                            docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-backend:${STABLE_TAG}  # 안정 백엔드 이미지 업로드
-                            docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-stable-frontend:${STABLE_TAG}  # 안정 프론트엔드 이미지 업로드
+                            docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}  # 카나리 백엔드 이미지를 안정 버전으로 태깅
+                            docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}  # 카나리 프론트엔드 이미지를 안정 버전으로 태깅
+                            docker push ${BACKEND_IMAGE}:${STABLE_TAG}  # 안정 백엔드 이미지 업로드
+                            docker push ${FRONTEND_IMAGE}:${STABLE_TAG}  # 안정 프론트엔드 이미지 업로드
                         """
                     }
 
