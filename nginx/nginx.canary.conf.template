@@ -4,13 +4,11 @@ events {
 
 http {
     upstream backend {
-        server stable_backend:8080 weight=90;
-        server canary_backend:8081 weight=10;
+        server $EC2_BACKEND_HOST:$STABLE_BACKEND_PORT;  # 안정화 백엔드만 사용
     }
 
     upstream frontend {
-        server stable_frontend:3000 weight=90;
-        server canary_frontend:3001 weight=10;
+        server $EC2_FRONTEND_HOST:$STABLE_FRONTEND_PORT; # 안정화 프론트만 사용
     }
 
     server {

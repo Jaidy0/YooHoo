@@ -138,15 +138,14 @@ pipeline {
                         }
                     )
 
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            scp -i \$SSH_KEY ${WORKSPACE}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose -f docker-compose.infra.yml up -d &&  # Nginx 컨테이너 실행
-                                docker exec nginx_lb nginx -s reload  # Nginx 설정 리로드
-                            "
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} '
+                                sudo apt-get update && sudo apt-get install -y gettext
+                            '
+                            envsubst < ${WORKSPACE}/nginx/nginx.conf.template > ${WORKSPACE}/nginx/nginx.conf
+                            cp ${WORKSPACE}/nginx/nginx.conf /etc/nginx/nginx.conf  # Nginx 설정 파일 교체
+                            nginx -s reload  # Nginx 설정 리로드
                         """
                     }
                 }
@@ -217,6 +216,7 @@ pipeline {
 
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
+                            envsubst < ${WORKSPACE}/nginx/nginx.canary.conf.template > ${WORKSPACE}/nginx/nginx.conf
                             cp ${WORKSPACE}/nginx/nginx.canary.conf /etc/nginx/nginx.conf  # Nginx 설정 파일 교체
                             nginx -s reload  # Nginx 설정 리로드
                         """

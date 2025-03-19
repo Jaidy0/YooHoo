@@ -4,11 +4,13 @@ events {
 
 http {
     upstream backend {
-        server stable_backend:8080;
+        server $EC2_BACKEND_HOST:$STABLE_BACKEND_PORT weight=90;
+        server $EC2_BACKEND_HOST:$CANARY_BACKEND_PORT weight=10;
     }
 
     upstream frontend {
-        server stable_frontend:3000;
+        server $EC2_FRONTEND_HOST:$STABLE_FRONTEND_PORT weight=90;
+        server $EC2_FRONTEND_HOST:$CANARY_FRONTEND_PORT weight=10;
     }
 
     server {
