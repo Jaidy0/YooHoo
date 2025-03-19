@@ -99,16 +99,39 @@ pipeline {
                                         server ${env.EC2_FRONTEND_HOST}:3001 weight=${params.TRAFFIC_SPLIT.toInteger()};  // 카나리 프론트엔드 서버로 가는 트래픽 비율
                                     }
                                     server {
-                                        listen 80;  // 80번 포트에서 요청 수신
-                                        location /api {
-                                            proxy_pass http://backend;  // /api 요청을 백엔드로 전달
-                                            proxy_set_header Host \$host;  # 호스트 헤더 설정
-                                            proxy_set_header X-Real-IP \$remote_addr;  # 클라이언트 IP 전달
-                                        }
+                                        listen 80;
+
+                                        # Next.js 서버로 프록시
                                         location / {
-                                            proxy_pass http://frontend;  # 기본 요청을 프론트엔드로 전달
-                                            proxy_set_header Host \$host;  # 호스트 헤더 설정
-                                            proxy_set_header X-Real-IP \$remote_addr;  # 클라이언트 IP 전달
+                                            proxy_pass http://frontend;
+                                            proxy_http_version 1.1;
+                                            proxy_set_header Upgrade $http_upgrade;
+                                            proxy_set_header Connection 'upgrade';
+                                            proxy_set_header Host $host;
+                                            proxy_cache_bypass $http_upgrade;
+                                            proxy_set_header X-Real-IP $remote_addr;
+                                            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                                            proxy_set_header X-Forwarded-Proto $scheme;
+                                        }
+
+                                        # 정적 파일 제공 (Next.js 빌드된 파일)
+                                        location /_next/ {
+                                            proxy_pass http://frontend;
+                                            proxy_cache_valid 200 1h;
+                                            proxy_set_header Cache-Control "public, max-age=31536000, immutable";
+                                        }
+
+                                        # API 요청을 백엔드로 전달
+                                        location /api/ {
+                                            proxy_pass http://backend;
+                                            proxy_http_version 1.1;
+                                            proxy_set_header Upgrade $http_upgrade;
+                                            proxy_set_header Connection 'upgrade';
+                                            proxy_set_header Host $host;
+                                            proxy_cache_bypass $http_upgrade;
+                                            proxy_set_header X-Real-IP $remote_addr;
+                                            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                                            proxy_set_header X-Forwarded-Proto $scheme;
                                         }
                                     }
                                 """
@@ -234,16 +257,39 @@ pipeline {
                                 server ${env.EC2_FRONTEND_HOST}:3000;  // 안정 프론트엔드 서버로 100% 트래픽 전환
                             }
                             server {
-                                listen 80;  // 80번 포트에서 요청 수신
-                                location /api {
-                                    proxy_pass http://backend;  // /api 요청을 백엔드로 전달
-                                    proxy_set_header Host \$host;  # 호스트 헤더 설정
-                                    proxy_set_header X-Real-IP \$remote_addr;  # 클라이언트 IP 전달
-                                }
+                                listen 80;
+
+                                # Next.js 서버로 프록시
                                 location / {
-                                    proxy_pass http://frontend;  # 기본 요청을 프론트엔드로 전달
-                                    proxy_set_header Host \$host;  # 호스트 헤더 설정
-                                    proxy_set_header X-Real-IP \$remote_addr;  # 클라이언트 IP 전달
+                                    proxy_pass http://frontend;
+                                    proxy_http_version 1.1;
+                                    proxy_set_header Upgrade $http_upgrade;
+                                    proxy_set_header Connection 'upgrade';
+                                    proxy_set_header Host $host;
+                                    proxy_cache_bypass $http_upgrade;
+                                    proxy_set_header X-Real-IP $remote_addr;
+                                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                                    proxy_set_header X-Forwarded-Proto $scheme;
+                                }
+
+                                # 정적 파일 제공 (Next.js 빌드된 파일)
+                                location /_next/ {
+                                    proxy_pass http://frontend;
+                                    proxy_cache_valid 200 1h;
+                                    proxy_set_header Cache-Control "public, max-age=31536000, immutable";
+                                }
+
+                                # API 요청을 백엔드로 전달
+                                location /api/ {
+                                    proxy_pass http://backend;
+                                    proxy_http_version 1.1;
+                                    proxy_set_header Upgrade $http_upgrade;
+                                    proxy_set_header Connection 'upgrade';
+                                    proxy_set_header Host $host;
+                                    proxy_cache_bypass $http_upgrade;
+                                    proxy_set_header X-Real-IP $remote_addr;
+                                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                                    proxy_set_header X-Forwarded-Proto $scheme;
                                 }
                             }
                         """  // 안정 버전으로 전환된 Nginx 설정 파일 생성
