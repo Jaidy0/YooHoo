@@ -15,7 +15,7 @@ COPY package.json yarn.lock ./
 RUN corepack prepare yarn@4.7.0 --activate
 
 # 의존성 설치
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # 앱 코드 복사
 COPY . .
