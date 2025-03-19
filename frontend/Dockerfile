@@ -1,13 +1,20 @@
 # 1. 빌드 단계
-FROM node:18 AS builder
+# Node.js 공식 이미지 사용
+FROM node:18
+
+# Corepack 활성화
+RUN corepack enable
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# package.json과 lock 파일 복사
+# 의존성 파일 복사
 COPY package.json yarn.lock ./
 
-# 의존성 설치 (프로덕션 패키지만 설치)
+# 올바른 Yarn 버전 사용하도록 Corepack 업데이트
+RUN corepack prepare yarn@4.7.0 --activate
+
+# 의존성 설치
 RUN yarn install --frozen-lockfile
 
 # 앱 코드 복사
