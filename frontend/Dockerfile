@@ -30,7 +30,6 @@ FROM node:18 AS runner
 
 # Corepack 활성화 (Yarn 4 실행을 위해 필요)
 RUN corepack enable
-RUN corepack prepare yarn@4.7.0 --activate
 
 WORKDIR /app
 
@@ -39,8 +38,10 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
-# 중요: Yarn 4 실행을 위해 .yarn 복사
-COPY --from=builder /app/.yarn ./
+
+# .yarn 폴더 및 설정 파일 복사 (Yarn 4 실행을 위해 .yarn을 반드시 복사)
+COPY --from=builder /app/.yarn ./.yarn
+
 # Yarn 설정 파일 복사
 COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
 
