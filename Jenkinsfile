@@ -34,14 +34,17 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {  // Jenkins에 저장된 환경 파일을 가져옴
                     script {
-                        // .env 파일 내용을 읽어서 properties map으로 변환 (파일은 key=value 형식이어야 함)
-                        def props = readProperties file: ENV_FILE_PATH
-                        // 각 프로퍼티를 전역 환경변수로 설정
-                        props.each { key, value ->
-                            env[key] = value
+                        def envContent = readFile(ENV_FILE_PATH).replaceAll('\r', '')  // 환경 파일 내용을 읽음
+                        dir("${PROJECT_DIRECTORY}") {
+                            writeFile file: '.env', text: envContent  // 프로젝트 디렉토리에 .env 파일 생성
                         }
-                        // 이제 env.DB_HOST, env.DB_USER, env.DB_PASS 등으로 접근 가능
-                        echo "DB_HOST is ${env.DB_HOST}"
+
+                        // .env 파일에서 환경 변수 읽기
+                        sh '''
+                            set -a  # 자동으로 변수를 export
+                            . ${PROJECT_DIRECTORY}/.env
+                            set +a
+                        '''
                     }
                 }
             }
