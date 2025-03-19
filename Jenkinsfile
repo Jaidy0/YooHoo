@@ -53,9 +53,7 @@ pipeline {
                         // 기존 .env 내용 + 추가 변수 저장
                         def finalEnvContent = envContent + "\n" + extraEnv.trim()
 
-                        dir("${PROJECT_DIRECTORY}") {
-                            writeFile file: '.env', text: finalEnvContent // 프로젝트 디렉토리에 .env 파일 생성
-                        }
+                        writeFile file: '.env', text: finalEnvContent // 프로젝트 디렉토리에 .env 파일 생성
 
                         // .env 파일 내용을 Map으로 변환
                         def envMap = [:]
