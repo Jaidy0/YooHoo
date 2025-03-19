@@ -1,0 +1,25 @@
+#docker-compose.backend.yml
+services:
+  stable_backend:
+    image: ${BACKEND_IMAGE}:${STABLE_TAG}
+    container_name: stable_backend
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+    ports:
+      - "${STABLE_BACKEND_PORT}:8080"
+
+  canary_backend:
+    image: ${BACKEND_IMAGE}:${CANARY_TAG}
+    container_name: canary_backend
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+    ports:
+      - "${CANARY_BACKEND_PORT}:8080"

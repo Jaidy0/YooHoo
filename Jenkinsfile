@@ -8,6 +8,7 @@ pipeline {
     }
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
+        GIT_BRANCH = "infra-dev"
         EC2_PUBLIC_HOST = "j12b209.p.ssafy.io"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
         EC2_BACKEND_HOST = ""
         EC2_FRONTEND_HOST = ""
@@ -22,12 +23,14 @@ pipeline {
         DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"  // Docker Hub에 로그인할 인증 정보의 Jenkins ID
         STABLE_TAG = "stable-${env.BUILD_NUMBER}"  // 안정 버전 이미지 태그 (예: stable-1, 빌드 번호 포함)
         CANARY_TAG = "canary-${env.BUILD_NUMBER}"  // 카나리 버전 이미지 태그 (예: canary-1, 빌드 번호 포함)
+        BACKEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-backend"  // 통합 이미지명 변수
+        FRONTEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-frontend"
     }
     stages {
         stage('Checkout') {
             agent any  // 코드 체크아웃은 어느 노드에서든 실행 가능
             steps {
-                git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"  // GitLab에서 infra-dev 브랜치 소스코드를 가져옴
+                git branch: "${GIT_BRANCH}", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"  // GitLab에서 infra-dev 브랜치 소스코드를 가져옴
             }
         }
 
@@ -65,10 +68,9 @@ pipeline {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
                                 dir("backend") {
-                                    sh 'pwd && ls -al'
                                     sh """
-                                        docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG} .  # 백엔드 카나리 이미지 빌드
-                                        docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG}  # 빌드한 이미지를 Docker Hub에 업로드
+                                        docker build -t ${BACKEND_IMAGE}:${CANARY_TAG} .  # 백엔드 카나리 이미지 빌드
+                                        docker push ${BACKEND_IMAGE}:${CANARY_TAG}  # 빌드한 이미지를 Docker Hub에 업로드
                                     """
                                 }
                             }
@@ -81,10 +83,9 @@ pipeline {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
                                 dir("frontend") {
-                                    sh 'pwd && ls -al'
                                     sh """
-                                        docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
-                                        docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG}  # 빌드한 이미지를 Docker Hub에 업로드
+                                        docker build -t ${FRONTEND_IMAGE}:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
+                                        docker push ${FRONTEND_IMAGE}:${CANARY_TAG}  # 빌드한 이미지를 Docker Hub에 업로드
                                     """
                                 }
                             }
@@ -161,8 +162,8 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose pull canary_backend &&  # 카나리 백엔드 이미지 다운로드
-                                        docker compose up -d --no-deps canary_backend  # 카나리 백엔드 컨테이너 실행
+                                        docker compose -f docker-compose.backend.yml pull canary_backend &&  # 카나리 백엔드 이미지 다운로드
+                                        docker compose -f docker-compose.backend.yml up -d canary_backend  # 카나리 백엔드 컨테이너 실행
                                     "
                                 """
                             }
@@ -173,8 +174,8 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
-                                        docker compose up -d --no-deps canary_frontend  # 카나리 프론트엔드 컨테이너 실행
+                                        docker compose -f docker-compose.frontend.yml pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
+                                        docker compose -f docker-compose.frontend.yml up -d canary_frontend  # 카나리 프론트엔드 컨테이너 실행
                                     "
                                 """
                             }
@@ -187,8 +188,8 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose up -d nginx &&  # Nginx 컨테이너 실행
-                                docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload  # Nginx 설정 리로드
+                                docker compose -f docker-compose.infra.yml up -d &&  # Nginx 컨테이너 실행
+                                docker exec nginx_lb nginx -s reload  # Nginx 설정 리로드
                             "
                         """
                     }
@@ -236,10 +237,10 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose pull stable_backend &&  # 안정 백엔드 이미지 다운로드
-                                        docker compose up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
-                                        docker compose stop canary_backend &&  # 카나리 백엔드 중지
-                                        docker compose rm -f canary_backend  # 카나리 백엔드 컨테이너 삭제
+                                        docker compose -f docker-compose.backend.yml pull stable_backend &&  # 안정 백엔드 이미지 다운로드
+                                        docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
+                                        docker compose -f docker-compose.backend.yml stop canary_backend &&  # 카나리 백엔드 중지
+                                        docker compose -f docker-compose.backend.yml rm -f canary_backend  # 카나리 백엔드 컨테이너 삭제
                                     "
                                 """
                             }
@@ -250,10 +251,10 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
-                                        docker compose up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
-                                        docker compose stop canary_frontend &&  # 카나리 프론트엔드 중지
-                                        docker compose rm -f canary_frontend  # 카나리 프론트엔드 컨테이너 삭제
+                                        docker compose -f docker-compose.frontend.yml pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
+                                        docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
+                                        docker compose -f docker-compose.frontend.yml stop canary_frontend &&  # 카나리 프론트엔드 중지
+                                        docker compose -f docker-compose.frontend.yml rm -f canary_frontend  # 카나리 프론트엔드 컨테이너 삭제
                                     "
                                 """
                             }
@@ -313,8 +314,8 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose up -d nginx &&  # Nginx 컨테이너 실행
-                                docker exec ${COMPOSE_PROJECT_NAME}-nginx-1 nginx -s reload  # Nginx 설정 리로드
+                                docker compose -f docker-compose.infra.yml up -d nginx &&  # Nginx 컨테이너 실행
+                                docker exec nginx_lb nginx -s reload  # Nginx 설정 리로드
                             "
                         """
                     }
@@ -332,8 +333,8 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                 mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose pull stable_backend &&  # 안정 백엔드 이미지 다운로드
-                                docker compose up -d --no-deps stable_backend  # 안정 백엔드 컨테이너 실행
+                                docker compose -f docker-compose.backend.yml pull stable_backend &&  # 안정 백엔드 이미지 다운로드
+                                docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend  # 안정 백엔드 컨테이너 실행
                             "
                         """
                     }
@@ -342,8 +343,8 @@ pipeline {
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                 mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
-                                docker compose up -d --no-deps stable_frontend  # 안정 프론트엔드 컨테이너 실행
+                                docker compose -f docker-compose.frontend.yml pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
+                                docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend  # 안정 프론트엔드 컨테이너 실행
                             "
                         """
                     }
