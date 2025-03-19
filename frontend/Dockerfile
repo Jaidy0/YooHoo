@@ -14,7 +14,7 @@ COPY package.json yarn.lock ./
 # 올바른 Yarn 버전 사용하도록 Corepack 업데이트
 RUN corepack prepare yarn@4.7.0 --activate
 
-# 의존성 설치
+# 의존성 설치 (node_modules가 제대로 설치되도록)
 RUN yarn install --immutable
 
 # 앱 코드 복사

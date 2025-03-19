@@ -76,7 +76,7 @@ pipeline {
                                 dir("frontend") {
                                     sh 'pwd && ls -al'
                                     sh """
-                                        docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
+                                        docker build --no-cache -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
                                         docker push ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG}  # 빌드한 이미지를 Docker Hub에 업로드
                                     """
                                 }
