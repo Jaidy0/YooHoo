@@ -1,5 +1,8 @@
-# 1. 빌드 단계
+# 1. 빌더 단계
 FROM node:18 AS builder
+
+# Corepack 캐시 디렉토리 고정
+ENV COREPACK_HOME=/app/.corepack
 
 # Corepack 활성화
 RUN corepack enable
@@ -10,7 +13,7 @@ WORKDIR /app
 # 의존성 파일 복사
 COPY package.json yarn.lock ./
 
-# Yarn 설정: node_modules 사용
+# Yarn 설정
 RUN echo "nodeLinker: node-modules" > .yarnrc.yml
 
 # Yarn 4.7.0 준비 및 활성화
@@ -19,7 +22,7 @@ RUN corepack prepare yarn@4.7.0 --activate
 # 의존성 설치
 RUN yarn install --immutable
 
-# 앱 코드 복사
+# 애플리케이션 코드 복사
 COPY . .
 
 # Next.js 빌드
@@ -43,7 +46,7 @@ COPY --from=builder /app/.yarn ./.yarn
 COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
 
 # Yarn 실행 파일 복사 (Corepack이 다운로드한 파일)
-COPY --from=builder /root/.cache/node/corepack/yarn/4.7.0/yarn-4.7.0.cjs /app/.yarn/releases/yarn-4.7.0.cjs
+COPY --from=builder /app/.corepack/yarn/4.7.0/yarn-4.7.0.cjs /app/.yarn/releases/yarn-4.7.0.cjs
 
 # 환경 변수 설정
 ENV NODE_ENV=production
