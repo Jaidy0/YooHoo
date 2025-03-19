@@ -57,7 +57,7 @@ pipeline {
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
-                                dir("/backend") {
+                                dir("${PROJECT_DIRECTORY}/backend") {
                                     sh 'pwd && ls -al'
                                     sh """
                                         docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-backend:${CANARY_TAG} .  # 백엔드 카나리 이미지 빌드
@@ -73,7 +73,7 @@ pipeline {
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {  // Docker Hub에 로그인
-                                dir("/frontend") {
+                                dir("${PROJECT_DIRECTORY}/frontend") {
                                     sh 'pwd && ls -al'
                                     sh """
                                         docker build -t ${DOCKER_IMAGE_PREFIX}/yoohoo-canary-frontend:${CANARY_TAG} .  # 프론트엔드 카나리 이미지 빌드
@@ -88,7 +88,7 @@ pipeline {
                     agent { label 'public-dev' }  // Nginx 설정은 public-dev 노드에서 실행
                     steps {
                         script {
-                            dir("/nginx") {
+                            dir("${PROJECT_DIRECTORY}/nginx") {
                                 def nginxConfig = """
                                     upstream backend {
                                         server ${env.EC2_BACKEND_HOST}:8080 weight=${100 - params.TRAFFIC_SPLIT.toInteger()};  // 기존 백엔드 서버로 가는 트래픽 비율
