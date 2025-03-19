@@ -1,6 +1,6 @@
 # 1. 빌드 단계
 # Node.js 공식 이미지 사용
-FROM node:18 AS builder  # builder로 이름을 지정
+FROM node:18 AS builder
 
 # Corepack 활성화
 RUN corepack enable
