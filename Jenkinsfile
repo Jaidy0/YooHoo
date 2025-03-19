@@ -154,7 +154,7 @@ pipeline {
                                         }
                                     }
                                 """
-                                writeFile file: 'nginx.conf', text: nginxConfig  // Nginx 설정 파일 생성
+                                writeFile file: 'nginxx.conf', text: nginxConfig  // Nginx 설정 파일 생성
                             }
                         }
                     }
@@ -170,11 +170,10 @@ pipeline {
                         "Backend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
-                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/docker-compose.backend.yml ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
-                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/.env ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
+                                    scp -i \$SSH_KEY ${WORKSPACE}/docker-compose.backend.yml ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                        mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.backend.yml pull canary_backend &&  # 카나리 백엔드 이미지 다운로드
                                         docker compose -f docker-compose.backend.yml up -d canary_backend  # 카나리 백엔드 컨테이너 실행
@@ -185,9 +184,9 @@ pipeline {
                         "Frontend Deployment": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
                                 sh """
-                                    ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
-                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/docker-compose.frontend.yml ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
-                                    scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/.env ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
+                                    scp -i \$SSH_KEY ${WORKSPACE}/docker-compose.frontend.yml ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.frontend.yml pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
@@ -200,7 +199,7 @@ pipeline {
 
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
                         sh """
-                            scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
+                            scp -i \$SSH_KEY ${WORKSPACE}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
@@ -277,7 +276,7 @@ pipeline {
                         }
                     )
 
-                    dir("${PROJECT_DIRECTORY}/nginx") {
+                    dir("swap") {
                         writeFile file: 'nginx.conf', text: """
                             upstream backend {
                                 server ${EC2_BACKEND_HOST}:8080;  // 안정 백엔드 서버로 100% 트래픽 전환
@@ -326,7 +325,7 @@ pipeline {
 
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 공용 서버 SSH 인증
                         sh """
-                            scp -i \$SSH_KEY ${PROJECT_DIRECTORY}/nginx/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
+                            scp -i \$SSH_KEY ${WORKSPACE}/swap/nginx.conf ${EC2_USER}@${EC2_PUBLIC_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/nginx/  # Nginx 설정 파일 업로드
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
