@@ -1,19 +1,23 @@
 # 1. 빌드 단계
 FROM node:18 AS builder
 
-# Corepack 명시적 활성화 및 Yarn 버전 준비
-RUN corepack enable && corepack prepare yarn@4.7.0 --activate
+# Corepack 활성화 (Yarn 4 사용을 위한 필수 작업)
+RUN corepack enable
 
+# 작업 디렉토리 설정
 WORKDIR /app
 
 # 의존성 파일 복사
-COPY package.json yarn.lock .yarnrc.yml ./
+COPY package.json yarn.lock ./
 
-COPY .yarn ./.yarn
+# Yarn 설정: node_modules 사용
+RUN echo "nodeLinker: node-modules" > .yarnrc.yml
 
-# Yarn 캐시 디렉토리 생성 및 의존성 설치
-RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
-    yarn install --immutable
+# 올바른 Yarn 버전 사용하도록 Corepack 업데이트
+RUN corepack prepare yarn@4.7.0 --activate
+
+# 의존성 설치
+RUN yarn install --immutable
 
 # 앱 코드 복사
 COPY . .
@@ -24,27 +28,28 @@ RUN yarn build
 # 2. 실행 단계
 FROM node:18 AS runner
 
-# Corepack 활성화 및 Yarn 버전 준비
-RUN corepack enable && corepack prepare yarn@4.7.0 --activate
+# Corepack 활성화 (Yarn 4 실행을 위해 필요)
+RUN corepack enable
+RUN corepack prepare yarn@4.7.0 --activate
 
 WORKDIR /app
 
-# 필수 파일 복사
+# 빌드된 앱 및 실행에 필요한 파일 복사
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.yarn ./.yarn
+# 중요: Yarn 4 실행을 위해 .yarn 복사
+COPY --from=builder /app/.yarn ./
+# Yarn 설정 파일 복사
 COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
-
-# Yarn 실행을 위해 필요한 파일 복사
-COPY --from=builder /usr/local/bin/yarn /usr/local/bin/yarn
-COPY --from=builder /usr/local/share/yarn /usr/local/share/yarn
 
 # 환경 변수 설정
 ENV NODE_ENV=production
 ENV PORT=3000
 
+# 포트 노출
 EXPOSE 3000
 
+# 앱 실행
 CMD ["yarn", "start"]

@@ -6,7 +6,7 @@
 # Yarn Berry
 /.pnp
 .pnp.*
-#.yarn/*
+.yarn/*
 !.yarn/releases
 !.yarn/plugins
 !.yarn/sdks
