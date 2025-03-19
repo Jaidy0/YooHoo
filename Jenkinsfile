@@ -105,13 +105,13 @@ pipeline {
                                         location / {
                                             proxy_pass http://frontend;
                                             proxy_http_version 1.1;
-                                            proxy_set_header Upgrade $http_upgrade;
+                                            proxy_set_header Upgrade \$http_upgrade;
                                             proxy_set_header Connection 'upgrade';
-                                            proxy_set_header Host $host;
-                                            proxy_cache_bypass $http_upgrade;
-                                            proxy_set_header X-Real-IP $remote_addr;
-                                            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                                            proxy_set_header X-Forwarded-Proto $scheme;
+                                            proxy_set_header Host \$host;
+                                            proxy_cache_bypass \$http_upgrade;
+                                            proxy_set_header X-Real-IP \$remote_addr;
+                                            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                                            proxy_set_header X-Forwarded-Proto \$scheme;
                                         }
 
                                         # 정적 파일 제공 (Next.js 빌드된 파일)
@@ -125,13 +125,13 @@ pipeline {
                                         location /api/ {
                                             proxy_pass http://backend;
                                             proxy_http_version 1.1;
-                                            proxy_set_header Upgrade $http_upgrade;
+                                            proxy_set_header Upgrade \$http_upgrade;
                                             proxy_set_header Connection 'upgrade';
-                                            proxy_set_header Host $host;
-                                            proxy_cache_bypass $http_upgrade;
-                                            proxy_set_header X-Real-IP $remote_addr;
-                                            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                                            proxy_set_header X-Forwarded-Proto $scheme;
+                                            proxy_set_header Host \$host;
+                                            proxy_cache_bypass \$http_upgrade;
+                                            proxy_set_header X-Real-IP \$remote_addr;
+                                            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                                            proxy_set_header X-Forwarded-Proto \$scheme;
                                         }
                                     }
                                 """
@@ -263,13 +263,13 @@ pipeline {
                                 location / {
                                     proxy_pass http://frontend;
                                     proxy_http_version 1.1;
-                                    proxy_set_header Upgrade $http_upgrade;
+                                    proxy_set_header Upgrade \$http_upgrade;
                                     proxy_set_header Connection 'upgrade';
-                                    proxy_set_header Host $host;
-                                    proxy_cache_bypass $http_upgrade;
-                                    proxy_set_header X-Real-IP $remote_addr;
-                                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                                    proxy_set_header X-Forwarded-Proto $scheme;
+                                    proxy_set_header Host \$host;
+                                    proxy_cache_bypass \$http_upgrade;
+                                    proxy_set_header X-Real-IP \$remote_addr;
+                                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                                    proxy_set_header X-Forwarded-Proto \$scheme;
                                 }
 
                                 # 정적 파일 제공 (Next.js 빌드된 파일)
@@ -283,13 +283,13 @@ pipeline {
                                 location /api/ {
                                     proxy_pass http://backend;
                                     proxy_http_version 1.1;
-                                    proxy_set_header Upgrade $http_upgrade;
+                                    proxy_set_header Upgrade \$http_upgrade;
                                     proxy_set_header Connection 'upgrade';
-                                    proxy_set_header Host $host;
-                                    proxy_cache_bypass $http_upgrade;
-                                    proxy_set_header X-Real-IP $remote_addr;
-                                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-                                    proxy_set_header X-Forwarded-Proto $scheme;
+                                    proxy_set_header Host \$host;
+                                    proxy_cache_bypass \$http_upgrade;
+                                    proxy_set_header X-Real-IP \$remote_addr;
+                                    proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                                    proxy_set_header X-Forwarded-Proto \$scheme;
                                 }
                             }
                         """  // 안정 버전으로 전환된 Nginx 설정 파일 생성
