@@ -1,14 +1,20 @@
 # 1. 빌드 단계
 FROM node:18 AS builder
 
-# Yarn 4.7.0 직접 설치
-RUN npm install -g yarn@4.7.0
+# Corepack 활성화
+RUN corepack enable
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
 # 의존성 파일 복사
 COPY package.json yarn.lock ./
+
+# Yarn 설정: node_modules 사용
+RUN echo "nodeLinker: node-modules" > .yarnrc.yml
+
+# Yarn 4.7.0 준비 및 활성화
+RUN corepack prepare yarn@4.7.0 --activate
 
 # 의존성 설치
 RUN yarn install --immutable
@@ -22,8 +28,8 @@ RUN yarn build
 # 2. 실행 단계
 FROM node:18 AS runner
 
-# Yarn 4.7.0 직접 설치
-RUN npm install -g yarn@4.7.0
+# Corepack 활성화 (필요 시)
+RUN corepack enable
 
 # 작업 디렉토리 설정
 WORKDIR /app
@@ -33,6 +39,11 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/.yarn ./.yarn
+COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
+
+# Yarn 실행 파일 복사 (Corepack이 다운로드한 파일)
+COPY --from=builder /root/.cache/node/corepack/yarn/4.7.0/yarn-4.7.0.cjs /app/.yarn/releases/yarn-4.7.0.cjs
 
 # 환경 변수 설정
 ENV NODE_ENV=production
