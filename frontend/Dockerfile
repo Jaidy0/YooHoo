@@ -13,7 +13,7 @@ COPY .yarn ./.yarn
 
 # Yarn 활성화 (버전 설정 제거)
 RUN corepack enable
-RUN yarn install --frozen-lockfile --production
+RUN yarn install --immutable --immutable-cache
 
 ###########################################################
 
