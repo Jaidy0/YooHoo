@@ -6,10 +6,13 @@ WORKDIR /usr/src/app
 # 필요한 파일 복사
 COPY package.json yarn.lock .yarnrc.yml ./
 # .yarn/releases 디렉토리 생성 후 corepack enable과 yarn 준비
-RUN mkdir -p .yarn/releases && corepack enable && corepack prepare yarn@4.7.0 --activate
+RUN mkdir -p .yarn/releases && \
+    corepack enable && \
+    corepack prepare yarn@4.7.0 --activate && \
+    ls -la .yarn/releases
 # 추가 디버깅 단계: node_modules 디렉토리가 생성되었는지 확인
 RUN ls -la /usr/src/app/
-RUN corepack enable && yarn set version 4.7.0
+RUN corepack enable && yarn set version 4.7.0 && ls -la .yarn/releases
 RUN yarn install --frozen-lockfile --production
 
 # 2단계: 애플리케이션 빌드 (builder)
