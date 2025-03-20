@@ -10,6 +10,9 @@ WORKDIR /usr/src/app
 # Dependancy install을 위해 package.json, package-lock.json, yarn.lock 복사
 COPY package.json yarn.lock ./
 
+# Yarn 최신 버전 설치
+RUN yarn set version 4.7.0
+
 # Dependancy 설치 (새로운 lock 파일 수정 또는 생성 방지)
 RUN yarn --frozen-lockfile
 
