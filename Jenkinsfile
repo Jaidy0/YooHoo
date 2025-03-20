@@ -12,6 +12,10 @@ pipeline {
         EC2_PUBLIC_HOST = ""  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
         EC2_BACKEND_HOST = ""
         EC2_FRONTEND_HOST = ""
+        STABLE_BACKEND_PORT = ""
+        CANARY_BACKEND_PORT = ""
+        STABLE_FRONTEND_PORT = ""
+        CANARY_FRONTEND_PORT = ""
         COMPOSE_PROJECT_NAME = "yoohoo"  // 도커 컴포즈 프로젝트 이름 (컨테이너 이름 등에 사용)
         EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"  // 공용 EC2에 접속할 SSH 키의 Jenkins ID
         EC2_BACKEND_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"  // 백엔드 EC2에 접속할 SSH 키의 Jenkins ID
@@ -67,6 +71,10 @@ pipeline {
                         EC2_PUBLIC_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
+                        STABLE_BACKEND_PORT  = envMap['STABLE_BACKEND_PORT ']
+                        CANARY_BACKEND_PORT  = envMap['CANARY_BACKEND_PORT ']
+                        STABLE_FRONTEND_PORT  = envMap['STABLE_FRONTEND_PORT ']
+                        CANARY_FRONTEND_PORT  = envMap['CANARY_FRONTEND_PORT ']
                     }
                 }
             }
