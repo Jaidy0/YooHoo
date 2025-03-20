@@ -130,7 +130,7 @@
   text-decoration: none;
 
   &:hover {
-    color: darken($yh-brown, 10%);
+    color: color.adjust($yh-brown, $lightness: -10%);
   }
 }
 

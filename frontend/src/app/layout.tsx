@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { useEffect } from 'react';
 import { Geist, Geist_Mono } from 'next/font/google';
 import '@/assets/styles/globals.scss';
-import localFont from "next/font/local";
+import localFont from 'next/font/local';
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
@@ -36,14 +36,9 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <head>
-        <link rel="preload" as="font" type="font/woff" />
+        <link rel='preload' as='font' type='font/woff' />
       </head>
-      <body
-        
-        suppressHydrationWarning
-      >
-        {children}
-      </body>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
