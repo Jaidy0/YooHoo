@@ -1,7 +1,7 @@
 import React, { ButtonHTMLAttributes } from 'react';
 import styles from './Button.module.scss';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'text';
+export type ButtonVariant = 'primary' | 'outline' | 'disabled';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -18,10 +18,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
 
   /**
-   * 너비 100% 적용 여부
-   * @default false
+   * 버튼 너비 - 직접 지정
    */
-  fullWidth?: boolean;
+  width?: string | number;
+
+  /**
+   * 버튼 높이 - 직접 지정
+   */
+  height?: string | number;
 
   /**
    * 로딩 상태 표시 여부
@@ -57,30 +61,38 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   variant = 'primary',
   size = 'md',
-  fullWidth = false,
+  width,
+  height,
   isLoading = false,
   leftIcon,
   rightIcon,
   className = '',
+  style,
   ...props
 }) => {
   const buttonClasses = [
     styles.button,
     styles[`button--${variant}`],
     styles[`button--${size}`],
-    fullWidth ? styles['button--fullWidth'] : '',
     isLoading ? styles['button--loading'] : '',
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
+  // 사용자 지정 스타일 (너비/높이)
+  const customStyle = {
+    ...style,
+    ...(width !== undefined && {
+      width: typeof width === 'number' ? `${width}px` : width,
+    }),
+    ...(height !== undefined && {
+      height: typeof height === 'number' ? `${height}px` : height,
+    }),
+  };
+
   return (
-    <button
-      className={buttonClasses}
-      disabled={isLoading || props.disabled}
-      {...props}
-    >
+    <button className={buttonClasses} style={customStyle} {...props}>
       {isLoading && <span className={styles.loader}></span>}
       {!isLoading && leftIcon && (
         <span className={styles.leftIcon}>{leftIcon}</span>
