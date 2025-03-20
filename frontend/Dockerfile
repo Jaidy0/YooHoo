@@ -3,8 +3,10 @@ FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /usr/src/app
 
-# 패키지 매니저 설정
+# 필요한 파일 복사
 COPY package.json yarn.lock .yarnrc.yml ./
+# .yarn/releases 디렉토리 생성 후 corepack enable과 yarn 준비
+RUN mkdir -p .yarn/releases && corepack enable && corepack prepare yarn@4.7.0 --activate
 RUN corepack enable && yarn set version 4.7.0
 RUN yarn install --frozen-lockfile --production
 
