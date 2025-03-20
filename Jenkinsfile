@@ -9,7 +9,7 @@ pipeline {
     }
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
-        EC2_PUBLIC_HOST = "j12b209.p.ssafy.io"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
+        EC2_PUBLIC_HOST = ""  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
         EC2_BACKEND_HOST = ""
         EC2_FRONTEND_HOST = ""
         COMPOSE_PROJECT_NAME = "yoohoo"  // 도커 컴포즈 프로젝트 이름 (컨테이너 이름 등에 사용)
@@ -64,6 +64,7 @@ pipeline {
                             }
                         }
 
+                        EC2_PUBLIC_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
                     }
@@ -158,6 +159,7 @@ pipeline {
                             # nginx_lb 컨테이너가 실행 중인지 확인하고 실행되지 않았다면 시작
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
+                                envsubst < ${WORKSPACE}/prometheus.yml > ./prometheus.yml
                                 docker compose -f docker-compose.infra.yml up -d
                             else
                                 echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."

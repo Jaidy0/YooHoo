@@ -4,12 +4,13 @@
 @use './base/animations';
 @use './abstracts/variables' as *;
 
+
 html,
 body {
   padding: 0;
   margin: 0;
   font-family:
-    'NanumSquareNeo-Variable',
+    'NanumSquareNeo',
     -apple-system,
     BlinkMacSystemFont,
     system-ui,

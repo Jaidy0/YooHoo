@@ -24,6 +24,7 @@
     "@chromatic-com/storybook": "3.2.5",
     "@eslint/eslintrc": "^3",
     "@eslint/js": "^9.22.0",
+    "@next/eslint-plugin-next": "^15.2.3",
     "@storybook/addon-essentials": "8.6.4",
     "@storybook/addon-onboarding": "8.6.4",
     "@storybook/blocks": "8.6.4",
@@ -31,6 +32,9 @@
     "@storybook/nextjs": "^8.6.4",
     "@storybook/react": "8.6.4",
     "@storybook/test": "8.6.4",
+    "@tanstack/eslint-plugin-query": "^5.68.0",
+    "@types/eslint-plugin-jsx-a11y": "^6",
+    "@svgr/webpack": "^8.1.0",
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -39,10 +43,14 @@
     "@vitest/browser": "^3.0.8",
     "@vitest/coverage-v8": "^3.0.8",
     "eslint": "^9.22.0",
+    "eslint-config-airbnb": "^19.0.4",
     "eslint-config-next": "^15.2.2",
     "eslint-config-prettier": "^10.1.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-storybook": "^0.11.4",
     "globals": "^16.0.0",
     "msw": "^2.7.3",
@@ -59,6 +67,9 @@
     "extends": [
       "plugin:storybook/recommended"
     ]
+  },
+  "resolutions": {
+    "typescript": "5.7.3"
   },
   "packageManager": "yarn@4.7.0",
   "msw": {

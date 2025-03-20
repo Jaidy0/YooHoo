@@ -1,5 +1,7 @@
-import Image from 'next/image';
+// import Image from 'next/image';
 import styles from './page.module.scss';
+import logo from '@/assets/imgs/yoohoo-logo.svg';
+
 
 export default function Home() {
   // const { user, setUser } = useAuthStore();
@@ -24,12 +26,14 @@ export default function Home() {
         ${isAdmin ? styles.adminMode : styles.userMode}
       `}
     >
-      <main>
+      <main style={{ fontSize: '30px' }}>
         {/* 역할별 다른 컴포넌트 렌더링 */}
         {isAdmin != 'user' ? (
           <div className={styles.admin}>관리자용</div>
         ) : (
-          <div className={styles.user}>사용자용페이지입니다. 안녕하셍요요</div>
+          <div className={styles.user}>사용자용페이지입니다.Pretendard
+          </div>
+          
         )}
       </main>
     </div>

@@ -1,11 +1,86 @@
-// NanumSquareNeo-Variable 폰트 설정
+// 개별 굵기 폰트 설정
 @font-face {
-  font-family: 'NanumSquareNeo-Variable';
-  font-weight: 300 800;
+  font-family: 'NanumSquareNeo';
+  font-weight: 300; // Light
   font-style: normal;
   font-display: swap;
-  src:
-    local('NanumSquareNeo-Variable'),
-    url('../../fonts/NanumSquareNeo-Variable.woff2') format('woff2-variations');
-  // url('../../fonts/NanumSquareNeo-Variable.woff') format('woff-variations');
+  src: 
+    local('NanumSquareNeo Light'),
+    url('../../fonts/NanumSquareNeoTTF-aLt.woff2') format('woff2');
 }
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  font-weight: 400; // Regular
+  font-style: normal;
+  font-display: swap;
+  src: 
+    local('NanumSquareNeo Regular'),
+    url('../../fonts/NanumSquareNeoTTF-bRg.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  font-weight: 500; // Medium
+  font-style: normal;
+  font-display: swap;
+  src: 
+    local('NanumSquareNeo Medium'),
+    url('../../fonts/NanumSquareNeoTTF-cBd.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  font-weight: 700; // Bold
+  font-style: normal;
+  font-display: swap;
+  src: 
+    local('NanumSquareNeo Bold'),
+    url('../../fonts/NanumSquareNeoTTF-dEb.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'NanumSquareNeo';
+  font-weight: 800; // ExtraBold
+  font-style: normal;
+  font-display: swap;
+  src: 
+    local('NanumSquareNeo ExtraBold'),
+    url('../../fonts/NanumSquareNeoTTF-eHv.woff2') format('woff2');
+}
+
+// @font-face {
+//   font-family: 'NanumSquareNeoLight';
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.eot);
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-aLt.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: 'NanumSquareNeo';
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.eot);
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-bRg.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: 'NanumSquareNeoBold';
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.eot);
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-cBd.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: 'NanumSquareNeoExtraBold';
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.eot);
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-dEb.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: 'NanumSquareNeoHeavy';
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.eot);
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeoTTF-eHv.ttf) format("truetype");
+// }
+
+// @font-face {
+//   font-family: 'NanumSquareNeoVariable';
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.eot);
+//   src: url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.eot?#iefix) format("embedded-opentype"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.woff) format("woff"), url(https://hangeul.pstatic.net/hangeul_static/webfont/NanumSquareNeo/NanumSquareNeo-Variable.ttf) format("truetype");
+// }
