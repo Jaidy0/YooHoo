@@ -1,9 +1,9 @@
 # 1단계: 의존성 설치
 FROM node:18-alpine AS deps
 WORKDIR /app
-# yarn.lock 파일이 있다면 함께 복사하여 고정된 의존성을 설치합니다.
+# yarn.lock 파일이 있다면 함께 복사합니다.
 COPY package.json yarn.lock* ./
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # 2단계: 빌드
 FROM node:18-alpine AS builder
@@ -19,7 +19,7 @@ RUN yarn build
 FROM node:18-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 # Next.js 기본 포트는 3000번입니다.
 EXPOSE 3000
 
