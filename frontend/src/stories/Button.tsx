@@ -1,5 +1,4 @@
 import React from 'react';
-
 import './button.css';
 
 export interface ButtonProps {
@@ -26,20 +25,20 @@ export const Button = ({
   const mode = primary
     ? 'storybook-button--primary'
     : 'storybook-button--secondary';
+
+  // 인라인 스타일 객체 생성
+  const buttonStyle = backgroundColor ? { backgroundColor } : {};
+
   return (
     <button
       type='button'
       className={['storybook-button', `storybook-button--${size}`, mode].join(
         ' '
       )}
+      style={buttonStyle}
       {...props}
     >
       {label}
-      <style jsx>{`
-        button {
-          background-color: ${backgroundColor};
-        }
-      `}</style>
     </button>
   );
 };

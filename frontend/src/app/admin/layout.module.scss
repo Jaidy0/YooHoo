@@ -1,5 +1,6 @@
 // src/app/(admin)/layout.module.scss
 @use '@/assets/styles/abstracts/variables' as *;
+@use 'sass:color';
 
 .adminLayout {
   display: flex;

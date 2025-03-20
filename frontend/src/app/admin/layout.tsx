@@ -24,7 +24,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className={styles.logo}>
             <Link href='/admin'>
               <div className={styles.logoImage}>
-                <img src='/logo.png' alt='유후 로고' />
+                {/* To Do: Image 태그로 수정 */}
+                {/* <img src='/logo.png' alt='유후 로고' /> */}
               </div>
               <span className={styles.logoText}>
                 단체명 <strong>사용자명</strong> 님 환영합니다!
@@ -35,7 +36,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         <div className={styles.mainNav}>
           <TabMenu menuItems={adminNavItems} className={styles.adminTabMenu} />
-          {/* TO DO: 버튼으로 수정  */}
+          {/* TO DO: 버튼으로 수정 */}
           <Link href='/admin/guide' className={styles.guideButton}>
             <span>메인 페이지가기</span>
           </Link>
