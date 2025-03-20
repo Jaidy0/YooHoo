@@ -11,7 +11,7 @@ WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
 
 # Yarn 최신 버전 설치
-RUN yarn set version 4.7.0
+RUN corepack enable && yarn set version 4.7.0
 
 # Dependancy 설치 (새로운 lock 파일 수정 또는 생성 방지)
 RUN yarn --frozen-lockfile
