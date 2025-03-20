@@ -73,3 +73,4 @@ volumes:
   mysql_data:
   redis_data:
   grafana-data:
+  prometheus-data:
