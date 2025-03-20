@@ -13,7 +13,7 @@ COPY .yarn ./.yarn
 
 # Yarn 활성화 (버전 설정 제거)
 RUN corepack enable
-RUN yarn install --no-lint
+RUN yarn install --immutable
 
 ###########################################################
 
@@ -34,7 +34,7 @@ COPY . .
 
 # 빌드 실행
 RUN corepack enable
-RUN yarn build
+RUN yarn build --no-lint
 
 ###########################################################
 
