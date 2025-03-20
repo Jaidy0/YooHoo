@@ -3,6 +3,10 @@ pipeline {
     options {
         disableConcurrentBuilds()  // 동시 빌드를 비활성화하여 빌드 충돌 방지
     }
+    parameters {
+        // 카나리 배포에서 새 버전으로 보낼 트래픽 비율 설정
+        string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')
+    }
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
         GIT_BRANCH = "infra-dev"
@@ -140,13 +144,18 @@ pipeline {
 
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
+                            # gettext가 설치되지 않았다면 설치
                             if ! dpkg -s gettext > /dev/null 2>&1; then
                                 sudo apt-get update && sudo apt-get install -y gettext
                             fi
+
                             set -a
                             . ${WORKSPACE}/.env
                             set +a
+
+                            export TRAFFIC_SPLIT=${TRAFFIC_SPLIT}
                             envsubst < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+
                             # nginx_lb 컨테이너가 실행 중인지 확인하고 실행되지 않았다면 시작
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
@@ -160,8 +169,8 @@ pipeline {
                 }
             }
         }
-/*
 
+/*
         stage('Health Check') {
             agent { label 'public-dev' }  // 헬스 체크는 public-dev 노드에서 실행
             steps {
@@ -230,7 +239,9 @@ pipeline {
                             set -a
                             . ${WORKSPACE}/.env
                             set +a
-                            envsubst < ${WORKSPACE}/nginx/nginx.canary.conf.template > ./nginx/nginx.conf
+
+                            envsubst < ${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
+
                             docker exec nginx_lb nginx -s reload
                         """
                     }

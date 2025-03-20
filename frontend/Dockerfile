@@ -1,50 +1,33 @@
-# 1. 빌더 단계
-FROM node:18 AS builder
-
-# Corepack 활성화
-RUN corepack enable
-
-# 작업 디렉토리 설정
+# 1단계: 의존성 설치
+FROM node:18-alpine AS deps
 WORKDIR /app
+# yarn.lock 파일이 있다면 함께 복사하여 고정된 의존성을 설치합니다.
+COPY package.json yarn.lock* ./
+RUN yarn install --frozen-lockfile
 
-# 의존성 파일 복사
-COPY package.json yarn.lock ./
-
-# Yarn 4.7.0 준비 및 활성화
-RUN corepack prepare yarn@4.7.0 --activate
-
-# 의존성 설치
-RUN yarn install --immutable
-
-# 애플리케이션 코드 복사
+# 2단계: 빌드
+FROM node:18-alpine AS builder
+WORKDIR /app
+# 전체 소스 코드를 복사합니다.
 COPY . .
-
-# Next.js 빌드
+# 이전 단계에서 설치한 node_modules를 복사합니다.
+COPY --from=deps /app/node_modules ./node_modules
+# Next.js 애플리케이션 빌드
 RUN yarn build
 
-# 2. 실행 단계
-FROM node:18 AS runner
-
-# Corepack 활성화
-RUN corepack enable
-
-# 작업 디렉토리 설정
+# 3단계: 런타임 이미지
+FROM node:18-alpine AS runner
 WORKDIR /app
 
-# 빌드된 앱 및 실행에 필요한 파일 복사
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/.yarn ./.yarn
-COPY --from=builder /app/.yarnrc.yml ./.yarnrc.yml
-
-# 환경 변수 설정
-ENV NODE_ENV=production
-ENV PORT=3000
-
-# 포트 노출
+ENV NODE_ENV production
+# Next.js 기본 포트는 3000번입니다.
 EXPOSE 3000
 
-# 앱 실행
+# 프로덕션에 필요한 파일들만 복사합니다.
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+
+# 애플리케이션 실행
 CMD ["yarn", "start"]

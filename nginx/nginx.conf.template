@@ -10,13 +10,13 @@ http {
     }
 
     upstream backend {
-        server $EC2_BACKEND_HOST:$STABLE_BACKEND_PORT weight=90;
-        server $EC2_BACKEND_HOST:$CANARY_BACKEND_PORT weight=10;
+        server $EC2_BACKEND_HOST:$STABLE_BACKEND_PORT weight=$((100 - ${TRAFFIC_SPLIT}));
+        server $EC2_BACKEND_HOST:$CANARY_BACKEND_PORT weight=${TRAFFIC_SPLIT};
     }
 
     upstream frontend {
-        server $EC2_FRONTEND_HOST:$STABLE_FRONTEND_PORT weight=90;
-        server $EC2_FRONTEND_HOST:$CANARY_FRONTEND_PORT weight=10;
+        server $EC2_FRONTEND_HOST:$STABLE_FRONTEND_PORT weight=$((100 - ${TRAFFIC_SPLIT}));
+        server $EC2_FRONTEND_HOST:$CANARY_FRONTEND_PORT weight=${TRAFFIC_SPLIT};
     }
 
     server {
