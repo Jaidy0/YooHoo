@@ -19,8 +19,8 @@ scrape_configs:
 
   - job_name: 'node'
     static_configs:
-      - targets: ['${EC2_BACKEND_HOST}:${NODE_EXPORTER_PORT}']
+      - targets: ['node-exporter:${NODE_EXPORTER_PORT}']
 
   - job_name: 'cadvisor'
     static_configs:
-      - targets: ['${EC2_BACKEND_HOST}:${CADVISOR_PORT}']
+      - targets: ['cadvisor:${CADVISOR_PORT}']
