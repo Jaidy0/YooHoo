@@ -1,4 +1,4 @@
-import Image from 'next/image';
+// import Image from 'next/image';
 import styles from './page.module.scss';
 import logo from '@/assets/imgs/yoohoo-logo.svg';
 
@@ -26,7 +26,7 @@ export default function Home() {
         ${isAdmin ? styles.adminMode : styles.userMode}
       `}
     >
-      <main style={{ fontSize: '30px' }} >
+      <main style={{ fontSize: '30px' }}>
         {/* 역할별 다른 컴포넌트 렌더링 */}
         {isAdmin != 'user' ? (
           <div className={styles.admin}>관리자용</div>

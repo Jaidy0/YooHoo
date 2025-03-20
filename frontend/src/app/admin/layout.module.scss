@@ -1,0 +1,179 @@
+// src/app/(admin)/layout.module.scss
+@use '@/assets/styles/abstracts/variables' as *;
+@use 'sass:color';
+
+.adminLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $yh-admin-bg;
+}
+
+.adminHeader {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-xl;
+  height: 64px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+
+  a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+  }
+
+  .logoImage {
+    height: 40px;
+    width: 40px;
+    margin-right: $spacing-sm;
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .logoText {
+    font-size: $font-size-md;
+    font-weight: $font-weight-normal;
+    color: $text-555;
+
+    strong {
+      font-size: $font-size-4xl;
+      font-weight: $font-weight-bold;
+      color: $text-121212;
+    }
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.logoutButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $yh-ivory;
+
+  span {
+    &:first-child {
+      font-size: $font-size-sm;
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+
+    &:last-child {
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  &:hover {
+    color: $yh-yellow;
+  }
+}
+
+.mainNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $spacing-xl;
+  height: 48px;
+}
+
+.adminTabMenu {
+  // 탭 메뉴에 특별한 스타일 적용이 필요하면 여기에 추가
+
+  :global(.menuList) {
+    border-bottom: none;
+  }
+
+  :global(.menuItem) {
+    color: $yh-brown;
+
+    &:global(.menuItem--active) {
+      font-weight: $font-weight-bold;
+
+      &::after {
+        background-color: $yh-brown;
+      }
+    }
+  }
+}
+
+.guideButton {
+  display: flex;
+  align-items: center;
+  color: $yh-brown;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  text-decoration: none;
+
+  &:hover {
+    color: color.adjust($yh-brown, $lightness: -10%);
+  }
+}
+
+.mainContent {
+  flex: 1;
+  padding: $spacing-xl;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.adminFooter {
+  background-color: $yh-admin-bg;
+  padding: $spacing-sm 0;
+  text-align: center;
+  border-top: 1px solid $color-border;
+}
+
+.footerContent {
+  font-size: $font-size-sm;
+  color: $text-777;
+  padding: $spacing-sm 0;
+}
+
+// 반응형 미디어 쿼리
+@media (max-width: $breakpoint-lg) {
+  .mainContent {
+    padding: $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .headerContainer {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .mainNav {
+    padding: 0 $spacing-md;
+    overflow-x: auto;
+  }
+
+  .logoText {
+    display: none;
+  }
+}
