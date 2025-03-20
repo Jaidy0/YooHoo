@@ -28,7 +28,7 @@ export default function Home() {
       <main style={{ fontSize: '30px' }}>
         {/* 역할별 다른 컴포넌트 렌더링 */}
         {isAdmin != 'user' ? (
-          <div className={styles.admin}>관리자용 페이지입니다.</div>
+          <div className={styles.admin}>관리자용 페이지입니다</div>
         ) : (
           <div className={styles.user}>사용자용페이지입니다.Pretendard</div>
         )}
