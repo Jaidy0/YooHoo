@@ -154,7 +154,7 @@ pipeline {
                             set +a
 
                             export TRAFFIC_SPLIT=${TRAFFIC_SPLIT}
-                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $TRAFFIC_SPLIT' ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $TRAFFIC_SPLIT' < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
 
                             # nginx_lb 컨테이너가 실행 중인지 확인하고 실행되지 않았다면 시작
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
@@ -243,7 +243,7 @@ pipeline {
 
                             # 트래픽 비율 0%로 설정하여 안정 버전만 사용
                             export TRAFFIC_SPLIT=0
-                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $TRAFFIC_SPLIT' ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $TRAFFIC_SPLIT' < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
@@ -265,7 +265,7 @@ pipeline {
 
                             # 트래픽 비율 0%로 설정하여 안정 버전만 사용
                             export TRAFFIC_SPLIT=0
-                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $TRAFFIC_SPLIT' ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $TRAFFIC_SPLIT' < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
