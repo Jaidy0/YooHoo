@@ -9,7 +9,6 @@ pipeline {
     }
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"  // 도커 이미지 이름의 접두사 (예: murhyun2/yoohoo-canary-backend)
-        GIT_BRANCH = "infra-dev"
         EC2_PUBLIC_HOST = "j12b209.p.ssafy.io"  // 공용 EC2 서버 주소 (Nginx가 실행되는 서버)
         EC2_BACKEND_HOST = ""
         EC2_FRONTEND_HOST = ""
@@ -240,8 +239,9 @@ pipeline {
                             . ${WORKSPACE}/.env
                             set +a
 
-                            envsubst < ${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
-
+                            # 트래픽 비율 0%로 설정하여 안정 버전만 사용
+                            export TRAFFIC_SPLIT=0
+                            envsubst < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
@@ -252,25 +252,58 @@ pipeline {
     post {
         failure {
             node('public-dev') {
-                echo "배포 실패: 롤백을 진행합니다."  // 파이프라인 실패 시 메시지 출력
+                echo "배포 실패: 롤백을 진행합니다."
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 백엔드 서버 SSH 인증
+                    // 1. Nginx 트래픽 100% 안정 버전으로 복구
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            set -a
+                            . ${WORKSPACE}/.env
+                            set +a
+
+                            # 트래픽 비율 0%로 설정하여 안정 버전만 사용
+                            export TRAFFIC_SPLIT=0
+                            envsubst < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            docker exec nginx_lb nginx -s reload
+                        """
+                    }
+
+                    // 2. 백엔드 카나리 컨테이너 정리
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose -f docker-compose.backend.yml pull stable_backend &&  # 안정 백엔드 이미지 다운로드
-                                docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend  # 안정 백엔드 컨테이너 실행
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
+                                docker compose -f docker-compose.backend.yml stop canary_backend
+                                docker compose -f docker-compose.backend.yml rm -f canary_backend
                             "
                         """
                     }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {  // 프론트엔드 서버 SSH 인증
+
+                    // 3. 프론트엔드 카나리 컨테이너 정리
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
-                                mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&  # 디렉토리가 없으면 생성
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                docker compose -f docker-compose.frontend.yml pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
-                                docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend  # 안정 프론트엔드 컨테이너 실행
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
+                                docker compose -f docker-compose.frontend.yml stop canary_frontend
+                                docker compose -f docker-compose.frontend.yml rm -f canary_frontend
+                            "
+                        """
+                    }
+
+                    // 4. 안정 버전 재시작 (필요시)
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
+                                docker compose -f docker-compose.backend.yml up -d stable_backend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
+                                docker compose -f docker-compose.frontend.yml up -d stable_frontend
                             "
                         """
                     }
@@ -280,10 +313,16 @@ pipeline {
         always {
             node('public-dev') {
                 script {
+                    // Git 브랜치 이름 추출 (Detached HEAD 상태 방지)
+                    def Branch_Name = env.GIT_BRANCH ? env.GIT_BRANCH.replace('origin/', '') : sh(
+                        script: "git name-rev --name-only HEAD | sed 's/^origin\\///'",
+                        returnStdout: true
+                    ).trim()
+
                     def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
                     def Author_Email = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                     def Commit_Message = sh(script: "git log -1 --pretty=%s", returnStdout: true).trim()
-                    def Branch_Name = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    // def Branch_Name = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                     def Build_Time = new Date(currentBuild.startTimeInMillis).format("yyyy년 MM월 dd일 HH시 mm분 ss초", TimeZone.getTimeZone("Asia/Seoul"))
                     def Duration = currentBuild.durationString.replace(' and counting', '')
                     def Status = currentBuild.result ?: "SUCCESS"
