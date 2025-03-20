@@ -28,7 +28,7 @@ const iconMap = {
   iconHeart,
   iconHome,
   iconPetfoot,
-  iconShare
+  iconShare,
 };
 
 export type IconName = keyof typeof iconMap;
@@ -53,12 +53,11 @@ export const IconBox: React.FC<IconProps> = ({
   className = '',
   onClick,
 }) => {
-  
   return (
-    <div 
+    <div
       className={`${styles.icon} ${className}`}
-      style={{ 
-        width: size, 
+      style={{
+        width: size,
         height: size,
         color: color,
       }}

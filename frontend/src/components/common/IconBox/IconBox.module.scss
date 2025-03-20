@@ -6,15 +6,15 @@
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
   -webkit-mask-size: contain;
-  color:color;
+  color: color;
 
-  &[role="button"] {
+  &[role='button'] {
     cursor: pointer;
-    
+
     &:hover {
       opacity: 0.8;
     }
-    
+
     &:active {
       opacity: 0.6;
     }

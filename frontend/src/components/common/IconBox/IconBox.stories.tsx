@@ -45,23 +45,29 @@ export const Default: Story = {
 export const AllIcons: Story = {
   render: () => {
     const allIcons: IconName[] = [
-        'iconArrow',
-        'iconBell',
-        'iconBone',
-        'iconCalendar',
-        'iconCart',
-        'iconChevron',
-        'iconDog',
-        'iconDoghead',
-        'iconDownload',
-        'iconHeart',
-        'iconHome',
-        'iconPetfoot',
-        'iconShare',
+      'iconArrow',
+      'iconBell',
+      'iconBone',
+      'iconCalendar',
+      'iconCart',
+      'iconChevron',
+      'iconDog',
+      'iconDoghead',
+      'iconDownload',
+      'iconHeart',
+      'iconHome',
+      'iconPetfoot',
+      'iconShare',
     ];
-    
+
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '20px' }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: '20px',
+        }}
+      >
         {allIcons.map((iconName) => (
           <div key={iconName} style={{ textAlign: 'center' }}>
             <Icon name={iconName} size={32} />
