@@ -1,6 +1,8 @@
 # 1단계: 의존성 설치
 FROM node:18-alpine AS deps
 WORKDIR /app
+# Yarn을 글로벌로 설치합니다.
+RUN npm install --global yarn
 # yarn.lock 파일이 있다면 함께 복사합니다.
 COPY package.json yarn.lock* ./
 RUN yarn install
