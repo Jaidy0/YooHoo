@@ -43,7 +43,7 @@ const baseConfig = {
     ...airbnb.rules,
     ...nextPlugin.configs.recommended.rules, // Next.js 권장 규칙 추가
     ...nextPlugin.configs['core-web-vitals'].rules, // Next.js core-web-vitals 규칙 추가
-    'prettier/prettier': ['error', { endOfLine: 'lf' }],
+    'prettier/prettier': ['error', { endOfLine: 'auto' }],
     'react/react-in-jsx-scope': 'off',
     ...tanstackQuery.configs.recommended.rules,
   },
