@@ -8,30 +8,12 @@ pipeline {
     }
     environment {
         DOCKER_IMAGE_PREFIX = "murhyun2"
-        EC2_PUBLIC_HOST = ""
-        EC2_BACKEND_HOST = ""
-        EC2_FRONTEND_HOST = ""
-        STABLE_BACKEND_PORT = ""
-        CANARY_BACKEND_PORT = ""
-        STABLE_FRONTEND_PORT = ""
-        CANARY_FRONTEND_PORT = ""
-        PROMETHEUS_PORT = ""
         COMPOSE_PROJECT_NAME = "yoohoo"
-        EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"
-        EC2_BACKEND_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"
-        EC2_FRONTEND_SSH_CREDENTIALS_ID = "ec2-frontend-ssh-key"
+        EC2_USER = "ubuntu"
+        DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
         GIT_CREDENTIALS_ID = "gitlab-token"
         GIT_REPOSITORY_URL = "https://lab.ssafy.com/s12-fintech-finance-sub1/S12P21B209"
         PROJECT_DIRECTORY = "YooHoo"
-        EC2_USER = "ubuntu"
-        DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
-        STABLE_TAG = "stable-${env.BUILD_NUMBER}"
-        CANARY_TAG = "canary-${env.BUILD_NUMBER}"
-        BACKEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-backend"
-        FRONTEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-frontend"
-        STABLE_WEIGHT = "${100 - params.TRAFFIC_SPLIT.toInteger()}"
-        CANARY_WEIGHT = "${params.TRAFFIC_SPLIT.toInteger()}"
-        // 자동 승인을 위한 추가 환경 변수
         ERROR_RATE_THRESHOLD = 1.0 // 오류율 임계값 (%)
         RESPONSE_TIME_THRESHOLD = 200 // 응답 시간 임계값 (ms)
         MONITORING_DURATION = 300 // 모니터링 지속 시간 (초)
@@ -66,14 +48,16 @@ pipeline {
                                 envMap[keyValue[0].trim()] = keyValue[1].trim()
                             }
                         }
-                        EC2_PUBLIC_HOST = envMap['EC2_PUBLIC_HOST']
-                        EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
-                        EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
-                        STABLE_BACKEND_PORT = envMap['STABLE_BACKEND_PORT']
-                        CANARY_BACKEND_PORT = envMap['CANARY_BACKEND_PORT']
-                        STABLE_FRONTEND_PORT = envMap['STABLE_FRONTEND_PORT']
-                        CANARY_FRONTEND_PORT = envMap['CANARY_FRONTEND_PORT']
-                        PROMETHEUS_PORT = envMap['PROMETHEUS_PORT']
+                        env.EC2_PUBLIC_HOST = envMap['EC2_PUBLIC_HOST']
+                        env.EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
+                        env.EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
+                        env.STABLE_BACKEND_PORT = envMap['STABLE_BACKEND_PORT']
+                        env.CANARY_BACKEND_PORT = envMap['CANARY_BACKEND_PORT']
+                        env.STABLE_FRONTEND_PORT = envMap['STABLE_FRONTEND_PORT']
+                        env.CANARY_FRONTEND_PORT = envMap['CANARY_FRONTEND_PORT']
+                        env.PROMETHEUS_PORT = envMap['PROMETHEUS_PORT']
+                        env.STABLE_WEIGHT = "${100 - params.TRAFFIC_SPLIT.toInteger()}"
+                        env.CANARY_WEIGHT = "${params.TRAFFIC_SPLIT.toInteger()}"
                     }
                 }
             }
@@ -88,8 +72,8 @@ pipeline {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 dir("backend") {
                                     sh """
-                                        docker build -t ${BACKEND_IMAGE}:${CANARY_TAG} .
-                                        docker push ${BACKEND_IMAGE}:${CANARY_TAG}
+                                        docker build -t ${env.BACKEND_IMAGE}:${env.CANARY_TAG} .
+                                        docker push ${env.BACKEND_IMAGE}:${env.CANARY_TAG}
                                     """
                                 }
                             }
@@ -103,8 +87,8 @@ pipeline {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 dir("frontend") {
                                     sh """
-                                        docker build -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
-                                        docker push ${FRONTEND_IMAGE}:${CANARY_TAG}
+                                        docker build -t ${env.FRONTEND_IMAGE}:${env.CANARY_TAG} .
+                                        docker push ${env.FRONTEND_IMAGE}:${env.CANARY_TAG}
                                     """
                                 }
                             }
@@ -120,12 +104,12 @@ pipeline {
                 script {
                     parallel(
                         "Backend Deployment": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "ec2-backend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
-                                    scp -i \$SSH_KEY ${WORKSPACE}/docker-compose.backend.yml ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
-                                    scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_BACKEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
+                                    scp -i \$SSH_KEY ${WORKSPACE}/docker-compose.backend.yml ${EC2_USER}@${env.EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${env.EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.backend.yml up -d canary_backend node-exporter cadvisor
                                     "
@@ -133,12 +117,12 @@ pipeline {
                             }
                         },
                         "Frontend Deployment": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "ec2-frontend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
-                                    scp -i \$SSH_KEY ${WORKSPACE}/docker-compose.frontend.yml ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
-                                    scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_FRONTEND_HOST} "mkdir -p /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}"
+                                    scp -i \$SSH_KEY ${WORKSPACE}/docker-compose.frontend.yml ${EC2_USER}@${env.EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${env.EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
                                         docker compose -f docker-compose.frontend.yml up -d canary_frontend node-exporter cadvisor
                                     "
@@ -146,7 +130,7 @@ pipeline {
                             }
                         }
                     )
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
                             if ! dpkg -s gettext > /dev/null 2>&1; then
                                 sudo apt-get update && sudo apt-get install -y gettext
@@ -168,24 +152,23 @@ pipeline {
                 }
             }
         }
+
         stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
                 script {
                     sleep(15) // 카나리 배포 후 안정화 대기 (15초)
                     def startTime = System.currentTimeMillis()
-                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간 (300초)
+                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000)
 
-                    // 병렬 실행: 트래픽 생성과 메트릭 모니터링
                     parallel(
                         "Generate Traffic": {
                             script {
                                 def duration = env.MONITORING_DURATION.toInteger()
                                 echo "카나리 백엔드로 테스트 트래픽을 생성합니다..."
-                                // curl 명령어로 /api/test 엔드포인트에 1초 간격 요청 전송
                                 sh """
                                     for i in \$(seq 1 ${duration}); do
-                                        curl -s http://${EC2_PUBLIC_HOST}/api/test || true
+                                        curl -s http://${env.EC2_PUBLIC_HOST}/api/test || true
                                         sleep 1
                                     done
                                 """
@@ -199,15 +182,13 @@ pipeline {
 
                                 while (System.currentTimeMillis() < endTime) {
                                     try {
-                                        // 서비스 UP 상태 확인
                                         def upQuery = "up{job=\"backend-canary\"}"
                                         def encodedUpQuery = URLEncoder.encode(upQuery, "UTF-8")
-                                        def upResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedUpQuery}\"", returnStdout: true).trim()
+                                        def upResponse = sh(script: "curl -s \"http://${env.EC2_PUBLIC_HOST}:${env.PROMETHEUS_PORT}/api/v1/query?query=${encodedUpQuery}\"", returnStdout: true).trim()
                                         echo "Up Status Response: ${upResponse}"
 
                                         def upJson = readJSON(text: upResponse)
                                         def isUp = false
-
                                         if (upJson.data.result && !upJson.data.result.isEmpty()) {
                                             for (def result in upJson.data.result) {
                                                 if (result.metric.job == "backend-canary" && result.value[1] == "1") {
@@ -223,34 +204,30 @@ pipeline {
                                             continue
                                         }
 
-                                        // 오류율 쿼리
                                         def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
                                         def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
-                                        def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
+                                        def errorRateResponse = sh(script: "curl -s \"http://${env.EC2_PUBLIC_HOST}:${env.PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
                                         echo "Error Rate Response: ${errorRateResponse}"
 
                                         def errorRateJson = readJSON(text: errorRateResponse)
                                         def errorRate = 0.0
                                         def hasErrorRateMetric = false
-
                                         if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
                                             hasErrorRateMetric = true
                                             errorRate = errorRateJson.data.result[0].value[1].toFloat()
                                         } else {
                                             errorRate = 0.0
-                                            hasErrorRateMetric = true // 오류율 0%로 간주
+                                            hasErrorRateMetric = true
                                         }
 
-                                        // 응답 시간 쿼리
                                         def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m]))"
                                         def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
-                                        def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
+                                        def responseTimeResponse = sh(script: "curl -s \"http://${env.EC2_PUBLIC_HOST}:${env.PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
                                         echo "Response Time Response: ${responseTimeResponse}"
 
                                         def responseTimeJson = readJSON(text: responseTimeResponse)
                                         def responseTime = 0.0
                                         def hasResponseTimeMetric = false
-
                                         if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
                                             hasResponseTimeMetric = true
                                             if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
@@ -258,28 +235,24 @@ pipeline {
                                             }
                                         }
 
-                                        // 메트릭이 아직 수집되지 않은 경우
                                         if (!hasErrorRateMetric || !hasResponseTimeMetric) {
                                             def elapsedTime = System.currentTimeMillis() - metricCheckStart
                                             def remainingTime = 60000 - elapsedTime
-
                                             if (elapsedTime > 60000) {
                                                 error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
                                             }
-
                                             echo "메트릭이 아직 수집되지 않았습니다. 대기 중... (제한 시간까지 ${remainingTime / 1000}초 남음)"
                                             sleep(10)
                                             continue
                                         }
 
                                         echo "현재 오류율: ${errorRate}%, 응답 시간: ${responseTime}초"
-
                                         if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
                                             success = false
                                             error("❌ 카나리 모니터링 실패: 오류율(${errorRate}%) 또는 응답 시간(${responseTime}초)이 임계값을 초과했습니다!")
                                         }
 
-                                        sleep(10) // 10초 간격 모니터링
+                                        sleep(10)
                                     } catch (Exception e) {
                                         echo "모니터링 중 오류 발생: ${e.message}"
                                         if (e.message.contains("카나리 모니터링 실패")) {
@@ -288,7 +261,6 @@ pipeline {
                                         sleep(10)
                                     }
                                 }
-
                                 if (success) {
                                     echo "✅ 카나리 모니터링 성공: 모든 메트릭이 정상 범위 내에 있습니다."
                                 }
@@ -298,24 +270,18 @@ pipeline {
                 }
             }
         }
+
         stage('Promote to Stable') {
             agent { label 'public-dev' }
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        sh """
-                            docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
-                            docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
-                            docker push ${BACKEND_IMAGE}:${STABLE_TAG}
-                            docker push ${FRONTEND_IMAGE}:${STABLE_TAG}
-                        """
-                    }
                     parallel(
                         "Backend Promotion": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "ec2-backend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        sed -i 's|image: .*|image: ${env.BACKEND_IMAGE}:${env.CANARY_TAG}|' docker-compose.backend.yml &&
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&
                                         docker compose -f docker-compose.backend.yml stop canary_backend &&
                                         docker compose -f docker-compose.backend.yml rm -f canary_backend
@@ -325,10 +291,11 @@ pipeline {
                             }
                         },
                         "Frontend Promotion": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            withCredentials([sshUserPrivateKey(credentialsId: "ec2-frontend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        sed -i 's|image: .*|image: ${env.FRONTEND_IMAGE}:${env.CANARY_TAG}|' docker-compose.frontend.yml &&
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&
                                         docker compose -f docker-compose.frontend.yml stop canary_frontend &&
                                         docker compose -f docker-compose.frontend.yml rm -f canary_frontend
@@ -338,7 +305,7 @@ pipeline {
                             }
                         }
                     )
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
                             set -a
                             . \${WORKSPACE}/.env
@@ -356,7 +323,7 @@ pipeline {
             node('public-dev') {
                 echo "배포 실패: 롤백을 진행합니다."
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
                             set -a
                             . \${WORKSPACE}/.env
@@ -365,35 +332,35 @@ pipeline {
                             docker exec nginx_lb nginx -s reload
                         """
                     }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-backend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.backend.yml stop canary_backend
                                 docker compose -f docker-compose.backend.yml rm -f canary_backend
                             "
                         """
                     }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-frontend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.frontend.yml stop canary_frontend
                                 docker compose -f docker-compose.frontend.yml rm -f canary_frontend
                             "
                         """
                     }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-backend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
+                            ssh -i \$SSH_KEY ${EC2_USER}@${env.EC2_BACKEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.backend.yml up -d stable_backend
                             "
                         """
                     }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                    withCredentials([sshUserPrivateKey(credentialsId: "ec2-frontend-ssh-key", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                            ssh -i \$SSH_KEY ${EC2_USER}@${env.EC2_FRONTEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.frontend.yml up -d stable_frontend
                             "
@@ -404,12 +371,10 @@ pipeline {
         }
         always {
             node('public-dev') {
-                // 백엔드 이미지 정리: 최신 1개 태그만 유지
                 sh """
                     docker image prune -a -f
                     docker images --filter "reference=*:canary-*" --format '{{.Repository}}:{{.Tag}}' | sort -t- -k2 -n | head -n -1 | xargs -r docker rmi
                 """
-                // 프론트엔드 이미지 정리: 최신 1개 태그만 유지
                 sh """
                     docker images --format '{{.Repository}}:{{.Tag}}' | grep 'murhyun2/yoohoo-frontend:canary-' | sort -t- -k2 -n | head -n -1 | xargs -r docker rmi
                 """
