@@ -74,11 +74,11 @@ pipeline {
                         EC2_PUBLIC_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
-                        STABLE_BACKEND_PORT  = envMap['STABLE_BACKEND_PORT ']
-                        CANARY_BACKEND_PORT  = envMap['CANARY_BACKEND_PORT ']
-                        STABLE_FRONTEND_PORT  = envMap['STABLE_FRONTEND_PORT ']
-                        CANARY_FRONTEND_PORT  = envMap['CANARY_FRONTEND_PORT ']
-                        PROMETHEUS_PORT  = envMap['PROMETHEUS_PORT ']
+                        STABLE_BACKEND_PORT = envMap['STABLE_BACKEND_PORT']
+                        CANARY_BACKEND_PORT = envMap['CANARY_BACKEND_PORT']
+                        STABLE_FRONTEND_PORT = envMap['STABLE_FRONTEND_PORT']
+                        CANARY_FRONTEND_PORT = envMap['CANARY_FRONTEND_PORT']
+                        PROMETHEUS_PORT = envMap['PROMETHEUS_PORT']
                     }
                 }
             }
