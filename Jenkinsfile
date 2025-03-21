@@ -182,27 +182,30 @@ pipeline {
                         try {
                             // 오류율 쿼리
                             def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
-                            def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")  // URL 인코딩
+                            def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
                             def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
-                            echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
+                            echo "Error Rate Response: ${errorRateResponse}"
 
                             def errorRateJson = readJSON(text: errorRateResponse)
                             def errorRate = 0.0
 
+                            // 응답 시간 쿼리
+                            def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
+                            def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
+                            // 여기가 중요! 변수명을 responseTimeResponse로 통일
+                            def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
+                            echo "Response Time Response: ${responseTimeResponse}"
+
+                            def responseTimeJson = readJSON(text: responseTimeResponse)
+                            def responseTime = 0.0
+
+                            // 결과 처리 로직
+                            // 안전하게 체크하고 값 추출
                             if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
                                 if (errorRateJson.data.result[0]?.value && errorRateJson.data.result[0].value.size() > 1) {
                                     errorRate = errorRateJson.data.result[0].value[1].toFloat()
                                 }
                             }
-
-                            // 응답 시간 쿼리
-                            def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
-                            def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
-                            def responseTimeResp = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
-                            echo "Response Time Response: ${responseTimeResp}"  // 응답 확인용 로그
-
-                            def responseTimeJson = readJSON(text: responseTimeResp)
-                            def responseTime = 0.0
 
                             if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
                                 if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
@@ -211,8 +214,9 @@ pipeline {
                             }
 
                             // 메트릭이 없는 경우 처리
-                            if (errorRateJson.data.result.isEmpty() || responseTimeJson.data.result.isEmpty()) {
-                                if (System.currentTimeMillis() - metricCheckStart > 60000) {  // 1분 이상 메트릭 없으면 실패
+                            if ((errorRateJson.data.result == null || errorRateJson.data.result.isEmpty()) ||
+                                (responseTimeJson.data.result == null || responseTimeJson.data.result.isEmpty())) {
+                                if (System.currentTimeMillis() - metricCheckStart > 60000) {
                                     error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
                                 }
                                 echo "메트릭이 아직 수집되지 않았습니다. 대기 중..."
@@ -231,9 +235,9 @@ pipeline {
                         } catch (Exception e) {
                             echo "모니터링 중 오류 발생: ${e.message}"
                             if (e.message.contains("카나리 모니터링 실패")) {
-                                throw e  // 의도적인 오류는 다시 던짐
+                                throw e
                             }
-                            sleep(10)  // 오류 발생 시에도 계속 진행
+                            sleep(10)
                         }
                     }
 
