@@ -222,7 +222,7 @@ pipeline {
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
                                         docker compose -f docker-compose.backend.yml stop canary_backend &&  # 카나리 백엔드 중지
                                         docker compose -f docker-compose.backend.yml rm -f canary_backend  # 카나리 백엔드 컨테이너 삭제
-                                        docker image prune -a
+                                        docker image prune -a -f
                                     "
                                 """
                             }
@@ -235,7 +235,7 @@ pipeline {
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
                                         docker compose -f docker-compose.frontend.yml stop canary_frontend &&  # 카나리 프론트엔드 중지
                                         docker compose -f docker-compose.frontend.yml rm -f canary_frontend  # 카나리 프론트엔드 컨테이너 삭제
-                                        docker image prune -a
+                                        docker image prune -a -f
                                     "
                                 """
                             }
@@ -255,7 +255,7 @@ pipeline {
 
                             envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
-                            docker image prune -a
+                            docker image prune -a -f
                         """
                     }
                 }
