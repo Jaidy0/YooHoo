@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TabMenu from '@/components/common/TabMenu/TabMenu';
 import styles from './layout.module.scss';
-import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
+// import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
+// import HomeIcon from '@/assets/imgs/icons/iconHome.svg';
 
 // 관리자 상단 네비게이션 항목 정의
 const adminNavItems = [
@@ -22,8 +23,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <div className={styles.logo}>
             <Link href='/admin'>
               <div className={styles.logoImage}>
-                {/* To Do: Image 태그로 수정 */}
-                {/* <img src='/logo.png' alt='유후 로고' /> */}
                 <Image
                   width={100}
                   height={100}
@@ -41,15 +40,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         <div className={styles.mainNav}>
           <TabMenu menuItems={adminNavItems} className={styles.adminTabMenu} />
-          <MoveButton
+          {/* TO DO : svg 해결하기 */}
+          {/* <MoveButton
             className={styles.smallButton}
-            leftIcon={
-              <Image src='/home.svg' alt='홈 아이콘' width={16} height={16} /> // 아이콘 크기도 줄이기
-            }
+            leftIcon={<HomeIcon width={16} height={16} />} // SVG를 React 컴포넌트로 직접 사용
             onClick={() => console.log('홈으로 이동')}
           >
             메인 화면으로 가기
-          </MoveButton>
+          </MoveButton> */}
         </div>
       </header>
 
