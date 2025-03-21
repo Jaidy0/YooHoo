@@ -180,14 +180,14 @@ pipeline {
 
                     while (System.currentTimeMillis() < endTime) {
                         // 오류율 쿼리
-                        def errorRateQuery = "sum(rate(http_requests_total{status=~'5..', job='backend-canary'}[5m])) / sum(rate(http_requests_total{job='backend-canary'}[5m])) * 100"
+                        def errorRateQuery = "sum(rate(http_requests_total{status=~\\\"5..\\\", job=\\\"backend-canary\\\"}[5m])) / sum(rate(http_requests_total{job=\\\"backend-canary\\\"}[5m])) * 100"
                         def errorRateResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${errorRateQuery}'", returnStdout: true).trim()
                         echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
                         def errorRateJson = readJSON(text: errorRateResponse)
                         def errorRate = errorRateJson.data.result[0]?.value[1]?.toFloat() ?: 100.0
 
                         // 응답 시간 쿼리
-                        def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job='backend-canary'}[5m])) by (le))"
+                        def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\\\"backend-canary\\\"}[5m])) by (le))"
                         def responseTimeResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${responseTimeQuery}'", returnStdout: true).trim()
                         echo "Response Time Response: ${responseTimeResponse}"  // 응답 확인용 로그
                         def responseTimeJson = readJSON(text: responseTimeResponse)
