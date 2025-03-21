@@ -27,11 +27,11 @@ scrape_configs:
 
   - job_name: 'frontend-stable'
     static_configs:
-      - targets: ['${EC2_BACKEND_HOST}:${STABLE_FRONTEND_PORT}']
+      - targets: ['${EC2_FRONTEND_HOST}:${STABLE_FRONTEND_PORT}']
 
   - job_name: 'frontend-canary'
     static_configs:
-      - targets: ['${EC2_BACKEND_HOST}:${CANARY_FRONTEND_PORT}']
+      - targets: ['${EC2_FRONTEND_HOST}:${CANARY_FRONTEND_PORT}']
 
   # 백엔드 서버의 node-exporter
   - job_name: 'node-backend'
@@ -52,4 +52,3 @@ scrape_configs:
   - job_name: 'cadvisor-frontend'
     static_configs:
       - targets: ['${EC2_FRONTEND_HOST}:${CADVISOR_PORT}']
-
