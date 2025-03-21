@@ -171,30 +171,35 @@ pipeline {
         stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
-                sleep 6  // 6초 대기 시간으로 변경
-
                 script {
+                    sleep(10) // 10초 대기 시간으로 변경
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION * 1000)
                     def success = true
+                    def metricCheckStart = System.currentTimeMillis()
 
                     while (System.currentTimeMillis() < endTime) {
                         // 오류율 쿼리
-                        def errorRateQuery = "sum(rate(http_requests_total{status=~\\\"5..\\\", job=\\\"backend-canary\\\"}[5m])) / sum(rate(http_requests_total{job=\\\"backend-canary\\\"}[5m])) * 100"
+                        def errorRateQuery = "sum(rate(http_requests_total{status=~'5..', job='backend-canary'}[5m])) / sum(rate(http_requests_total{job='backend-canary'}[5m])) * 100"
                         def errorRateResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${errorRateQuery}'", returnStdout: true).trim()
+                        echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
                         def errorRateJson = readJSON(text: errorRateResponse)
                         def errorRate = errorRateJson.data.result[0]?.value[1]?.toFloat() ?: 100.0
 
                         // 응답 시간 쿼리
-                        def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\\\"backend-canary\\\"}[5m])) by (le))"
+                        def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job='backend-canary'}[5m])) by (le))"
                         def responseTimeResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${responseTimeQuery}'", returnStdout: true).trim()
+                        echo "Response Time Response: ${responseTimeResponse}"  // 응답 확인용 로그
                         def responseTimeJson = readJSON(text: responseTimeResponse)
                         def responseTime = responseTimeJson.data.result[0]?.value[1]?.toFloat() ?: 9999.0
 
-                        // 메트릭이 아직 수집되지 않은 경우 처리
+                        // 메트릭이 없는 경우 처리
                         if (errorRateJson.data.result.isEmpty() || responseTimeJson.data.result.isEmpty()) {
+                            if (System.currentTimeMillis() - metricCheckStart > 60000) {  // 1분 이상 메트릭 없으면 실패
+                                error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
+                            }
                             echo "메트릭이 아직 수집되지 않았습니다. 대기 중..."
-                            sleep(10)  // 추가 대기 후 재시도
+                            sleep(10)
                             continue
                         }
 
@@ -202,7 +207,7 @@ pipeline {
                             success = false
                             break
                         }
-                        sleep(10)  // 10초 간격으로 모니터링
+                        sleep(10)  // 10초 간격 모니터링
                     }
 
                     if (!success) {
@@ -234,7 +239,7 @@ pipeline {
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&
                                         docker compose -f docker-compose.backend.yml stop canary_backend &&
                                         docker compose -f docker-compose.backend.yml rm -f canary_backend
-                                        docker image prune -a -f
+                                        docker image prune -f
                                     "
                                 """
                             }
@@ -247,7 +252,7 @@ pipeline {
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&
                                         docker compose -f docker-compose.frontend.yml stop canary_frontend &&
                                         docker compose -f docker-compose.frontend.yml rm -f canary_frontend
-                                        docker image prune -a -f
+                                        docker image prune -f
                                     "
                                 """
                             }
@@ -260,7 +265,6 @@ pipeline {
                             set +a
                             envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
-                            docker image prune -a -f
                         """
                     }
                 }
@@ -320,6 +324,15 @@ pipeline {
         }
         always {
             node('public-dev') {
+                // 백엔드 이미지 정리: 최신 1개 태그만 유지
+                sh """
+                    docker image prune -f
+                    docker images --filter "reference=*:canary-*" --format '{{.Repository}}:{{.Tag}}' | sort -t- -k2 -n | head -n -1 | xargs -r docker rmi
+                """
+                // 프론트엔드 이미지 정리: 최신 1개 태그만 유지
+                sh """
+                    docker images --format '{{.Repository}}:{{.Tag}}' | grep 'murhyun2/yoohoo-frontend:canary-' | sort -t- -k2 -n | head -n -1 | xargs -r docker rmi
+                """
                 script {
                     def Branch_Name = env.GIT_BRANCH ? env.GIT_BRANCH.replace('origin/', '') : sh(script: "git name-rev --name-only HEAD | sed 's/^origin\\///'", returnStdout: true).trim()
                     def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
