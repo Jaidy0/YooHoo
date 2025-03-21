@@ -172,9 +172,9 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(10) // 10초 대기 시간으로 변경
+                    sleep(10) // 10초 대기
                     def startTime = System.currentTimeMillis()
-                    def endTime = startTime + (env.MONITORING_DURATION * 1000)
+                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000)
                     def success = true
                     def metricCheckStart = System.currentTimeMillis()
 
@@ -203,7 +203,7 @@ pipeline {
                             continue
                         }
 
-                        if (errorRate > env.ERROR_RATE_THRESHOLD || responseTime > env.RESPONSE_TIME_THRESHOLD) {
+                        if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
                             success = false
                             break
                         }
