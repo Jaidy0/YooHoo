@@ -172,7 +172,7 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(10) // 10초 대기
+                    sleep(30) // 10초 대기
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000)
                     def success = true
@@ -180,7 +180,7 @@ pipeline {
 
                     while (System.currentTimeMillis() < endTime) {
                         // 오류율 쿼리
-                        def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
+                        def errorRateQuery = "sum(rate(http_requests_total{status=~\\\"5..\\\", job=\\\"backend-canary\\\"}[5m])) / sum(rate(http_requests_total{job=\\\"backend-canary\\\"}[5m])) * 100"
                         def errorRateResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${errorRateQuery}'", returnStdout: true).trim()
                         echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
                         def errorRateJson = readJSON(text: errorRateResponse)
