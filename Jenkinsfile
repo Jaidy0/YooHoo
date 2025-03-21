@@ -172,7 +172,7 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(30) // 30초 대기
+                    sleep(15) // 30초 대기
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000)
                     def success = true
@@ -180,6 +180,31 @@ pipeline {
 
                     while (System.currentTimeMillis() < endTime) {
                         try {
+                            // 서비스가 UP 상태인지 먼저 확인
+                            def upQuery = "up{job=\"backend-canary\"}"
+                            def encodedUpQuery = URLEncoder.encode(upQuery, "UTF-8")
+                            def upResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedUpQuery}\"", returnStdout: true).trim()
+                            echo "Up Status Response: ${upResponse}"
+
+                            def upJson = readJSON(text: upResponse)
+                            def isUp = false
+
+                            // 서비스 UP 상태 확인
+                            if (upJson.data.result && !upJson.data.result.isEmpty()) {
+                                for (def result in upJson.data.result) {
+                                    if (result.metric.job == "backend-canary" && result.value[1] == "1") {
+                                        isUp = true
+                                        break
+                                    }
+                                }
+                            }
+
+                            if (!isUp) {
+                                echo "backend-canary 서비스가 아직 준비되지 않았습니다. 대기 중..."
+                                sleep(10)
+                                continue
+                            }
+
                             // 오류율 쿼리
                             def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
                             def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
@@ -188,38 +213,42 @@ pipeline {
 
                             def errorRateJson = readJSON(text: errorRateResponse)
                             def errorRate = 0.0
+                            def hasErrorRateMetric = false
 
-                            // 응답 시간 쿼리
-                            def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
-                            def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
-                            // 여기가 중요! 변수명을 responseTimeResponse로 통일
-                            def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
-                            echo "Response Time Response: ${responseTimeResponse}"
-
-                            def responseTimeJson = readJSON(text: responseTimeResponse)
-                            def responseTime = 0.0
-
-                            // 결과 처리 로직
-                            // 안전하게 체크하고 값 추출
                             if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
+                                hasErrorRateMetric = true
                                 if (errorRateJson.data.result[0]?.value && errorRateJson.data.result[0].value.size() > 1) {
                                     errorRate = errorRateJson.data.result[0].value[1].toFloat()
                                 }
                             }
 
+                            // 응답 시간 쿼리
+                            def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
+                            def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
+                            def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
+                            echo "Response Time Response: ${responseTimeResponse}"
+
+                            def responseTimeJson = readJSON(text: responseTimeResponse)
+                            def responseTime = 0.0
+                            def hasResponseTimeMetric = false
+
                             if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
+                                hasResponseTimeMetric = true
                                 if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
                                     responseTime = responseTimeJson.data.result[0].value[1].toFloat()
                                 }
                             }
 
-                            // 메트릭이 없는 경우 처리
-                            if ((errorRateJson.data.result == null || errorRateJson.data.result.isEmpty()) ||
-                                (responseTimeJson.data.result == null || responseTimeJson.data.result.isEmpty())) {
-                                if (System.currentTimeMillis() - metricCheckStart > 60000) {
+                            // 아직 메트릭이 수집되지 않은 경우
+                            if (!hasErrorRateMetric || !hasResponseTimeMetric) {
+                                def elapsedTime = System.currentTimeMillis() - metricCheckStart
+                                def remainingTime = 60000 - elapsedTime
+
+                                if (elapsedTime > 60000) {
                                     error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
                                 }
-                                echo "메트릭이 아직 수집되지 않았습니다. 대기 중..."
+
+                                echo "메트릭이 아직 수집되지 않았습니다. 대기 중... (제한 시간까지 ${remainingTime / 1000}초 남음)"
                                 sleep(10)
                                 continue
                             }
