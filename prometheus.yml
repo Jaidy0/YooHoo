@@ -7,6 +7,14 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:${PROMETHEUS_PORT}']
 
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:${NODE_EXPORTER_PORT}']
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:${CADVISOR_PORT}']
+
   - job_name: 'backend-stable'
     metrics_path: '/actuator/prometheus'
     static_configs:
@@ -17,10 +25,31 @@ scrape_configs:
     static_configs:
       - targets: ['${EC2_BACKEND_HOST}:${CANARY_BACKEND_PORT}']
 
-  - job_name: 'node'
+  - job_name: 'frontend-stable'
     static_configs:
-      - targets: ['node-exporter:${NODE_EXPORTER_PORT}']
+      - targets: ['${EC2_BACKEND_HOST}:${STABLE_FRONTEND_PORT}']
 
-  - job_name: 'cadvisor'
+  - job_name: 'frontend-canary'
     static_configs:
-      - targets: ['cadvisor:${CADVISOR_PORT}']
+      - targets: ['${EC2_BACKEND_HOST}:${CANARY_FRONTEND_PORT}']
+
+  # 백엔드 서버의 node-exporter
+  - job_name: 'node-backend'
+    static_configs:
+      - targets: ['${EC2_BACKEND_HOST}:${NODE_EXPORTER_PORT}']
+
+  # 백엔드 서버의 cAdvisor
+  - job_name: 'cadvisor-backend'
+    static_configs:
+      - targets: ['${EC2_BACKEND_HOST}:${CADVISOR_PORT}']
+
+  # 프론트엔드 서버의 node-exporter
+  - job_name: 'node-frontend'
+    static_configs:
+      - targets: ['${EC2_FRONTEND_HOST}:${NODE_EXPORTER_PORT}']
+
+  # 프론트엔드 서버의 cAdvisor
+  - job_name: 'cadvisor-frontend'
+    static_configs:
+      - targets: ['${EC2_FRONTEND_HOST}:${CADVISOR_PORT}']
+

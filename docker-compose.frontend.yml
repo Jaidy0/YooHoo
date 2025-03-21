@@ -15,3 +15,24 @@ services:
       BACKEND_URL: http://${EC2_BACKEND_HOST}:${CANARY_BACKEND_PORT}
     ports:
       - "${CANARY_FRONTEND_PORT}:3000"
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: always
+    ports:
+      - "${NODE_EXPORTER_PORT}:9100"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    privileged: true
+    ports:
+      - "${CADVISOR_PORT}:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/kmsg:/dev/kmsg:ro
+    restart: always
