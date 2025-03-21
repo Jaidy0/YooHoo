@@ -188,7 +188,7 @@ pipeline {
                      def PROMETHEUS_URL = "http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=up"
 
                      // Prometheus에서 up 메트릭 조회
-                     def response = sh(script: "curl -s '${EC2_PUBLIC_HOST}'", returnStdout: true).trim()
+                     def response = sh(script: "curl -s '${PROMETHEUS_URL}'", returnStdout: true).trim()
                      def json = readJSON(text: response)
 
                      // 백엔드 및 프론트엔드 상태 확인
