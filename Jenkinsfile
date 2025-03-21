@@ -71,7 +71,7 @@ pipeline {
                             }
                         }
 
-                        EC2_PUBLIC_HOST = envMap['EC2_BACKEND_HOST']
+                        EC2_PUBLIC_HOST = envMap['EC2_PUBLIC_HOST']
                         EC2_BACKEND_HOST = envMap['EC2_BACKEND_HOST']
                         EC2_FRONTEND_HOST = envMap['EC2_FRONTEND_HOST']
                         STABLE_BACKEND_PORT = envMap['STABLE_BACKEND_PORT']
