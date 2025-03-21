@@ -251,11 +251,11 @@ pipeline {
                             set +a
 
                             # 트래픽 비율 0%로 설정하여 안정 버전만 사용
-                            newTrafficSplit=0
-                            export STABLE_WEIGHT=\$((100 - newTrafficSplit))
-                            export CANARY_WEIGHT=\$newTrafficSplit
+                            # newTrafficSplit=0
+                            # export STABLE_WEIGHT=\$((100 - newTrafficSplit))
+                            # export CANARY_WEIGHT=\$newTrafficSplit
 
-                            envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
@@ -276,11 +276,11 @@ pipeline {
                             set +a
 
                             # 트래픽 비율 0%로 설정하여 안정 버전만 사용
-                            newTrafficSplit=0
-                            export STABLE_WEIGHT=\$((100 - newTrafficSplit))
-                            export CANARY_WEIGHT=\$newTrafficSplit
+                            # newTrafficSplit=0
+                            # export STABLE_WEIGHT=\$((100 - newTrafficSplit))
+                            # export CANARY_WEIGHT=\$newTrafficSplit
 
-                            envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
