@@ -172,48 +172,67 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(30) // 10초 대기
+                    sleep(30) // 30초 대기
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000)
                     def success = true
                     def metricCheckStart = System.currentTimeMillis()
 
                     while (System.currentTimeMillis() < endTime) {
-                        // 오류율 쿼리
-                        def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
-                        def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")  // URL 인코딩
-                        def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
-                        echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
-                        def errorRateJson = readJSON(text: errorRateResponse)
-                        def errorRate = errorRateJson.data.result[0]?.value[1]?.toFloat() ?: 100.0
+                        try {
+                            // 오류율 쿼리
+                            def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
+                            def encodedRateQuery = URLEncoder.encode(errorRateQuery, "UTF-8")  // URL 인코딩
+                            def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRateQuery}\"", returnStdout: true).trim()
+                            echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
 
-                        // 응답 시간 쿼리
-                        def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\\\"backend-canary\\\"}[5m])) by (le))"
-                        def responseTimeResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${responseTimeQuery}'", returnStdout: true).trim()
-                        echo "Response Time Response: ${responseTimeResponse}"  // 응답 확인용 로그
-                        def responseTimeJson = readJSON(text: responseTimeResponse)
-                        def responseTime = responseTimeJson.data.result[0]?.value[1]?.toFloat() ?: 9999.0
+                            def errorRateJson = readJSON(text: errorRateResponse)
+                            def errorRate = 0.0
 
-                        // 메트릭이 없는 경우 처리
-                        if (errorRateJson.data.result.isEmpty() || responseTimeJson.data.result.isEmpty()) {
-                            if (System.currentTimeMillis() - metricCheckStart > 60000) {  // 1분 이상 메트릭 없으면 실패
-                                error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
+                            if (!errorRateJson.data.result.isEmpty()) {
+                                errorRate = errorRateJson.data.result[0]?.value[1]?.toFloat() ?: 0.0
                             }
-                            echo "메트릭이 아직 수집되지 않았습니다. 대기 중..."
-                            sleep(10)
-                            continue
-                        }
 
-                        if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
-                            success = false
-                            break
+                            // 응답 시간 쿼리
+                            def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
+                            def encodedTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")  // URL 인코딩
+                            def responseTimeResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedTimeQuery}'", returnStdout: true).trim()                            echo "Response Time Response: ${responseTimeResponse}"  // 응답 확인용 로그
+
+                            def responseTimeJson = readJSON(text: responseTimeResponse)
+                            def responseTime = 0.0
+
+                            if (!responseTimeJson.data.result.isEmpty()) {
+                                responseTime = responseTimeJson.data.result[0]?.value[1]?.toFloat() ?: 0.0
+                            }
+
+                            // 메트릭이 없는 경우 처리
+                            if (errorRateJson.data.result.isEmpty() || responseTimeJson.data.result.isEmpty()) {
+                                if (System.currentTimeMillis() - metricCheckStart > 60000) {  // 1분 이상 메트릭 없으면 실패
+                                    error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
+                                }
+                                echo "메트릭이 아직 수집되지 않았습니다. 대기 중..."
+                                sleep(10)
+                                continue
+                            }
+
+                            echo "현재 오류율: ${errorRate}%, 응답 시간: ${responseTime}초"
+
+                            if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
+                                success = false
+                                error("❌ 카나리 모니터링 실패: 오류율(${errorRate}%) 또는 응답 시간(${responseTime}초)이 임계값을 초과했습니다!")
+                            }
+
+                            sleep(10)  // 10초 간격 모니터링
+                        } catch (Exception e) {
+                            echo "모니터링 중 오류 발생: ${e.message}"
+                            if (e.message.contains("카나리 모니터링 실패")) {
+                                throw e  // 의도적인 오류는 다시 던짐
+                            }
+                            sleep(10)  // 오류 발생 시에도 계속 진행
                         }
-                        sleep(10)  // 10초 간격 모니터링
                     }
 
-                    if (!success) {
-                        error("❌ 카나리 모니터링 실패: 오류율 또는 응답 시간이 임계값을 초과했습니다!")
-                    } else {
+                    if (success) {
                         echo "✅ 카나리 모니터링 성공: 모든 메트릭이 정상 범위 내에 있습니다."
                     }
                 }
