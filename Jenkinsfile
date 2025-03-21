@@ -172,7 +172,7 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(10) // 10초 대기
+                    sleep(30) // 10초 대기
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000)
                     def success = true
