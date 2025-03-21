@@ -130,8 +130,7 @@ pipeline {
                                     scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${EC2_BACKEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose -f docker-compose.backend.yml pull canary_backend &&  # 카나리 백엔드 이미지 다운로드
-                                        docker compose -f docker-compose.backend.yml up -d canary_backend  # 카나리 백엔드 컨테이너 실행
+                                        docker compose -f docker-compose.backend.yml up -d canary_backend node-exporter cadvisor  # 카나리 백엔드 컨테이너 실행
                                     "
                                 """
                             }
@@ -144,8 +143,7 @@ pipeline {
                                     scp -i \$SSH_KEY ${WORKSPACE}/.env ${EC2_USER}@${EC2_FRONTEND_HOST}:/home/${EC2_USER}/${COMPOSE_PROJECT_NAME}/
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose -f docker-compose.frontend.yml pull canary_frontend &&  # 카나리 프론트엔드 이미지 다운로드
-                                        docker compose -f docker-compose.frontend.yml up -d canary_frontend  # 카나리 프론트엔드 컨테이너 실행
+                                        docker compose -f docker-compose.frontend.yml up -d canary_frontend node-exporter cadvisor  # 카나리 프론트엔드 컨테이너 실행
                                     "
                                 """
                             }
@@ -221,10 +219,10 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose -f docker-compose.backend.yml pull stable_backend &&  # 안정 백엔드 이미지 다운로드
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&  # 안정 백엔드 컨테이너 실행
                                         docker compose -f docker-compose.backend.yml stop canary_backend &&  # 카나리 백엔드 중지
                                         docker compose -f docker-compose.backend.yml rm -f canary_backend  # 카나리 백엔드 컨테이너 삭제
+                                        docker image prune -a
                                     "
                                 """
                             }
@@ -234,10 +232,10 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
-                                        docker compose -f docker-compose.frontend.yml pull stable_frontend &&  # 안정 프론트엔드 이미지 다운로드
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&  # 안정 프론트엔드 컨테이너 실행
                                         docker compose -f docker-compose.frontend.yml stop canary_frontend &&  # 카나리 프론트엔드 중지
                                         docker compose -f docker-compose.frontend.yml rm -f canary_frontend  # 카나리 프론트엔드 컨테이너 삭제
+                                        docker image prune -a
                                     "
                                 """
                             }
@@ -257,6 +255,7 @@ pipeline {
 
                             envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
+                            docker image prune -a
                         """
                     }
                 }
