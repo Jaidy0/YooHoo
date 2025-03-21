@@ -172,7 +172,7 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(30) // 카나리 배포 후 안정화 대기 (30초)
+                    sleep(15) // 카나리 배포 후 안정화 대기 (15초)
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간 (300초)
 
@@ -224,7 +224,7 @@ pipeline {
                                         }
 
                                         // 오류율 쿼리
-                                        def errorRateQuery = "(sum(rate(http_server_requests_seconds_count{outcome="SERVER_ERROR", job="backend-canary"}[5m])) or vector(0)) / sum(rate(http_server_requests_seconds_count{job="backend-canary"}[5m])) * 100"
+                                        def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
                                         def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
                                         def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
                                         echo "Error Rate Response: ${errorRateResponse}"
@@ -235,9 +235,10 @@ pipeline {
 
                                         if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
                                             hasErrorRateMetric = true
-                                            if (errorRateJson.data.result[0]?.value && errorRateJson.data.result[0].value.size() > 1) {
-                                                errorRate = errorRateJson.data.result[0].value[1].toFloat()
-                                            }
+                                            errorRate = errorRateJson.data.result[0].value[1].toFloat()
+                                        } else {
+                                            errorRate = 0.0
+                                            hasErrorRateMetric = true // 오류율 0%로 간주
                                         }
 
                                         // 응답 시간 쿼리
