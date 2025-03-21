@@ -180,29 +180,40 @@ pipeline {
             }
         }
 
-         stage('Health Check via Prometheus') {
-             agent { label 'public-dev' }
-             steps {
-                 script {
-                     // Prometheus 서버 주소
-                     def PROMETHEUS_URL = "http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=up"
+        stage('Health Check via Prometheus') {
+            agent { label 'public-dev' }
+            steps {
+                script {
+                    def PROMETHEUS_URL = "http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=up"
 
-                     // Prometheus에서 up 메트릭 조회
-                     def response = sh(script: "curl -s '${PROMETHEUS_URL}'", returnStdout: true).trim()
-                     def json = readJSON(text: response)
+                    // Prometheus API 호출
+                    def response = sh(script: "curl -s '${PROMETHEUS_URL}'", returnStdout: true).trim()
 
-                     // 백엔드 및 프론트엔드 상태 확인
-                     def backendStatus = json.data.result.find { it.metric.instance.contains("backend-canary") }?.value[1] as Integer ?: 0
-                     def frontendStatus = json.data.result.find { it.metric.instance.contains("frontend-canary") }?.value[1] as Integer ?: 0
+                    // JSON 파싱 (예외 처리 추가)
+                    def json
+                    try {
+                        json = readJSON(text: response)
+                    } catch (Exception e) {
+                        error("❌ JSON 파싱 실패: Prometheus 응답이 올바르지 않습니다! 응답 내용: ${response}")
+                    }
 
-                     if (backendStatus == 0 || frontendStatus == 0) {
-                         error("❌ 헬스 체크 실패: 백엔드 또는 프론트엔드가 DOWN 상태입니다!")
-                     } else {
-                         echo "✅ 헬스 체크 성공: 백엔드 & 프론트엔드 모두 정상 작동 중!"
-                     }
-                 }
-             }
-         }
+                    // 응답이 유효한지 확인
+                    if (!json || !json.data || !json.data.result) {
+                        error("❌ Prometheus에서 'up' 메트릭을 찾을 수 없습니다! 응답: ${response}")
+                    }
+
+                    // 백엔드, 프론트엔드 상태 체크
+                    def backendStatus = json.data.result.find { it.metric.instance.contains("backend-canary") }?.value[1] as Integer ?: 0
+                    def frontendStatus = json.data.result.find { it.metric.instance.contains("frontend-canary") }?.value[1] as Integer ?: 0
+
+                    if (backendStatus == 0 || frontendStatus == 0) {
+                        error("❌ 헬스 체크 실패: 백엔드(${backendStatus}), 프론트엔드(${frontendStatus}) 상태 비정상!")
+                    } else {
+                        echo "✅ 헬스 체크 성공: 백엔드(${backendStatus}), 프론트엔드(${frontendStatus}) 모두 정상 작동!"
+                    }
+                }
+            }
+        }
 
         stage('Approval') {
             agent any  // 수동 승인은 특정 노드 필요 없음
