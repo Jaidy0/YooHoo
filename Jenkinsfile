@@ -182,27 +182,32 @@ pipeline {
                         try {
                             // 오류율 쿼리
                             def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
-                            def encodedRateQuery = URLEncoder.encode(errorRateQuery, "UTF-8")  // URL 인코딩
-                            def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRateQuery}\"", returnStdout: true).trim()
+                            def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")  // URL 인코딩
+                            def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
                             echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
 
                             def errorRateJson = readJSON(text: errorRateResponse)
                             def errorRate = 0.0
 
-                            if (!errorRateJson.data.result.isEmpty()) {
-                                errorRate = errorRateJson.data.result[0]?.value[1]?.toFloat() ?: 0.0
+                            if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
+                                if (errorRateJson.data.result[0]?.value && errorRateJson.data.result[0].value.size() > 1) {
+                                    errorRate = errorRateJson.data.result[0].value[1].toFloat()
+                                }
                             }
 
                             // 응답 시간 쿼리
                             def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
-                            def encodedTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")  // URL 인코딩
-                            def responseTimeResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedTimeQuery}'", returnStdout: true).trim()                            echo "Response Time Response: ${responseTimeResponse}"  // 응답 확인용 로그
+                            def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
+                            def responseTimeResp = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
+                            echo "Response Time Response: ${responseTimeResp}"  // 응답 확인용 로그
 
-                            def responseTimeJson = readJSON(text: responseTimeResponse)
+                            def responseTimeJson = readJSON(text: responseTimeResp)
                             def responseTime = 0.0
 
-                            if (!responseTimeJson.data.result.isEmpty()) {
-                                responseTime = responseTimeJson.data.result[0]?.value[1]?.toFloat() ?: 0.0
+                            if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
+                                if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
+                                    responseTime = responseTimeJson.data.result[0].value[1].toFloat()
+                                }
                             }
 
                             // 메트릭이 없는 경우 처리
