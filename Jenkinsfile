@@ -16,6 +16,7 @@ pipeline {
         CANARY_BACKEND_PORT = ""
         STABLE_FRONTEND_PORT = ""
         CANARY_FRONTEND_PORT = ""
+        PROMETHEUS_PORT = ""
         COMPOSE_PROJECT_NAME = "yoohoo"  // 도커 컴포즈 프로젝트 이름 (컨테이너 이름 등에 사용)
         EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"  // 공용 EC2에 접속할 SSH 키의 Jenkins ID
         EC2_BACKEND_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"  // 백엔드 EC2에 접속할 SSH 키의 Jenkins ID
@@ -77,6 +78,7 @@ pipeline {
                         CANARY_BACKEND_PORT  = envMap['CANARY_BACKEND_PORT ']
                         STABLE_FRONTEND_PORT  = envMap['STABLE_FRONTEND_PORT ']
                         CANARY_FRONTEND_PORT  = envMap['CANARY_FRONTEND_PORT ']
+                        PROMETHEUS_PORT  = envMap['PROMETHEUS_PORT ']
                     }
                 }
             }
@@ -178,20 +180,29 @@ pipeline {
             }
         }
 
-/*
-        stage('Health Check') {
-            agent { label 'public-dev' }  // 헬스 체크는 public-dev 노드에서 실행
-            steps {
-                script {
-                    def backendHealth = sh(script: "curl -f http://${EC2_BACKEND_HOST}:8081/health", returnStatus: true)  // 백엔드 카나리 버전 헬스 체크
-                    def frontendHealth = sh(script: "curl -f http://${EC2_FRONTEND_HOST}:3001/health", returnStatus: true)  // 프론트엔드 카나리 버전 헬스 체크
-                    if (backendHealth != 0 || frontendHealth != 0) {
-                        error("헬스 체크 실패: 카나리 배포가 정상적으로 실행되지 않았습니다.")  // 헬스 체크 실패 시 에러 발생
-                    }
-                }
-            }
-        }
- */
+         stage('Health Check via Prometheus') {
+             agent { label 'public-dev' }
+             steps {
+                 script {
+                     // Prometheus 서버 주소
+                     def PROMETHEUS_URL = "http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=up"
+
+                     // Prometheus에서 up 메트릭 조회
+                     def response = sh(script: "curl -s '${EC2_PUBLIC_HOST}'", returnStdout: true).trim()
+                     def json = readJSON(text: response)
+
+                     // 백엔드 및 프론트엔드 상태 확인
+                     def backendStatus = json.data.result.find { it.metric.instance.contains("backend-canary") }?.value[1] as Integer ?: 0
+                     def frontendStatus = json.data.result.find { it.metric.instance.contains("frontend-canary") }?.value[1] as Integer ?: 0
+
+                     if (backendStatus == 0 || frontendStatus == 0) {
+                         error("❌ 헬스 체크 실패: 백엔드 또는 프론트엔드가 DOWN 상태입니다!")
+                     } else {
+                         echo "✅ 헬스 체크 성공: 백엔드 & 프론트엔드 모두 정상 작동 중!"
+                     }
+                 }
+             }
+         }
 
         stage('Approval') {
             agent any  // 수동 승인은 특정 노드 필요 없음
