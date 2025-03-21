@@ -163,8 +163,7 @@ pipeline {
                             . ${WORKSPACE}/.env
                             set +a
 
-                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $STABLE_WEIGHT $CANARY_WEIGHT' \
-                            < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $STABLE_WEIGHT $CANARY_WEIGHT' < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
 
                             # nginx_lb 컨테이너가 실행 중인지 확인하고 실행되지 않았다면 시작
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
@@ -252,12 +251,11 @@ pipeline {
                             set +a
 
                             # 트래픽 비율 0%로 설정하여 안정 버전만 사용
-                            def newTrafficSplit = 0
-                            env.STABLE_WEIGHT = (100 - newTrafficSplit).toString()
-                            env.CANARY_WEIGHT = newTrafficSplit.toString()
+                            newTrafficSplit=0
+                            export STABLE_WEIGHT=$((100 - newTrafficSplit))
+                            export CANARY_WEIGHT=$newTrafficSplit
 
-                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $STABLE_WEIGHT $CANARY_WEIGHT' \
-                            < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $STABLE_WEIGHT $CANARY_WEIGHT' < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
@@ -278,12 +276,11 @@ pipeline {
                             set +a
 
                             # 트래픽 비율 0%로 설정하여 안정 버전만 사용
-                            def newTrafficSplit = 0
-                            env.STABLE_WEIGHT = (100 - newTrafficSplit).toString()
-                            env.CANARY_WEIGHT = newTrafficSplit.toString()
+                            newTrafficSplit=0
+                            export STABLE_WEIGHT=$((100 - newTrafficSplit))
+                            export CANARY_WEIGHT=$newTrafficSplit
 
-                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $STABLE_WEIGHT $CANARY_WEIGHT' \
-                            < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+                            envsubst '$EC2_BACKEND_HOST $STABLE_BACKEND_PORT $CANARY_BACKEND_PORT $EC2_FRONTEND_HOST $STABLE_FRONTEND_PORT $CANARY_FRONTEND_PORT $STABLE_WEIGHT $CANARY_WEIGHT' < ${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
