@@ -34,7 +34,7 @@ pipeline {
         // 자동 승인을 위한 추가 환경 변수
         ERROR_RATE_THRESHOLD = 1.0 // 오류율 임계값 (%)
         RESPONSE_TIME_THRESHOLD = 200 // 응답 시간 임계값 (ms)
-        MONITORING_DURATION = 300 // 모니터링 지속 시간 (초)
+        MONITORING_DURATION = 60 // 모니터링 지속 시간 (초)
     }
     stages {
         stage('Checkout') {
@@ -174,7 +174,7 @@ pipeline {
                 script {
                     sleep(15) // 카나리 배포 후 안정화 대기 (15초)
                     def startTime = System.currentTimeMillis()
-                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간 (300초)
+                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간
 
                     // 병렬 실행: 트래픽 생성과 메트릭 모니터링
                     parallel(
