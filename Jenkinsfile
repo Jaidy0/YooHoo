@@ -180,7 +180,7 @@ pipeline {
 
                     while (System.currentTimeMillis() < endTime) {
                         // 오류율 쿼리
-                        def errorRateQuery = "sum(rate(http_requests_total{status=~\\\"5..\\\", job=\\\"backend-canary\\\"}[5m])) / sum(rate(http_requests_total{job=\\\"backend-canary\\\"}[5m])) * 100"
+                        def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
                         def errorRateResponse = sh(script: "curl -s 'http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${errorRateQuery}'", returnStdout: true).trim()
                         echo "Error Rate Response: ${errorRateResponse}"  // 응답 확인용 로그
                         def errorRateJson = readJSON(text: errorRateResponse)
@@ -239,7 +239,7 @@ pipeline {
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&
                                         docker compose -f docker-compose.backend.yml stop canary_backend &&
                                         docker compose -f docker-compose.backend.yml rm -f canary_backend
-                                        docker image prune -f
+                                        docker image prune -a -f
                                     "
                                 """
                             }
@@ -252,7 +252,7 @@ pipeline {
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&
                                         docker compose -f docker-compose.frontend.yml stop canary_frontend &&
                                         docker compose -f docker-compose.frontend.yml rm -f canary_frontend
-                                        docker image prune -f
+                                        docker image prune -a -f
                                     "
                                 """
                             }
@@ -326,7 +326,7 @@ pipeline {
             node('public-dev') {
                 // 백엔드 이미지 정리: 최신 1개 태그만 유지
                 sh """
-                    docker image prune -f
+                    docker image prune -a -f
                     docker images --filter "reference=*:canary-*" --format '{{.Repository}}:{{.Tag}}' | sort -t- -k2 -n | head -n -1 | xargs -r docker rmi
                 """
                 // 프론트엔드 이미지 정리: 최신 1개 태그만 유지
