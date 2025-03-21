@@ -1,13 +1,11 @@
+'use client';
+
 import { ReactNode } from 'react';
-import { Metadata } from 'next';
+import Image from 'next/image';
 import Link from 'next/link';
 import TabMenu from '@/components/common/TabMenu/TabMenu';
 import styles from './layout.module.scss';
-
-export const metadata: Metadata = {
-  title: '유기견 후원 관리자 페이지',
-  description: '유기견 후원 서비스 관리자 대시보드',
-};
+import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 
 // 관리자 상단 네비게이션 항목 정의
 const adminNavItems = [
@@ -26,6 +24,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <div className={styles.logoImage}>
                 {/* To Do: Image 태그로 수정 */}
                 {/* <img src='/logo.png' alt='유후 로고' /> */}
+                <Image
+                  width={100}
+                  height={100}
+                  src='/yoohoo-logo.svg'
+                  alt='유후 로고'
+                  className={styles.logo}
+                />
               </div>
               <span className={styles.logoText}>
                 단체명 <strong>사용자명</strong> 님 환영합니다!
@@ -36,10 +41,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         <div className={styles.mainNav}>
           <TabMenu menuItems={adminNavItems} className={styles.adminTabMenu} />
-          {/* TO DO: 버튼으로 수정 */}
-          <Link href='/admin/guide' className={styles.guideButton}>
-            <span>메인 페이지가기</span>
-          </Link>
+          <MoveButton
+            className={styles.smallButton}
+            leftIcon={
+              <Image src='/home.svg' alt='홈 아이콘' width={16} height={16} /> // 아이콘 크기도 줄이기
+            }
+            onClick={() => console.log('홈으로 이동')}
+          >
+            메인 화면으로 가기
+          </MoveButton>
         </div>
       </header>
 
