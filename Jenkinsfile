@@ -185,7 +185,7 @@ pipeline {
                                 // curl 명령어로 /api/test 엔드포인트에 1초 간격 요청 전송
                                 sh """
                                     for i in \$(seq 1 ${duration}); do
-                                        curl -s http://${EC2_BACKEND_HOST}:${CANARY_BACKEND_PORT}/actuator/health || true
+                                        curl -s http://${EC2_PUBLIC_HOST}/api/test || true
                                         sleep 1
                                     done
                                 """
@@ -224,7 +224,7 @@ pipeline {
                                         }
 
                                         // 오류율 쿼리
-                                        def errorRateQuery = "sum(rate(http_requests_total{status=~\"5..\", job=\"backend-canary\"}[5m])) / sum(rate(http_requests_total{job=\"backend-canary\"}[5m])) * 100"
+                                        def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
                                         def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
                                         def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
                                         echo "Error Rate Response: ${errorRateResponse}"
@@ -241,7 +241,7 @@ pipeline {
                                         }
 
                                         // 응답 시간 쿼리
-                                        def responseTimeQuery = "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"backend-canary\"}[5m])) by (le))"
+                                        def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m]))"
                                         def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
                                         def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
                                         echo "Response Time Response: ${responseTimeResponse}"
