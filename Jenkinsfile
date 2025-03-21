@@ -224,7 +224,7 @@ pipeline {
                                         }
 
                                         // 오류율 쿼리
-                                        def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
+                                        def errorRateQuery = "(sum(rate(http_server_requests_seconds_count{outcome="SERVER_ERROR", job="backend-canary"}[5m])) or vector(0)) / sum(rate(http_server_requests_seconds_count{job="backend-canary"}[5m])) * 100"
                                         def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
                                         def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
                                         echo "Error Rate Response: ${errorRateResponse}"
