@@ -14,11 +14,6 @@ const meta: Meta<typeof RoundButton> = {
       options: ['fill', 'primary', 'secondary'],
       description: '버튼 디자인 변형',
     },
-
-    isLoading: {
-      control: { type: 'boolean' },
-      description: '로딩 상태 표시 여부',
-    },
     onClick: { action: 'clicked' },
   },
 };
@@ -56,26 +51,6 @@ export const Disabled: Story = {
     variant: 'disabled',
     children: '로그인',
   },
-};
-
-// 로딩 상태
-export const Loading: Story = {
-  render: () => (
-    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-      <RoundButton variant='primary' isLoading>
-        로그인
-      </RoundButton>
-      <RoundButton variant='secondary' isLoading>
-        추가하기
-      </RoundButton>
-      <RoundButton variant='fill' isLoading>
-        로그인
-      </RoundButton>
-      <RoundButton variant='disabled' isLoading>
-        로그인
-      </RoundButton>
-    </div>
-  ),
 };
 
 // 모든 버튼 스타일

@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './MoveButton.module.scss';
 
 export type MoveButtonVariant = 'primary' | 'secondary';
@@ -14,12 +14,12 @@ export interface MoveButtonProps
   /**
    * 버튼 왼쪽에 표시할 아이콘
    */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
 
   /**
    * 버튼 오른쪽에 표시할 아이콘
    */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
 
   /**
    * 로딩 상태 표시 여부
@@ -35,13 +35,13 @@ export interface MoveButtonProps
   /**
    * 버튼 내용
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**
  * 페이지 이동을 위한 버튼 컴포넌트
  */
-const MoveButton: React.FC<MoveButtonProps> = ({
+export default function MoveButton({
   children,
   variant = 'primary',
   leftIcon,
@@ -49,7 +49,7 @@ const MoveButton: React.FC<MoveButtonProps> = ({
   isLoading = false,
   className = '',
   ...props
-}) => {
+}: MoveButtonProps) {
   const buttonClasses = [
     styles.moveButton,
     styles[`moveButton--${variant}`],
@@ -74,6 +74,4 @@ const MoveButton: React.FC<MoveButtonProps> = ({
       )}
     </button>
   );
-};
-
-export default MoveButton;
+}

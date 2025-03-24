@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './RoundButton.module.scss';
 
 export type RoundButtonVariant = 'fill' | 'primary' | 'secondary' | 'disabled';
@@ -25,19 +25,19 @@ export interface RoundButtonProps
   /**
    * 버튼 내용
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**
  * 둥근 형태의 버튼 컴포넌트
  */
-const RoundButton: React.FC<RoundButtonProps> = ({
+export default function RoundButton({
   children,
   variant = 'primary',
   isLoading = false,
   className = '',
   ...props
-}) => {
+}: RoundButtonProps) {
   const buttonClasses = [
     styles.roundButton,
     styles[`roundButton--${variant}`],
@@ -56,6 +56,4 @@ const RoundButton: React.FC<RoundButtonProps> = ({
       )}
     </button>
   );
-};
-
-export default RoundButton;
+}
