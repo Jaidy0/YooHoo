@@ -5,18 +5,18 @@ export type BadgeVariant = 'positive' | 'negative';
 
 export interface BadgeProps {
   /**
-   * 버튼 디자인 변형
+   * 뱃지 디자인 변형
    * @default 'positive'
    */
   variant?: BadgeVariant;
 
   /**
-   * 버튼 너비 - 직접 지정
+   * 뱃지 너비 - 직접 지정
    */
   width?: string | number;
 
   /**
-   * 버튼 높이 - 직접 지정
+   * 뱃지 높이 - 직접 지정
    */
   height?: string | number;
 
@@ -26,14 +26,11 @@ export interface BadgeProps {
   className?: string;
 
   /**
-   * 버튼 내용
+   * 뱃지 내용
    */
   children: React.ReactNode;
 }
 
-/**
- * 유기견 후원 플랫폼의 기본 버튼 컴포넌트
- */
 export const Badge: React.FC<BadgeProps> = ({
   children,
   variant = 'positive',
