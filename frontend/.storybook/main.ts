@@ -1,6 +1,5 @@
 import { join, resolve } from 'path';
 import type { StorybookConfig } from '@storybook/nextjs';
-import '../src/assets/styles/globals.scss';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -24,7 +23,10 @@ const config: StorybookConfig = {
     interface WebpackRule {
       test: RegExp;
       exclude?: RegExp;
-      use?: string | string[] | { loader: string; options?: Record<string, unknown> }[];
+      use?:
+        | string
+        | string[]
+        | { loader: string; options?: Record<string, unknown> }[];
     }
 
     // SVG 처리를 위한 설정 - 기존 규칙 찾기
