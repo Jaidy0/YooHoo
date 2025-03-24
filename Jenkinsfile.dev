@@ -280,8 +280,8 @@ pipeline {
                         "Backend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${$EC2_PUBLIC_HOST} "
-                                        cd /home/${EC2_USER}/${WORKSPACE} &&
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        #cd /home/${EC2_USER}/${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend &&
                                         docker compose -f docker-compose.develop.yml stop canary_backend &&
                                         docker compose -f docker-compose.develop.yml rm -f canary_backend
@@ -293,7 +293,7 @@ pipeline {
                         "Frontend Promotion": {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${$EC2_PUBLIC_HOST} "
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd /home/${EC2_USER}/${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
                                         docker compose -f docker-compose.develop.yml stop canary_frontend &&
@@ -334,7 +334,7 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${$EC2_PUBLIC_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd /home/${EC2_USER}/${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_backend
                                 docker compose -f docker-compose.develop.yml rm -f canary_backend
@@ -343,7 +343,7 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${$EC2_PUBLIC_HOST} "
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd /home/${EC2_USER}/${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_frontend
                                 docker compose -f docker-compose.develop.yml rm -f canary_frontend
@@ -352,7 +352,7 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${$EC2_PUBLIC_HOST} "
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd /home/${EC2_USER}/${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml up -d stable_backend
                             "
@@ -360,7 +360,7 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${$EC2_PUBLIC_HOST} "
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd /home/${EC2_USER}/${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml up -d stable_frontend
                             "
