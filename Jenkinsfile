@@ -266,24 +266,20 @@ pipeline {
             }
         } */
         stage('Promote to Stable') {
-            agent { label 'public-dev' }
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                        sh """
-                            docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
-                            docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:latest
-                            docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
-                            docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:latest
+            parallel(
+                stage('Backend Promotion') {
+                    agent { label 'backend-dev' }
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                sh """
+                                    docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
+                                    docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:latest
 
-                            docker push ${BACKEND_IMAGE}:${STABLE_TAG}
-                            docker push ${BACKEND_IMAGE}:latest
-                            docker push ${FRONTEND_IMAGE}:${STABLE_TAG}
-                            docker push ${FRONTEND_IMAGE}:latest
-                        """
-                    }
-                    parallel(
-                        "Backend Promotion": {
+                                    docker push ${BACKEND_IMAGE}:${STABLE_TAG}
+                                    docker push ${BACKEND_IMAGE}:latest
+                                """
+                            }
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
@@ -295,33 +291,53 @@ pipeline {
                                     "
                                 """
                             }
-                        },
-                        "Frontend Promotion": {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        }
+                    }
+                }
+                stage('Frontend Promotion') {
+                    agent { label 'backend-dev' }
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 sh """
-                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                        cd ${WORKSPACE} &&
-                                        docker compose -f docker-compose.develop.yml pull stable_backend &&
-                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
-                                        docker compose -f docker-compose.develop.yml stop canary_frontend &&
-                                        docker compose -f docker-compose.develop.yml rm -f canary_frontend
-                                    "
+                                    docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
+                                    docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:latest
+
+                                    docker push ${FRONTEND_IMAGE}:${STABLE_TAG}
+                                    docker push ${FRONTEND_IMAGE}:latest
                                 """
                             }
                         }
-                    )
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
-                            set -a
-                            . \${WORKSPACE}/.env
-                            set +a
-
-                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
-                            docker exec nginx_lb nginx -s reload
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE} &&
+                                docker compose -f docker-compose.develop.yml pull stable_frontend &&
+                                docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
+                                docker compose -f docker-compose.develop.yml stop canary_frontend &&
+                                docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                            "
                         """
                     }
                 }
-            }
+                stage('Update Nginx Configuration')
+                    agent { label 'public-dev' }
+                    steps {
+                        script {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                                sh """
+                                    set -a
+                                    . \${WORKSPACE}/.env
+                                    set +a
+
+                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                                    docker exec nginx_lb nginx -s reload
+                                """
+                            }
+                        }
+                    }
+                }
+            )
         }
     }
     post {
