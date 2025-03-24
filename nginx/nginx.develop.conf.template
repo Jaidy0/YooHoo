@@ -1,0 +1,58 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    # http 블록 상단에 upgrade 관련 기본값 처리
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        "" close;
+    }
+
+    upstream backend {
+        server $EC2_PUBLIC_HOST:$STABLE_BACKEND_PORT weight=$STABLE_WEIGHT;
+        server $EC2_PUBLIC_HOST:$CANARY_BACKEND_PORT weight=$CANARY_WEIGHT;
+    }
+
+    upstream frontend {
+        server $EC2_PUBLIC_HOST:$STABLE_FRONTEND_PORT weight=$STABLE_WEIGHT;
+        server $EC2_PUBLIC_HOST:$CANARY_FRONTEND_PORT weight=$CANARY_WEIGHT;
+    }
+
+    server {
+        listen 80;
+
+        # Next.js 서버로 프록시
+        location / {
+            proxy_pass http://frontend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # 정적 파일 제공 (Next.js 빌드된 파일)
+        location /_next/ {
+            proxy_pass http://frontend;
+            proxy_cache_valid 200 1h;
+            proxy_set_header Cache-Control "public, max-age=31536000, immutable";
+        }
+
+        # API 요청을 백엔드로 전달
+        location /api/ {
+            proxy_pass http://backend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}
