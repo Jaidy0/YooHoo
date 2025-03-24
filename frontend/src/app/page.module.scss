@@ -18,6 +18,11 @@
       max-width: 500px;
       margin: 0 auto;
       background-color: #fff;
+      position: relative;
+
+      .bottomNav {
+        height: 100vh;
+      }
     }
   }
 }

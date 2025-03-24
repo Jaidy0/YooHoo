@@ -1,9 +1,11 @@
+// IconBox.stories.tsx
 import type { Meta, StoryObj } from '@storybook/react';
-import Icon, { IconName } from './IconBox';
+import IconBox from './IconBox';
 
-const meta: Meta<typeof Icon> = {
-  title: 'Components/Icon',
-  component: Icon,
+// 메타데이터 정의
+const meta: Meta<typeof IconBox> = {
+  title: 'UI/IconBox',
+  component: IconBox,
   parameters: {
     layout: 'centered',
   },
@@ -12,86 +14,227 @@ const meta: Meta<typeof Icon> = {
     name: {
       control: 'select',
       options: [
-        'arrow-right',
-        'arrow-left',
-        'close',
-        'check',
-        'user',
-        'settings',
-        // 아이콘 이름 목록을 여기에 추가하세요
+        'arrow',
+        'bell',
+        'bone',
+        'calendar',
+        'cart',
+        'chevron',
+        'dog',
+        'doghead',
+        'download',
+        'heart',
+        'home',
+        'petfoot',
+        'share',
       ],
+      description: '아이콘 이름',
     },
     size: {
-      control: { type: 'range', min: 12, max: 64, step: 4 },
+      control: { type: 'number', min: 12, max: 64, step: 4 },
+      description: '아이콘 크기 (px)',
     },
     color: {
       control: 'color',
+      description: '아이콘 색상',
     },
-    onClick: { action: 'clicked' },
+    className: {
+      control: 'text',
+      description: '추가 클래스명',
+    },
+    onClick: {
+      action: 'clicked',
+      description: '클릭 이벤트 핸들러',
+    },
   },
 };
 
 export default meta;
-type Story = StoryObj<typeof Icon>;
+type Story = StoryObj<typeof IconBox>;
 
+// 기본 아이콘 스토리
 export const Default: Story = {
   args: {
-    name: 'iconArrow',
+    name: 'dog',
     size: 24,
-    color: '#000000',
   },
 };
 
+// 모든 아이콘 전시
 export const AllIcons: Story = {
-  render: () => {
-    const allIcons: IconName[] = [
-      'iconArrow',
-      'iconBell',
-      'iconBone',
-      'iconCalendar',
-      'iconCart',
-      'iconChevron',
-      'iconDog',
-      'iconDoghead',
-      'iconDownload',
-      'iconHeart',
-      'iconHome',
-      'iconPetfoot',
-      'iconShare',
-    ];
-
-    return (
+  render: () => (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(5, 1fr)',
+        gap: '20px',
+      }}
+    >
       <div
         style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(5, 1fr)',
-          gap: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
-        {allIcons.map((iconName) => (
-          <div key={iconName} style={{ textAlign: 'center' }}>
-            <Icon name={iconName} size={32} />
-            <div style={{ marginTop: '8px', fontSize: '12px' }}>{iconName}</div>
-          </div>
-        ))}
+        <IconBox name='arrow' />
+        <span>arrow</span>
       </div>
-    );
-  },
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='bell' />
+        <span>bell</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='bone' />
+        <span>bone</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='calendar' />
+        <span>calendar</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='cart' />
+        <span>cart</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='chevron' />
+        <span>chevron</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='dog' />
+        <span>dog</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='doghead' />
+        <span>doghead</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='download' />
+        <span>download</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='heart' />
+        <span>heart</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='home' />
+        <span>home</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='petfoot' />
+        <span>petfoot</span>
+      </div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+        }}
+      >
+        <IconBox name='share' />
+        <span>share</span>
+      </div>
+    </div>
+  ),
 };
 
-export const Colored: Story = {
-  args: {
-    name: 'iconBell',
-    size: 32,
-    color: '#4CAF50',
-  },
+// 다양한 크기의 아이콘
+export const Sizes: Story = {
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <IconBox name='dog' size={16} />
+      <IconBox name='dog' size={24} />
+      <IconBox name='dog' size={32} />
+      <IconBox name='dog' size={48} />
+      <IconBox name='dog' size={64} />
+    </div>
+  ),
 };
 
-export const Interactive: Story = {
+// 다양한 색상의 아이콘
+export const Colors: Story = {
+  render: () => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+      <IconBox name='heart' color='#FF0000' />
+      <IconBox name='heart' color='#00FF00' />
+      <IconBox name='heart' color='#0000FF' />
+      <IconBox name='heart' color='#FF00FF' />
+      <IconBox name='heart' color='#FFD700' />
+    </div>
+  ),
+};
+
+// 클릭 이벤트가 있는 아이콘
+export const Clickable: Story = {
   args: {
-    name: 'iconBone',
+    name: 'download',
     size: 32,
-    color: '#2196F3',
     onClick: () => alert('아이콘이 클릭되었습니다!'),
   },
 };
