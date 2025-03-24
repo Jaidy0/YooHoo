@@ -28,12 +28,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   height?: string | number;
 
   /**
-   * 로딩 상태 표시 여부
-   * @default false
-   */
-  isLoading?: boolean;
-
-  /**
    * 버튼 왼쪽에 표시할 아이콘
    */
   leftIcon?: ReactNode;
@@ -63,7 +57,6 @@ export default function Button({
   size = 'md',
   width,
   height,
-  isLoading = false,
   leftIcon,
   rightIcon,
   className = '',
@@ -74,7 +67,6 @@ export default function Button({
     styles.button,
     styles[`button--${variant}`],
     styles[`button--${size}`],
-    isLoading ? styles['button--loading'] : '',
     className,
   ]
     .filter(Boolean)
@@ -91,16 +83,17 @@ export default function Button({
     }),
   };
 
+  // variant가 'disabled'인 경우 disabled 속성 추가
+  const buttonProps = {
+    ...props,
+    ...(variant === 'disabled' && { disabled: true }),
+  };
+
   return (
-    <button className={buttonClasses} style={customStyle} {...props}>
-      {isLoading && <span className={styles.loader}></span>}
-      {!isLoading && leftIcon && (
-        <span className={styles.leftIcon}>{leftIcon}</span>
-      )}
+    <button className={buttonClasses} style={customStyle} {...buttonProps}>
+      {leftIcon && <span className={styles.leftIcon}>{leftIcon}</span>}
       <span className={styles.content}>{children}</span>
-      {!isLoading && rightIcon && (
-        <span className={styles.rightIcon}>{rightIcon}</span>
-      )}
+      {rightIcon && <span className={styles.rightIcon}>{rightIcon}</span>}
     </button>
   );
 }
