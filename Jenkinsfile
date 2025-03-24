@@ -157,8 +157,8 @@ pipeline {
                             envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
-                                envsubst < \${WORKSPACE}/prometheus.template.yml > ./prometheus.yml
-                                docker compose -f docker-compose.infra.yml up -d
+                                envsubst < \${WORKSPACE}/prometheus.develop.template.yml > ./prometheus.yml
+                                docker compose -f docker-compose.develop.yml up -d
                             else
                                 echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."
                                 docker exec nginx_lb nginx -s reload
@@ -172,7 +172,7 @@ pipeline {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(15) // 카나리 배포 후 안정화 대기 (15초)
+                    sleep(20) // 카나리 배포 후 안정화 대기 (15초)
                     def startTime = System.currentTimeMillis()
                     def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간
 
