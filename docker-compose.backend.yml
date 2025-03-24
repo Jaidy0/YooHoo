@@ -1,7 +1,7 @@
 #docker-compose.backend.yml
 services:
   stable_backend:
-    image: ${BACKEND_IMAGE}:${STABLE_TAG}
+    image: ${BACKEND_IMAGE}:latest
     container_name: stable_backend
     env_file: .env
     environment:

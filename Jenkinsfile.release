@@ -305,9 +305,14 @@ pipeline {
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                         sh """
                             docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
+                            docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:latest
                             docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
+                            docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:latest
+
                             docker push ${BACKEND_IMAGE}:${STABLE_TAG}
+                            docker push ${BACKEND_IMAGE}:latest
                             docker push ${FRONTEND_IMAGE}:${STABLE_TAG}
+                            docker push ${FRONTEND_IMAGE}:latest
                         """
                     }
                     parallel(
@@ -390,6 +395,9 @@ pipeline {
                             ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.backend.yml up -d stable_backend
+                                # 백엔드 이미지 정리
+                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
                             "
                         """
                     }
@@ -398,6 +406,9 @@ pipeline {
                             ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.frontend.yml up -d stable_frontend
+                                # 프론트엔드 이미지 정리
+                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
                             "
                         """
                     }
