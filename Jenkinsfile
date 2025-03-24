@@ -403,7 +403,7 @@ pipeline {
                     )
 
                     // 백엔드 이미지 정리
-                    withCredentials([usernamePassword(credentialsId: '${DOCKER_HUB_CREDENTIALS_ID}', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                         sh """
                             # 로컬 백엔드 이미지 정리
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
@@ -421,7 +421,7 @@ pipeline {
                     }
 
                     // 프론트엔드 이미지 정리
-                    withCredentials([usernamePassword(credentialsId: '${DOCKER_HUB_CREDENTIALS_ID}', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
+                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                         sh """
                             # 로컬 프론트엔드 이미지 정리
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
@@ -437,7 +437,6 @@ pipeline {
                             done
                         """
                     }
-
                 }
             }
         }
