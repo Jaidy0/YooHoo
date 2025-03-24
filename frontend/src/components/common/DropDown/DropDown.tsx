@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './DropDown.module.scss';
 import IconBox from '../IconBox/IconBox';
 
@@ -44,13 +44,13 @@ export interface DropDownProps {
 /**
  * 드롭다운 컴포넌트
  */
-const DropDown: React.FC<DropDownProps> = ({
+export default function DropDown({
   placeholder = '선택',
   options,
   value,
   onChange,
   className = '',
-}) => {
+}: DropDownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -58,26 +58,26 @@ const DropDown: React.FC<DropDownProps> = ({
   const selectedOption = options.find((option) => option.value === value);
 
   // 드롭다운 토글
-  const toggleDropdown = () => {
+  function toggleDropdown() {
     setIsOpen(!isOpen);
-  };
+  }
 
   // 옵션 선택 처리
-  const handleOptionSelect = (optionValue: string) => {
+  function handleOptionSelect(optionValue: string) {
     onChange && onChange(optionValue);
     setIsOpen(false);
-  };
+  }
 
   // 외부 클릭 감지하여 드롭다운 닫기
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
-    };
+    }
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
@@ -113,7 +113,9 @@ const DropDown: React.FC<DropDownProps> = ({
           options.map((option) => (
             <li
               key={option.value}
-              className={`${styles.dropdownOption} ${option.value === value ? styles['dropdownOption--selected'] : ''}`}
+              className={`${styles.dropdownOption} ${
+                option.value === value ? styles['dropdownOption--selected'] : ''
+              }`}
               onClick={() => handleOptionSelect(option.value)}
               role='option'
               aria-selected={option.value === value}
@@ -124,6 +126,4 @@ const DropDown: React.FC<DropDownProps> = ({
       </ul>
     </div>
   );
-};
-
-export default DropDown;
+}
