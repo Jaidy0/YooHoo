@@ -1,37 +1,41 @@
+'use client';
+
 import React from 'react';
 import styles from './IconBox.module.scss';
-import iconArrow from '../../../assets/imgs/icons/iconArrow.svg';
-import iconBell from '../../../assets/imgs/icons/iconBell.svg';
-import iconBone from '../../../assets/imgs/icons/iconBone.svg';
-import iconCalendar from '../../../assets/imgs/icons/iconCalendar.svg';
-import iconCart from '../../../assets/imgs/icons/iconCart.svg';
-import iconChevron from '../../../assets/imgs/icons/iconChevron.svg';
-import iconDog from '../../../assets/imgs/icons/iconDog.svg';
-import iconDoghead from '../../../assets/imgs/icons/iconDoghead.svg';
-import iconDownload from '../../../assets/imgs/icons/iconDownload.svg';
-import iconHeart from '../../../assets/imgs/icons/iconHeart.svg';
-import iconHome from '../../../assets/imgs/icons/iconHome.svg';
-import iconPetfoot from '../../../assets/imgs/icons/iconPetfoot.svg';
-import iconShare from '../../../assets/imgs/icons/iconShare.svg';
 
-// 아이콘 맵 객체 생성
-const iconMap = {
-  iconArrow,
-  iconBell,
-  iconBone,
-  iconCalendar,
-  iconCart,
-  iconChevron,
-  iconDog,
-  iconDoghead,
-  iconDownload,
-  iconHeart,
-  iconHome,
-  iconPetfoot,
-  iconShare,
-};
+import ArrowIcon from '@/assets/imgs/icons/iconArrow.svg';
+import BellIcon from '@/assets/imgs/icons/iconBell.svg';
+import BoneIcon from '@/assets/imgs/icons/iconBone.svg';
+import CalendarIcon from '@/assets/imgs/icons/iconCalendar.svg';
+import CartIcon from '@/assets/imgs/icons/iconCart.svg';
+import ChevronIcon from '@/assets/imgs/icons/iconChevron.svg';
+import DogIcon from '@/assets/imgs/icons/iconDog.svg';
+import DogheadIcon from '@/assets/imgs/icons/iconDoghead.svg';
+import DownloadIcon from '@/assets/imgs/icons/iconDownload.svg';
+import HeartIcon from '@/assets/imgs/icons/iconHeart.svg';
+import HomeIcon from '@/assets/imgs/icons/iconHome.svg';
+import PetfootIcon from '@/assets/imgs/icons/iconPetfoot.svg';
+import ShareIcon from '@/assets/imgs/icons/iconShare.svg';
 
-export type IconName = keyof typeof iconMap;
+// 아이콘 컴포넌트 매핑 객체
+const ICON_COMPONENTS = {
+  arrow: ArrowIcon,
+  bell: BellIcon,
+  bone: BoneIcon,
+  calendar: CalendarIcon,
+  cart: CartIcon,
+  chevron: ChevronIcon,
+  dog: DogIcon,
+  doghead: DogheadIcon,
+  download: DownloadIcon,
+  heart: HeartIcon,
+  home: HomeIcon,
+  petfoot: PetfootIcon,
+  share: ShareIcon,
+} as const;
+
+// 아이콘 이름 타입
+export type IconName = keyof typeof ICON_COMPONENTS;
 
 export interface IconProps {
   /** 아이콘 이름 */
@@ -53,31 +57,27 @@ export const IconBox: React.FC<IconProps> = ({
   className = '',
   onClick,
 }) => {
+  // 아이콘 컴포넌트 가져오기
+  const IconComponent = ICON_COMPONENTS[name];
+
+  if (!IconComponent) {
+    console.warn(`Icon with name "${name}" not found`);
+    return null;
+  }
+
   return (
     <div
       className={`${styles.icon} ${className}`}
-      style={{
-        width: size,
-        height: size,
-        color: color,
-      }}
+      style={{ width: size, height: size }}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
-      <div
+      <IconComponent
+        width={size}
+        height={size}
         style={{
-          width: '100%',
-          height: '100%',
-          maskImage: `url(${iconMap[name].src})`,
-          WebkitMaskImage: `url(${iconMap[name].src})`,
-          maskSize: 'contain',
-          WebkitMaskSize: 'contain',
-          maskRepeat: 'no-repeat',
-          WebkitMaskRepeat: 'no-repeat',
-          maskPosition: 'center',
-          WebkitMaskPosition: 'center',
-          backgroundColor: color || 'currentColor',
+          color: color,
         }}
       />
     </div>
