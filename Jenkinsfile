@@ -15,8 +15,6 @@ pipeline {
         CANARY_FRONTEND_PORT = ""
         PROMETHEUS_PORT = ""
         EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"
-        EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-backend-ssh-key"
-        EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-frontend-ssh-key"
         GIT_CREDENTIALS_ID = "gitlab-token"
         GIT_REPOSITORY_URL = "https://lab.ssafy.com/s12-fintech-finance-sub1/S12P21B209"
         PROJECT_DIRECTORY = "YooHoo"
