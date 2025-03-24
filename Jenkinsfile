@@ -127,6 +127,7 @@ pipeline {
                                 docker compose -f docker-compose.develop.yml up -d mysql redis nginx canary_backend canary_frontend prometheus grafana node-exporter cadvisor
                             else
                                 echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."
+                                docker compose -f docker-compose.develop.yml up -d canary_backend canary_frontend
                                 docker exec nginx_lb nginx -s reload
                             fi
                         """
