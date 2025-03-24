@@ -288,6 +288,7 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml pull stable_backend &&
                                         docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend &&
                                         docker compose -f docker-compose.develop.yml stop canary_backend &&
                                         docker compose -f docker-compose.develop.yml rm -f canary_backend
@@ -300,6 +301,7 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml pull stable_backend &&
                                         docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
                                         docker compose -f docker-compose.develop.yml stop canary_frontend &&
                                         docker compose -f docker-compose.develop.yml rm -f canary_frontend
@@ -403,38 +405,18 @@ pipeline {
                     )
 
                     // 백엔드 이미지 정리
-                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                         sh """
                             # 로컬 백엔드 이미지 정리
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
-
-                            # Docker Hub 태그 정리
-                            curl -s -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/" | jq -r '.results[] | .name' | grep -v 'stable-latest' | sort -V | head -n -3 | while read tag; do
-                                curl -X DELETE -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/\$tag/"
-                            done
-
-                            curl -s -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/" | jq -r '.results[] | .name' | grep 'canary-' | while read tag; do
-                                curl -X DELETE -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/\$tag/"
-                            done
                         """
                     }
 
                     // 프론트엔드 이미지 정리
-                    withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_TOKEN')]) {
                         sh """
                             # 로컬 프론트엔드 이미지 정리
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
-
-                            # Docker Hub 태그 정리
-                            curl -s -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/" | jq -r '.results[] | .name' | grep -v 'stable-latest' | sort -V | head -n -3 | while read tag; do
-                                curl -X DELETE -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/\$tag/"
-                            done
-
-                            curl -s -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/" | jq -r '.results[] | .name' | grep 'canary-' | while read tag; do
-                                curl -X DELETE -H "Authorization: Bearer $DOCKER_TOKEN" "https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/\$tag/"
-                            done
                         """
                     }
                 }

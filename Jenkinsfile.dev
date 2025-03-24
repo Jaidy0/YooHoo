@@ -135,7 +135,7 @@ pipeline {
                 }
             }
         }
-        stage('Monitor Canary with Prometheus') {
+        /* stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
                 script {
@@ -264,7 +264,7 @@ pipeline {
                     )
                 }
             }
-        }
+        } */
         stage('Promote to Stable') {
             agent { label 'public-dev' }
             steps {
@@ -375,14 +375,6 @@ pipeline {
         }
         always {
             node('public-dev') {
-                // 백엔드 이미지 정리: 최신 3개 태그만 유지
-                sh """
-                    docker images --format '{{.Repository}}:{{.Tag}}' | grep '${BACKEND_IMAGE}:stable-[0-9]\\+' | sort -t- -k2 -n | head -n -3 | xargs -r docker rmi
-                """
-                // 프론트엔드 이미지 정리: 최신 3개 태그만 유지
-                sh """
-                    docker images --format '{{.Repository}}:{{.Tag}}' | grep '${FRONTEND_IMAGE}:stable-[0-9]\\+' | sort -t- -k2 -n | head -n -3 | xargs -r docker rmi
-                """
                 script {
                     def Branch_Name = env.GIT_BRANCH ? env.GIT_BRANCH.replace('origin/', '') : sh(script: "git name-rev --name-only HEAD | sed 's/^origin\\///'", returnStdout: true).trim()
                     def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
@@ -409,6 +401,22 @@ pipeline {
                         endpoint: 'https://meeting.ssafy.com/hooks/3wgn4b8xz7nnpcfb7rkdrwr1mo',
                         channel: 'B209-Jenkins-Result'
                     )
+
+                    // 백엔드 이미지 정리
+                        sh """
+                            # 로컬 백엔드 이미지 정리
+                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
+                        """
+                    }
+
+                    // 프론트엔드 이미지 정리
+                        sh """
+                            # 로컬 프론트엔드 이미지 정리
+                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
+                        """
+                    }
                 }
             }
         }

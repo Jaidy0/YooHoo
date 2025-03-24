@@ -316,6 +316,7 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        docker compose -f docker-compose.develop.yml pull stable_backend &&
                                         docker compose -f docker-compose.backend.yml up -d --no-deps stable_backend &&
                                         docker compose -f docker-compose.backend.yml stop canary_backend &&
                                         docker compose -f docker-compose.backend.yml rm -f canary_backend
@@ -329,6 +330,7 @@ pipeline {
                                 sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
                                         cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME} &&
+                                        docker compose -f docker-compose.develop.yml pull stable_backend &&
                                         docker compose -f docker-compose.frontend.yml up -d --no-deps stable_frontend &&
                                         docker compose -f docker-compose.frontend.yml stop canary_frontend &&
                                         docker compose -f docker-compose.frontend.yml rm -f canary_frontend
