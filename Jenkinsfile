@@ -400,7 +400,9 @@ pipeline {
                     def Status = currentBuild.result ?: "SUCCESS"
                     def Color = (Status == "SUCCESS") ? 'good' : 'danger'
                     def Icon = (Status == "SUCCESS") ? "✅" : "❌"
+                    def BlueOcean_URL = "${env.JENKINS_URL}/blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline/"
                     def Message = """\
+
                     ${Icon} *BUILD ${Status}*
                     - *Job:* ${env.JOB_NAME} #${env.BUILD_NUMBER}
                     - *Branch:* ${Branch_Name}
@@ -408,7 +410,7 @@ pipeline {
                     - *Commit:* ${Commit_Message}
                     - *시작 시간:* ${Build_Time}
                     - *소요 시간:* ${Duration}
-                    [🔍 *Details*](${env.BUILD_URL})
+                    [🔍 *Details*](${BlueOcean_URL})
                     """.stripIndent()
                     mattermostSend(
                         color: Color,

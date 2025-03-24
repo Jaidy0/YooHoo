@@ -436,8 +436,8 @@ pipeline {
                     def Status = currentBuild.result ?: "SUCCESS"
                     def Color = (Status == "SUCCESS") ? 'good' : 'danger'
                     def Icon = (Status == "SUCCESS") ? "✅" : "❌"
-                    def Message = """\
                     def BlueOcean_URL = "${env.JENKINS_URL}/blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline/"
+                    def Message = """\
 
                     ${Icon} *BUILD ${Status}*
                     - *Job:* ${env.JOB_NAME} #${env.BUILD_NUMBER}
