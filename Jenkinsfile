@@ -295,7 +295,7 @@ pipeline {
                     }
                 }
                 stage('Frontend Promotion') {
-                    agent { label 'backend-dev' }
+                    agent { label 'frontend-dev' }
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
