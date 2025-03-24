@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styles from './TabMenu.module.scss';
 
+// 인터페이스 정의
 export interface TabMenuItem {
   /**
    * 메뉴 아이템의 이름
@@ -24,7 +25,6 @@ export interface TabMenuItem {
 export interface TabMenuProps {
   /**
    * 탭 메뉴 아이템 목록
-   * @default []
    */
   menuItems: TabMenuItem[];
 
@@ -60,14 +60,15 @@ export interface TabMenuProps {
 /**
  * 유기견 후원 플랫폼의 탭 메뉴 컴포넌트
  */
-export const TabMenu: React.FC<TabMenuProps> = ({
+export default function TabMenu({
   menuItems = [],
   defaultActiveIndex = 0,
   onMenuItemClick,
   fullWidth = false,
   size = 'md',
   className = '',
-}) => {
+  ...props
+}: TabMenuProps) {
   const [activeIndex, setActiveIndex] = useState<number>(defaultActiveIndex);
 
   const handleItemClick = (item: TabMenuItem, index: number) => {
@@ -85,7 +86,7 @@ export const TabMenu: React.FC<TabMenuProps> = ({
     .join(' ');
 
   return (
-    <nav className={tabMenuClasses}>
+    <nav className={tabMenuClasses} {...props}>
       <ul className={styles.menuList}>
         {menuItems.map((item, index) => {
           const isActive = index === activeIndex;
@@ -116,6 +117,4 @@ export const TabMenu: React.FC<TabMenuProps> = ({
       </ul>
     </nav>
   );
-};
-
-export default TabMenu;
+}
