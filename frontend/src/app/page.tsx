@@ -1,6 +1,8 @@
-// import Image from 'next/image';
 import styles from './page.module.scss';
-// import logo from '@/assets/imgs/yoohoo-logo.svg';
+import BottomNav, {
+  BottomNavItem,
+} from '@/components/common/BottomNav/BottomNav';
+import Header from '@/components/common/Header/Header';
 
 export default function Home() {
   // const { user, setUser } = useAuthStore();
@@ -18,6 +20,30 @@ export default function Home() {
   // const isAdmin = user?.role === 'admin';
   const isAdmin = 'user';
 
+  // BottomNav에 사용할 목 데이터
+  const navItems: BottomNavItem[] = [
+    {
+      label: '홈',
+      iconName: 'home',
+      href: '/',
+    },
+    {
+      label: '단체',
+      iconName: 'dog',
+      href: '/dogs',
+    },
+    {
+      label: '후원',
+      iconName: 'bone',
+      href: '/donate',
+    },
+    {
+      label: '마이페이지',
+      iconName: 'petfoot',
+      href: '/profile',
+    },
+  ];
+
   return (
     <div
       className={`
@@ -30,7 +56,11 @@ export default function Home() {
         {isAdmin != 'user' ? (
           <div className={styles.admin}>관리자용 페이지입니다</div>
         ) : (
-          <div className={styles.user}>사용자용페이지입니다.Pretendard</div>
+          <div className={styles.user}>
+            <Header title='유후' type='main' />
+            <div className={styles.content}>사용자용페이지입니다.</div>
+            <BottomNav items={navItems} />
+          </div>
         )}
       </main>
     </div>

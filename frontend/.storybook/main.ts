@@ -1,5 +1,6 @@
 import { join, resolve } from 'path';
 import type { StorybookConfig } from '@storybook/nextjs';
+import '../src/assets/styles/globals.scss';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -18,9 +19,35 @@ const config: StorybookConfig = {
   docs: {
     autodocs: 'tag',
   },
-
-  // SCSS 변수를 전역으로 사용하기 위한 웹팩 설정 추가
   webpackFinal: async (config) => {
+    // 웹팩 규칙의 타입 정의
+    interface WebpackRule {
+      test: RegExp;
+      exclude?: RegExp;
+      use?: string | string[] | { loader: string; options?: Record<string, unknown> }[];
+    }
+
+    // SVG 처리를 위한 설정 - 기존 규칙 찾기
+    const fileLoaderRule = config.module?.rules?.find(
+      (rule): rule is WebpackRule =>
+        rule !== null &&
+        typeof rule === 'object' &&
+        'test' in rule &&
+        rule.test instanceof RegExp &&
+        rule.test.toString().includes('svg')
+    );
+
+    // 찾은 규칙에서 svg 제외
+    if (fileLoaderRule) {
+      fileLoaderRule.exclude = /\.svg$/;
+    }
+
+    // SVG를 위한 새 규칙 추가
+    config.module?.rules?.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'] as string[],
+    });
+
     // SCSS 설정 추가
     if (config.module && config.module.rules) {
       const rules = config.module.rules as Array<unknown>;

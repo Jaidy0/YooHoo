@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './Button.module.scss';
 
 export type ButtonVariant = 'primary' | 'outline' | 'disabled';
@@ -28,20 +28,14 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   height?: string | number;
 
   /**
-   * 로딩 상태 표시 여부
-   * @default false
-   */
-  isLoading?: boolean;
-
-  /**
    * 버튼 왼쪽에 표시할 아이콘
    */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
 
   /**
    * 버튼 오른쪽에 표시할 아이콘
    */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
 
   /**
    * 추가 CSS 클래스명
@@ -51,30 +45,28 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * 버튼 내용
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**
  * 유기견 후원 플랫폼의 기본 버튼 컴포넌트
  */
-export const Button: React.FC<ButtonProps> = ({
+export default function Button({
   children,
   variant = 'primary',
   size = 'md',
   width,
   height,
-  isLoading = false,
   leftIcon,
   rightIcon,
   className = '',
   style,
   ...props
-}) => {
+}: ButtonProps) {
   const buttonClasses = [
     styles.button,
     styles[`button--${variant}`],
     styles[`button--${size}`],
-    isLoading ? styles['button--loading'] : '',
     className,
   ]
     .filter(Boolean)
@@ -91,18 +83,17 @@ export const Button: React.FC<ButtonProps> = ({
     }),
   };
 
+  // variant가 'disabled'인 경우 disabled 속성 추가
+  const buttonProps = {
+    ...props,
+    ...(variant === 'disabled' && { disabled: true }),
+  };
+
   return (
-    <button className={buttonClasses} style={customStyle} {...props}>
-      {isLoading && <span className={styles.loader}></span>}
-      {!isLoading && leftIcon && (
-        <span className={styles.leftIcon}>{leftIcon}</span>
-      )}
+    <button className={buttonClasses} style={customStyle} {...buttonProps}>
+      {leftIcon && <span className={styles.leftIcon}>{leftIcon}</span>}
       <span className={styles.content}>{children}</span>
-      {!isLoading && rightIcon && (
-        <span className={styles.rightIcon}>{rightIcon}</span>
-      )}
+      {rightIcon && <span className={styles.rightIcon}>{rightIcon}</span>}
     </button>
   );
-};
-
-export default Button;
+}

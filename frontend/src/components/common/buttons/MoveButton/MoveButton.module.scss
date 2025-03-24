@@ -1,15 +1,16 @@
-@import '../../../../assets/styles/abstracts/variables';
+@use '../../../../assets/styles/abstracts/variables' as *;
+@use 'sass:color';
 
 .moveButton {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1.6px solid;
+  border: 1px solid;
   border-radius: 24px;
   font-family: 'NanumSquareNeo', sans-serif;
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-md;
   padding: 10px 16px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -21,7 +22,7 @@
     border-color: $yh-orange;
 
     &:hover {
-      background-color: darken(white, 3%);
+      background-color: color.adjust(white, $lightness: -3%);
     }
   }
 
@@ -32,7 +33,7 @@
     border-color: $yh-orange;
 
     &:hover {
-      background-color: darken($yh-orange, 10%);
+      background-color: color.adjust($yh-orange, $lightness: -10%);
     }
   }
 

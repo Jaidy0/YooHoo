@@ -3,8 +3,8 @@
 // import type { Metadata } from 'next';
 import React from 'react';
 import { useEffect } from 'react';
-// import { Geist, Geist_Mono } from 'next/font/google';
 import '@/assets/styles/globals.scss';
+// import { Geist, Geist_Mono } from 'next/font/google';
 // import localFont from 'next/font/local';
 
 // const geistSans = Geist({
@@ -35,7 +35,7 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang='en'>
+    <html lang='ko'>
       <head>
         <link rel='preload' as='font' type='font/woff' />
       </head>

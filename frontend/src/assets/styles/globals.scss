@@ -5,7 +5,8 @@
 @use './abstracts/variables' as *;
 
 html,
-body {
+body,
+.storybook-wrapper {
   padding: 0;
   margin: 0;
   font-family:
@@ -27,13 +28,8 @@ body {
 }
 
 a {
-  color: $color-primary;
+  color: inherit;
   text-decoration: none;
-  // @include transition;
-
-  &:hover {
-    color: $color-primary-dark;
-  }
 }
 
 * {

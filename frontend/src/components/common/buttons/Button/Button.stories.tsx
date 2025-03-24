@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Button from './Button';
+import IconBox from '../../IconBox/IconBox';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Common/Buttons/Button',
@@ -18,10 +19,6 @@ const meta: Meta<typeof Button> = {
       control: { type: 'select' },
       options: ['sm', 'md', 'lg'],
       description: '버튼 크기',
-    },
-    isLoading: {
-      control: { type: 'boolean' },
-      description: '로딩 상태 표시 여부',
     },
     onClick: { action: 'clicked' },
   },
@@ -177,14 +174,6 @@ export const CustomSizes: Story = {
   ),
 };
 
-// 로딩 상태
-export const Loading: Story = {
-  args: {
-    children: '로딩 중...',
-    isLoading: true,
-  },
-};
-
 // 아이콘 포함
 export const WithIcons: Story = {
   render: () => {
@@ -201,80 +190,19 @@ export const WithIcons: Story = {
       </svg>
     );
 
-    const ShareIcon = () => (
-      <svg
-        width='16'
-        height='16'
-        viewBox='0 0 24 24'
-        fill='none'
-        xmlns='http://www.w3.org/2000/svg'
-      >
-        <circle cx='18' cy='5' r='3' stroke='currentColor' strokeWidth='2' />
-        <circle cx='6' cy='12' r='3' stroke='currentColor' strokeWidth='2' />
-        <circle cx='18' cy='19' r='3' stroke='currentColor' strokeWidth='2' />
-        <path d='M9 10.5L15 6.5' stroke='currentColor' strokeWidth='2' />
-        <path d='M9 13.5L15 17.5' stroke='currentColor' strokeWidth='2' />
-      </svg>
-    );
-
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <Button leftIcon={<PlusIcon />}>버튼</Button>
         <Button variant='outline' leftIcon={<PlusIcon />}>
           버튼
         </Button>
-        <Button variant='disabled' rightIcon={<ShareIcon />}>
+        <Button
+          variant='disabled'
+          rightIcon={<IconBox name='iconShare' size={16} />}
+        >
           버튼
         </Button>
       </div>
     );
   },
-};
-
-// 각 스타일에 대한 다양한 상태 보기
-export const AllVariants: Story = {
-  render: () => (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, auto)',
-        gap: '16px',
-        padding: '16px',
-      }}
-    >
-      <div style={{ textAlign: 'center', color: '#777', marginBottom: '8px' }}>
-        버튼
-      </div>
-      <div style={{ textAlign: 'center', color: '#777', marginBottom: '8px' }}>
-        버튼
-      </div>
-      <div style={{ textAlign: 'center', color: '#777', marginBottom: '8px' }}>
-        버튼
-      </div>
-
-      <Button variant='primary'>버튼</Button>
-      <Button variant='outline'>버튼</Button>
-      <Button variant='disabled'>버튼</Button>
-
-      <Button variant='primary' isLoading>
-        버튼
-      </Button>
-      <Button variant='outline' isLoading>
-        버튼
-      </Button>
-      <Button variant='disabled' isLoading>
-        버튼
-      </Button>
-
-      <Button variant='primary' disabled>
-        버튼
-      </Button>
-      <Button variant='outline' disabled>
-        버튼
-      </Button>
-      <Button variant='disabled' disabled>
-        버튼
-      </Button>
-    </div>
-  ),
 };
