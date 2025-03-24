@@ -403,6 +403,7 @@ pipeline {
                     )
 
                     // 백엔드 이미지 정리: 최신 3개 태그만 유지
+                    // Docker Hub에서 백엔드 이미지 정리
                     sh """
                         # 로컬에서 백엔드 이미지 정리: stable-[숫자] 패턴에 맞는 이미지 중 stable-latest를 제외하고 최신 3개를 제외한 나머지 제거
                         docker images --format '{{.Repository}}:{{.Tag}}' | grep '${BACKEND_IMAGE}:stable-[0-9]\\+' | sort -t- -k2 -n | head -n -3 | xargs -r docker rmi
@@ -413,17 +414,18 @@ pipeline {
                         # 카나리 이미지 정리
                         withCredentials([string(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", variable: 'docker_token')]) {
                             sh """
-                                curl -s -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep -v 'stable-latest' | sort | head -n -3 | cut -d'"' -f4 | while read tag; do
-                                    curl -X DELETE -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/\$tag/
+                                curl -s -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep -v 'stable-latest' | sort | head -n -3 | cut -d'"' -f4 | while read tag; do
+                                    curl -X DELETE -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/\$tag/
                                 done
 
-                                curl -s -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep 'canary-' | cut -d'"' -f4 | while read tag; do
-                                    curl -X DELETE -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/\$tag/
+                                curl -s -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep 'canary-' | cut -d'"' -f4 | while read tag; do
+                                    curl -X DELETE -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${BACKEND_IMAGE}/tags/\$tag/
                                 done
                             """
                         }
                     """
                     // 프론트엔드 이미지 정리: 최신 3개 태그만 유지
+                    // Docker Hub에서 프론트엔드 이미지 정리
                     sh """
                     # 로컬에서 프론트엔드 이미지 정리: stable-[숫자] 패턴에 맞는 이미지 중 stable-latest를 제외하고 최신 3개를 제외한 나머지 제거
                         docker images --format '{{.Repository}}:{{.Tag}}' | grep '${FRONTEND_IMAGE}:stable-[0-9]\\+' | sort -t- -k2 -n | head -n -3 | xargs -r docker rmi
@@ -434,12 +436,12 @@ pipeline {
                         # 카나리 이미지 정리
                         withCredentials([string(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", variable: 'docker_token')]) {
                             sh """
-                                curl -s -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep -v 'stable-latest' | sort | head -n -3 | cut -d'"' -f4 | while read tag; do
-                                    curl -X DELETE -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/\$tag/
+                                curl -s -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep -v 'stable-latest' | sort | head -n -3 | cut -d'"' -f4 | while read tag; do
+                                    curl -X DELETE -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/\$tag/
                                 done
 
-                                curl -s -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep 'canary-' | cut -d'"' -f4 | while read tag; do
-                                    curl -X DELETE -H "Authorization: Bearer ${docker_token}" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/\$tag/
+                                curl -s -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/ | jq '.results[] | {name: .name}' | grep 'canary-' | cut -d'"' -f4 | while read tag; do
+                                    curl -X DELETE -H \\"Authorization: Bearer ${docker_token}\\" https://hub.docker.com/v2/repositories/${FRONTEND_IMAGE}/tags/\$tag/
                                 done
                             """
                         }
