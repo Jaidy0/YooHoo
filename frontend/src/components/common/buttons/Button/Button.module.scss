@@ -1,4 +1,5 @@
-@import '../../../../assets/styles/abstracts/variables';
+@use '../../../../assets/styles/abstracts/variables' as *;
+@use 'sass:color';
 
 .button {
   position: relative;
@@ -18,7 +19,7 @@
     color: $color-text;
 
     &:hover {
-      background-color: darken($yh-yellow, 10%);
+      background-color: color.adjust($yh-yellow, $lightness: -10%);
     }
   }
 

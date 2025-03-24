@@ -1,4 +1,5 @@
-@import '../../../../assets/styles/abstracts/variables';
+@use '../../../../assets/styles/abstracts/variables' as *;
+@use 'sass:color';
 
 .moveButton {
   position: relative;
@@ -21,7 +22,7 @@
     border-color: $yh-orange;
 
     &:hover {
-      background-color: darken(white, 3%);
+      background-color: color.adjust(white, $lightness: -3%);
     }
   }
 
@@ -32,7 +33,7 @@
     border-color: $yh-orange;
 
     &:hover {
-      background-color: darken($yh-orange, 10%);
+      background-color: color.adjust($yh-orange, $lightness: -10%);
     }
   }
 
