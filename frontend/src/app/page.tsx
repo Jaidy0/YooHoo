@@ -1,10 +1,8 @@
-// import Image from 'next/image';
-import IconBox from '@/components/common/IconBox/IconBox';
 import styles from './page.module.scss';
 import BottomNav, {
   BottomNavItem,
 } from '@/components/common/BottomNav/BottomNav';
-// import logo from '@/assets/imgs/yoohoo-logo.svg';
+import Header from '@/components/common/Header/Header';
 
 export default function Home() {
   // const { user, setUser } = useAuthStore();
@@ -59,6 +57,7 @@ export default function Home() {
           <div className={styles.admin}>관리자용 페이지입니다</div>
         ) : (
           <div className={styles.user}>
+            <Header title='유후' type='main' />
             <div className={styles.content}>사용자용페이지입니다.</div>
             <BottomNav items={navItems} />
           </div>

@@ -16,6 +16,10 @@ import HeartIcon from '@/assets/imgs/icons/iconHeart.svg';
 import HomeIcon from '@/assets/imgs/icons/iconHome.svg';
 import PetfootIcon from '@/assets/imgs/icons/iconPetfoot.svg';
 import ShareIcon from '@/assets/imgs/icons/iconShare.svg';
+import GearIcon from '@/assets/imgs/icons/iconGear.svg';
+import iconCircleX from '@/assets/imgs/icons/iconCircleX.svg';
+import iconZoom from '@/assets/imgs/icons/iconZoom.svg';
+import iconSearch from '@/assets/imgs/icons/iconSearch.svg';
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -32,6 +36,10 @@ const ICON_COMPONENTS = {
   home: HomeIcon,
   petfoot: PetfootIcon,
   share: ShareIcon,
+  gear: GearIcon,
+  circleX: iconCircleX,
+  zoom: iconZoom,
+  search: iconSearch,
 } as const;
 
 // 아이콘 이름 타입
