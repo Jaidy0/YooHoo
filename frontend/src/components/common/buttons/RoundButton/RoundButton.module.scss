@@ -7,11 +7,11 @@
   justify-content: center;
   min-width: 59px;
   height: 26px;
-  border: 1.6px solid;
+  border: 1px solid;
   border-radius: 50px;
   font-family: 'NanumSquareNeo', sans-serif;
-  font-weight: 700;
-  font-size: 0.875rem;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-xs;
   padding: 0 12px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -41,8 +41,8 @@
   // 회색 테두리 버튼
   &--secondary {
     background-color: transparent;
-    color: #777;
-    border-color: #777;
+    color: $text-777;
+    border-color: $text-777;
 
     &:hover {
       background-color: rgba(119, 119, 119, 0.05);

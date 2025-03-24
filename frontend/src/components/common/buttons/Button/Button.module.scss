@@ -8,7 +8,7 @@
   border: none;
   border-radius: 10px;
   font-family: 'NanumSquareNeo', sans-serif;
-  font-weight: 700;
+  font-weight: $font-weight-bold;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
@@ -24,7 +24,7 @@
 
   &--outline {
     background-color: transparent;
-    border: 1.6px solid $color-text;
+    border: 1px solid $color-text;
     color: $color-text;
 
     &:hover {
