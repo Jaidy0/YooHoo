@@ -3,21 +3,19 @@
 import React from 'react';
 import styles from './IconBox.module.scss';
 
-// SVG 아이콘을 React 컴포넌트로 가져오기
-// SVGR이 적용되면 SVG 파일이 React 컴포넌트로 변환됩니다
-import ArrowIcon from '../../../assets/imgs/icons/iconArrow.svg';
-import BellIcon from '../../../assets/imgs/icons/iconBell.svg';
-import BoneIcon from '../../../assets/imgs/icons/iconBone.svg';
-import CalendarIcon from '../../../assets/imgs/icons/iconCalendar.svg';
-import CartIcon from '../../../assets/imgs/icons/iconCart.svg';
-import ChevronIcon from '../../../assets/imgs/icons/iconChevron.svg';
-import DogIcon from '../../../assets/imgs/icons/iconDog.svg';
-import DogheadIcon from '../../../assets/imgs/icons/iconDoghead.svg';
-import DownloadIcon from '../../../assets/imgs/icons/iconDownload.svg';
-import HeartIcon from '../../../assets/imgs/icons/iconHeart.svg';
-import HomeIcon from '../../../assets/imgs/icons/iconHome.svg';
-import PetfootIcon from '../../../assets/imgs/icons/iconPetfoot.svg';
-import ShareIcon from '../../../assets/imgs/icons/iconShare.svg';
+import ArrowIcon from '@/assets/imgs/icons/iconArrow.svg';
+import BellIcon from '@/assets/imgs/icons/iconBell.svg';
+import BoneIcon from '@/assets/imgs/icons/iconBone.svg';
+import CalendarIcon from '@/assets/imgs/icons/iconCalendar.svg';
+import CartIcon from '@/assets/imgs/icons/iconCart.svg';
+import ChevronIcon from '@/assets/imgs/icons/iconChevron.svg';
+import DogIcon from '@/assets/imgs/icons/iconDog.svg';
+import DogheadIcon from '@/assets/imgs/icons/iconDoghead.svg';
+import DownloadIcon from '@/assets/imgs/icons/iconDownload.svg';
+import HeartIcon from '@/assets/imgs/icons/iconHeart.svg';
+import HomeIcon from '@/assets/imgs/icons/iconHome.svg';
+import PetfootIcon from '@/assets/imgs/icons/iconPetfoot.svg';
+import ShareIcon from '@/assets/imgs/icons/iconShare.svg';
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
