@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './Button.module.scss';
 
 export type ButtonVariant = 'primary' | 'outline' | 'disabled';
@@ -36,12 +36,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * 버튼 왼쪽에 표시할 아이콘
    */
-  leftIcon?: React.ReactNode;
+  leftIcon?: ReactNode;
 
   /**
    * 버튼 오른쪽에 표시할 아이콘
    */
-  rightIcon?: React.ReactNode;
+  rightIcon?: ReactNode;
 
   /**
    * 추가 CSS 클래스명
@@ -51,13 +51,13 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * 버튼 내용
    */
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**
  * 유기견 후원 플랫폼의 기본 버튼 컴포넌트
  */
-export const Button: React.FC<ButtonProps> = ({
+export default function Button({
   children,
   variant = 'primary',
   size = 'md',
@@ -69,7 +69,7 @@ export const Button: React.FC<ButtonProps> = ({
   className = '',
   style,
   ...props
-}) => {
+}: ButtonProps) {
   const buttonClasses = [
     styles.button,
     styles[`button--${variant}`],
@@ -103,6 +103,4 @@ export const Button: React.FC<ButtonProps> = ({
       )}
     </button>
   );
-};
-
-export default Button;
+}
