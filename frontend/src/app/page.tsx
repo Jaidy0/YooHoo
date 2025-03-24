@@ -2,7 +2,7 @@ import styles from './page.module.scss';
 import BottomNav, {
   BottomNavItem,
 } from '@/components/common/BottomNav/BottomNav';
-import Header from '@/components/common/Header/Header';
+import Header from '@/components/layout/Header/Header';
 
 export default function Home() {
   // const { user, setUser } = useAuthStore();

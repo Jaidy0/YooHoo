@@ -1,8 +1,7 @@
 // components/layout/Header/Header.tsx
 import React from 'react';
 import styles from './Header.module.scss';
-import logo from '@/assets/imgs/yoohoo-logo.svg';
-import IconBox from '../IconBox/IconBox';
+import IconBox from '@/components/common/IconBox/IconBox';
 import Image from 'next/image';
 
 export type HeaderType = 'main' | 'sub';
