@@ -55,7 +55,7 @@ export interface InputProps {
   type?: string;
 }
 
-export function Input({
+export default function Input({
   title = '제목',
   placeHolder = '검색어를 입력하세요',
   isAvail = true,
@@ -86,5 +86,3 @@ export function Input({
     </div>
   );
 }
-
-export default Input;

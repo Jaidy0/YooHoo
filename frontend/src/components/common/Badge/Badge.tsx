@@ -1,14 +1,12 @@
 import React from 'react';
 import styles from './Badge.module.scss';
 
-export type BadgeVariant = 'positive' | 'negative';
-
 export interface BadgeProps {
   /**
    * 뱃지 디자인 변형
    * @default 'positive'
    */
-  variant?: BadgeVariant;
+  variant?: 'positive' | 'negative';
 
   /**
    * 뱃지 너비 - 직접 지정
@@ -31,14 +29,13 @@ export interface BadgeProps {
   children: React.ReactNode;
 }
 
-export const Badge: React.FC<BadgeProps> = ({
+export default function Badge({
   children,
   variant = 'positive',
   width,
   height,
   className = '',
-  ...props
-}) => {
+}: BadgeProps) {
   const badgeClasses = [styles.badge, styles[`badge--${variant}`], className]
     .filter(Boolean)
     .join(' ');
@@ -53,10 +50,8 @@ export const Badge: React.FC<BadgeProps> = ({
   };
 
   return (
-    <div className={badgeClasses} style={customStyle} {...props}>
+    <div className={badgeClasses} style={customStyle}>
       <span className={styles.content}>{children}</span>
     </div>
   );
-};
-
-export default Badge;
+}
