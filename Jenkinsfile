@@ -406,7 +406,7 @@ pipeline {
                     withCredentials([string(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", variable: 'DOCKER_TOKEN')]) {
                         sh '''
                             # 로컬 백엔드 이미지 정리
-                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k2 -n | head -n -3 | xargs -r docker rmi || true
+                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
 
                             # Docker Hub 태그 정리
@@ -424,7 +424,7 @@ pipeline {
                     withCredentials([string(credentialsId: "${DOCKER_HUB_CREDENTIALS_ID}", variable: 'DOCKER_TOKEN')]) {
                         sh '''
                             # 로컬 프론트엔드 이미지 정리
-                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k2 -n | head -n -3 | xargs -r docker rmi || true
+                            docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
                             docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
 
                             # Docker Hub 태그 정리
