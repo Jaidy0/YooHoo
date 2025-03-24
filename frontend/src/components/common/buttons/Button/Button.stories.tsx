@@ -198,7 +198,7 @@ export const WithIcons: Story = {
         </Button>
         <Button
           variant='disabled'
-          rightIcon={<IconBox name='iconShare' size={16} />}
+          rightIcon={<IconBox name='share' size={16} />}
         >
           버튼
         </Button>

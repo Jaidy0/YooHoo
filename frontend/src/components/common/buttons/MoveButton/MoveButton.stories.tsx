@@ -54,15 +54,15 @@ export const WithIcons: Story = {
           alignItems: 'flex-start',
         }}
       >
-        <MoveButton leftIcon={<IconBox name='iconHome' size={16} />}>
+        <MoveButton leftIcon={<IconBox name='home' size={16} />}>
           채널 바로가기
         </MoveButton>
-        <MoveButton leftIcon={<IconBox name='iconBell' size={16} />}>
+        <MoveButton leftIcon={<IconBox name='bell' size={16} />}>
           알림 보기
         </MoveButton>
         <MoveButton
-          leftIcon={<IconBox name='iconHome' size={16} />}
-          rightIcon={<IconBox name='iconChevron' size={20} />}
+          leftIcon={<IconBox name='home' size={16} />}
+          rightIcon={<IconBox name='chevron' size={20} />}
           variant='secondary'
         >
           바로가기
@@ -109,14 +109,14 @@ export const AllVariants: Story = {
 
       <MoveButton
         variant='primary'
-        leftIcon={<IconBox name='iconHome' size={16} />}
+        leftIcon={<IconBox name='home' size={16} />}
       >
         홈으로 가기
       </MoveButton>
 
       <MoveButton
         variant='secondary'
-        rightIcon={<IconBox name='iconChevron' size={20} />}
+        rightIcon={<IconBox name='chevron' size={20} />}
       >
         다음으로
       </MoveButton>

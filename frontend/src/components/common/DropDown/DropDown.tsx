@@ -104,7 +104,7 @@ export default function DropDown({
       >
         <span>{selectedOption ? selectedOption.label : placeholder}</span>
         <span className={styles.dropdownArrow}>
-          <IconBox name='iconChevron' size={20} />
+          <IconBox name='chevron' size={20} />
         </span>
       </button>
 
