@@ -1,0 +1,36 @@
+@use '@/assets/styles/abstracts/variables' as *;
+@use 'sass:color';
+
+.adminShelterInfo {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-yoohoo;
+  display: flex;
+  padding: $spacing-lg;
+  align-items: center;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.adminTrust {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-yoohoo;
+  display: flex;
+  width: 24.5rem;
+  padding: $spacing-lg;
+  align-items: center;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.adminFootPrint {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-yoohoo;
+  display: flex;
+  padding: $spacing-lg;
+  align-items: center;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
