@@ -1,6 +1,86 @@
 @use '@/assets/styles/abstracts/variables' as *;
 @use 'sass:color';
 
+.adminShelter {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.shelterPhoto {
+  width: 345px;
+  height: 345px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: $border-radius-md;
+}
+
+.shelterImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.shelterText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-md;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.shelterTitle {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+}
+
+.settingButton {
+  display: flex;
+  padding: 8px;
+  align-items: center;
+  gap: $spacing-sm;
+  position: absolute;
+  right: $spacing-xxl;
+
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
+}
+
+.shelterInfoText {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: $spacing-md;
+}
+
+.shelterInfoItem {
+  display: flex;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.shelterSubtitle {
+  width: 120px;
+  padding: $spacing-sm 0;
+  color: $text-777;
+}
+
+.shelterInfoContent {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  font-weight: $font-weight-medium;
+  color: $text-121212;
+}
+
 .adminShelterInfo {
   background-color: $color-background;
   border-radius: $border-radius-lg;
