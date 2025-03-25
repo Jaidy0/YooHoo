@@ -115,7 +115,7 @@ pipeline {
                                 sudo apt-get update && sudo apt-get install -y gettext
                             fi
                             set -a
-                            . \${WORKSPACE}/.env
+                            . \${WORKSPACE}/.enveee
                             set +a
 
                             envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
