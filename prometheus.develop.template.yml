@@ -16,11 +16,11 @@ scrape_configs:
       - targets: ['$EC2_PUBLIC_HOST:$CADVISOR_PORT']
 
   - job_name: 'backend-stable'
-    metrics_path: '/actuator/prometheus'
+    metrics_path: '/api/actuator/prometheus'
     static_configs:
       - targets: ['$EC2_PUBLIC_HOST:$STABLE_BACKEND_PORT']
 
   - job_name: 'backend-canary'
-    metrics_path: '/actuator/prometheus'
+    metrics_path: '/api/actuator/prometheus'
     static_configs:
       - targets: ['$EC2_PUBLIC_HOST:$CANARY_BACKEND_PORT']

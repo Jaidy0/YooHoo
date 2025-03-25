@@ -34,7 +34,7 @@ pipeline {
         stage('Checkout') {
             agent any
             steps {
-                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
             }
         }
 
@@ -134,130 +134,173 @@ pipeline {
                 }
             }
         }
-        /* stage('Monitor Canary with Prometheus') {
+        stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
                 script {
-                    sleep(20) // 카나리 배포 후 안정화 대기 (15초)
-                    def startTime = System.currentTimeMillis()
-                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간
+                    sleep(20) // 카나리 배포 후 안정화 대기 (20초)
 
-                    parallel(
-                        "Generate Traffic": {
-                            script {
-                                def duration = env.MONITORING_DURATION.toInteger()
-                                echo "카나리 백엔드로 테스트 트래픽을 생성합니다..."
+                    def trafficPercentages = [10, 40, 70, 100]
+                    def overallSuccess = true
+
+                    for (def percent in trafficPercentages) {
+                        echo "카나리 버전으로 트래픽을 ${percent}%로 설정합니다..."
+                        // NGINX 설정 업데이트: 트래픽 비율에 따라 분배
+
+                        def stableWeight = 100 - percent
+                        def canaryWeight = percent
+
+                        if (percent == 100) {
+                            sh """
+                                set -a
+                                . \${WORKSPACE}/.env
+                                set +a
+                                envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                                docker exec nginx_lb nginx -s reload
+                            """
+                        } else {
+                            withEnv(["STABLE_WEIGHT=${stableWeight}", "CANARY_WEIGHT=${canaryWeight}"]) {
+                                echo "환경 변수 설정: STABLE_WEIGHT=${env.STABLE_WEIGHT}, CANARY_WEIGHT=${env.CANARY_WEIGHT}"
                                 sh """
-                                    for i in \$(seq 1 ${duration}); do
-                                        curl -s http://${EC2_PUBLIC_HOST}/api/test || true
-                                        sleep 1
-                                    done
+                                    set -a
+                                    . \${WORKSPACE}/.env
+                                    set +a
+                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
+                                    docker exec nginx_lb nginx -s reload
                                 """
-                                echo "테스트 트래픽 생성 완료!"
-                            }
-                        },
-                        "Monitor Metrics": {
-                            script {
-                                def success = true
-                                def metricCheckStart = System.currentTimeMillis()
-
-                                while (System.currentTimeMillis() < endTime) {
-                                    try {
-                                        def upQuery = "up{job=\"backend-canary\"}"
-                                        def encodedUpQuery = URLEncoder.encode(upQuery, "UTF-8")
-                                        def upResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedUpQuery}\"", returnStdout: true).trim()
-                                        echo "Up Status Response: ${upResponse}"
-
-                                        def upJson = readJSON(text: upResponse)
-                                        def isUp = false
-
-                                        if (upJson.data.result && !upJson.data.result.isEmpty()) {
-                                            for (def result in upJson.data.result) {
-                                                if (result.metric.job == "backend-canary" && result.value[1] == "1") {
-                                                    isUp = true
-                                                    break
-                                                }
-                                            }
-                                        }
-
-                                        if (!isUp) {
-                                            echo "backend-canary 서비스가 아직 준비되지 않았습니다. 대기 중..."
-                                            sleep(10)
-                                            continue
-                                        }
-
-                                        def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
-                                        def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
-                                        def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
-                                        echo "Error Rate Response: ${errorRateResponse}"
-
-                                        def errorRateJson = readJSON(text: errorRateResponse)
-                                        def errorRate = 0.0
-                                        def hasErrorRateMetric = false
-
-                                        if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
-                                            hasErrorRateMetric = true
-                                            errorRate = errorRateJson.data.result[0].value[1].toFloat()
-                                        } else {
-                                            errorRate = 0.0
-                                            hasErrorRateMetric = true
-                                        }
-
-                                        def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m]))"
-                                        def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
-                                        def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
-                                        echo "Response Time Response: ${responseTimeResponse}"
-
-                                        def responseTimeJson = readJSON(text: responseTimeResponse)
-                                        def responseTime = 0.0
-                                        def hasResponseTimeMetric = false
-
-                                        if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
-                                            hasResponseTimeMetric = true
-                                            if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
-                                                responseTime = responseTimeJson.data.result[0].value[1].toFloat()
-                                            }
-                                        }
-
-                                        if (!hasErrorRateMetric || !hasResponseTimeMetric) {
-                                            def elapsedTime = System.currentTimeMillis() - metricCheckStart
-                                            def remainingTime = 60000 - elapsedTime
-
-                                            if (elapsedTime > 60000) {
-                                                error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
-                                            }
-
-                                            echo "메트릭이 아직 수집되지 않았습니다. 대기 중... (제한 시간까지 ${remainingTime / 1000}초 남음)"
-                                            sleep(10)
-                                            continue
-                                        }
-
-                                        echo "현재 오류율: ${errorRate}%, 응답 시간: ${responseTime}초"
-
-                                        if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
-                                            success = false
-                                            error("❌ 카나리 모니터링 실패: 오류율(${errorRate}%) 또는 응답 시간(${responseTime}초)이 임계값을 초과했습니다!")
-                                        }
-
-                                        sleep(10)
-                                    } catch (Exception e) {
-                                        echo "모니터링 중 오류 발생: ${e.message}"
-                                        if (e.message.contains("카나리 모니터링 실패")) {
-                                            throw e
-                                        }
-                                        sleep(10)
-                                    }
-                                }
-
-                                if (success) {
-                                    echo "✅ 카나리 모니터링 성공: 모든 메트릭이 정상 범위 내에 있습니다."
-                                }
                             }
                         }
-                    )
+
+                        echo "카나리 버전을 ${percent}% 트래픽으로 모니터링합니다..."
+                        def startTime = System.currentTimeMillis()
+                        def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간
+                        def stageSuccess = true
+
+                        parallel(
+                            "Generate Traffic": {
+                                script {
+                                    def duration = env.MONITORING_DURATION.toInteger()
+                                    echo "카나리 버전을 ${percent}% 트래픽으로 설정. 트래픽을 생성합니다..."
+                                    sh """
+                                        for i in \$(seq 1 ${duration}); do
+                                            curl -s http://${EC2_PUBLIC_HOST}/api/actuator/health || true
+                                            sleep 1
+                                        done
+                                    """
+                                    echo "테스트 트래픽 생성 완료!"
+                                }
+                            },
+                            "Monitor Metrics": {
+                                script {
+                                    def metricCheckStart = System.currentTimeMillis()
+                                    echo "카나리 버전을 ${percent}% 트래픽으로 모니터링합니다..."
+
+                                    while (System.currentTimeMillis() < endTime) {
+                                        try {
+                                            def upQuery = "up{job=\"backend-canary\"}"
+                                            def encodedUpQuery = URLEncoder.encode(upQuery, "UTF-8")
+                                            def upResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedUpQuery}\"", returnStdout: true).trim()
+                                            echo "Up Status Response: ${upResponse}"
+
+                                            def upJson = readJSON(text: upResponse)
+                                            def isUp = false
+
+                                            if (upJson.data.result && !upJson.data.result.isEmpty()) {
+                                                for (def result in upJson.data.result) {
+                                                    if (result.metric.job == "backend-canary" && result.value[1] == "1") {
+                                                        isUp = true
+                                                        break
+                                                    }
+                                                }
+                                            }
+
+                                            if (!isUp) {
+                                                echo "backend-canary 서비스가 아직 준비되지 않았습니다. 대기 중..."
+                                                sleep(10)
+                                                continue
+                                            }
+
+                                            def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
+                                            def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
+                                            def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
+                                            echo "Error Rate Response: ${errorRateResponse}"
+
+                                            def errorRateJson = readJSON(text: errorRateResponse)
+                                            def errorRate = 0.0
+                                            def hasErrorRateMetric = false
+
+                                            if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
+                                                hasErrorRateMetric = true
+                                                errorRate = errorRateJson.data.result[0].value[1].toFloat()
+                                            } else {
+                                                errorRate = 0.0
+                                                hasErrorRateMetric = true
+                                            }
+
+                                            def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m]))"
+                                            def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
+                                            def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
+                                            echo "Response Time Response: ${responseTimeResponse}"
+
+                                            def responseTimeJson = readJSON(text: responseTimeResponse)
+                                            def responseTime = 0.0
+                                            def hasResponseTimeMetric = false
+
+                                            if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
+                                                hasResponseTimeMetric = true
+                                                if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
+                                                    responseTime = responseTimeJson.data.result[0].value[1].toFloat()
+                                                }
+                                            }
+
+                                            if (!hasErrorRateMetric || !hasResponseTimeMetric) {
+                                                def elapsedTime = System.currentTimeMillis() - metricCheckStart
+                                                def remainingTime = 60000 - elapsedTime
+
+                                                if (elapsedTime > 60000) {
+                                                    error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
+                                                }
+
+                                                echo "메트릭이 아직 수집되지 않았습니다. 대기 중... (제한 시간까지 ${remainingTime / 1000}초 남음)"
+                                                sleep(10)
+                                                continue
+                                            }
+
+                                            echo "현재 오류율: ${errorRate}%, 응답 시간: ${responseTime}초"
+
+                                            if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
+                                                stageSuccess = false
+                                                error("❌ 카나리 모니터링 실패: 오류율(${errorRate}%) 또는 응답 시간(${responseTime}초)이 임계값을 초과했습니다!")
+                                            }
+
+                                            sleep(10)
+                                        } catch (Exception e) {
+                                            echo "모니터링 중 오류 발생: ${e.message}"
+                                            if (e.message.contains("카나리 모니터링 실패")) {
+                                                throw e
+                                            }
+                                            sleep(10)
+                                        }
+                                    }
+
+                                    if (stageSuccess) {
+                                        echo "✅ 카나리 모니터링 성공: ${percent}% 트래픽에서 모든 메트릭이 정상 범위 내에 있습니다."
+                                    }
+                                }
+                            }
+                        )
+                        if (!stageSuccess) {
+                            overallSuccess = false
+                            error("❌ ${percent}% 트래픽에서 카나리 모니터링 실패!")
+                        }
+                        // 100% 트래픽에서 성공 시 메세지
+                        if (percent == 100 && overallSuccess) {
+                            echo "✅ 모든 모니터링 단계가 성공했습니다. 모든 트래픽이 카나리 버전으로 전환되었습니다."
+                        }
+                    }
                 }
             }
-        } */
+        }
         stage('Promote to Stable') {
             parallel {
                 stage('Backend Promotion') {
@@ -277,9 +320,7 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml pull stable_backend &&
-                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend &&
-                                        docker compose -f docker-compose.develop.yml stop canary_backend &&
-                                        docker compose -f docker-compose.develop.yml rm -f canary_backend
+                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend
                                     "
                                 """
                             }
@@ -303,26 +344,60 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml pull stable_frontend &&
-                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
-                                        docker compose -f docker-compose.develop.yml stop canary_frontend &&
-                                        docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend
                                     "
                                 """
                             }
                         }
                     }
                 }
-                stage('Update Nginx') {
-                    agent { label 'public-dev' }
+            }
+        }
+        stage('Update Nginx') {
+        agent { label 'public-dev' }
+            steps {
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            set -a
+                            . \${WORKSPACE}/.env
+                            set +a
+                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                            docker exec nginx_lb nginx -s reload
+                        """
+                    }
+                }
+            }
+        }
+        stage('Cleanup Canary') {
+            parallel {
+                stage('Backend Canary Cleanup') {
+                    agent { label 'backend-dev' }
                     steps {
                         script {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    set -a
-                                    . \${WORKSPACE}/.env
-                                    set +a
-                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
-                                    docker exec nginx_lb nginx -s reload
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml stop canary_backend &&
+                                        docker compose -f docker-compose.develop.yml rm -f canary_backend
+                                    "
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Frontend Canary Cleanup') {
+                    agent { label 'frontend-dev' }
+                    steps {
+                        script {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml stop canary_frontend &&
+                                        docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                                    "
                                 """
                             }
                         }
@@ -347,6 +422,22 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml up -d stable_backend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml up -d stable_frontend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_backend
@@ -360,22 +451,6 @@ pipeline {
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_frontend
                                 docker compose -f docker-compose.develop.yml rm -f canary_frontend
-                            "
-                        """
-                    }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                cd ${WORKSPACE}
-                                docker compose -f docker-compose.develop.yml up -d stable_backend
-                            "
-                        """
-                    }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                cd ${WORKSPACE}
-                                docker compose -f docker-compose.develop.yml up -d stable_frontend
                             "
                         """
                     }
