@@ -20,7 +20,7 @@ import GearIcon from '@/assets/imgs/icons/iconGear.svg';
 import iconCircleX from '@/assets/imgs/icons/iconCircleX.svg';
 import iconZoom from '@/assets/imgs/icons/iconZoom.svg';
 import iconSearch from '@/assets/imgs/icons/iconSearch.svg';
-import iconHandShake from '@/assets/imgs/icons/iconHandShake.svg';
+import iconHandshake from '@/assets/imgs/icons/iconHandshake.svg';
 import iconCutiDog from '@/assets/imgs/icons/iconCutiDog.svg';
 
 // 아이콘 컴포넌트 매핑 객체
@@ -42,7 +42,7 @@ const ICON_COMPONENTS = {
   circleX: iconCircleX,
   zoom: iconZoom,
   search: iconSearch,
-  handShake: iconHandShake,
+  handShake: iconHandshake,
   cutiDog: iconCutiDog,
 } as const;
 
@@ -64,7 +64,7 @@ export interface IconProps {
 
 export const IconBox: React.FC<IconProps> = ({
   name,
-  size = 24,
+  size,
   color,
   className = '',
   onClick,

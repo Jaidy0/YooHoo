@@ -86,7 +86,10 @@
 }
 
 .content {
+  display: flex;
+  align-items: center;
   position: relative;
+  gap: 4px;
 }
 
 @keyframes spin {
