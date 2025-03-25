@@ -1,6 +1,86 @@
 @use '@/assets/styles/abstracts/variables' as *;
 @use 'sass:color';
 
+.adminShelter {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.shelterPhoto {
+  width: 345px;
+  height: 345px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: $border-radius-md;
+}
+
+.shelterImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.shelterText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-md;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.shelterTitle {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+}
+
+.settingButton {
+  display: flex;
+  padding: 8px;
+  align-items: center;
+  gap: $spacing-sm;
+  position: absolute;
+  right: $spacing-xxl;
+
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
+}
+
+.shelterInfoText {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: $spacing-md;
+}
+
+.shelterInfoItem {
+  display: flex;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.shelterSubtitle {
+  width: 120px;
+  padding: $spacing-sm 0;
+  color: $text-777;
+}
+
+.shelterInfoContent {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  font-weight: $font-weight-medium;
+  color: $text-121212;
+}
+
 .adminShelterInfo {
   background-color: $color-background;
   border-radius: $border-radius-lg;
@@ -9,6 +89,15 @@
   padding: $spacing-lg;
   align-items: center;
   gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.adminShelterDetail {
+  display: flex;
+  flex-direction: row; // 명시적으로 row 추가
+  flex-wrap: nowrap; // 줄바꿈 방지
+  align-items: flex-end;
+  gap: 28px;
   align-self: stretch;
 }
 
@@ -22,6 +111,47 @@
   align-items: center;
   gap: $spacing-xl;
   align-self: stretch;
+  flex-direction: column;
+}
+
+.trustContent {
+  display: flex;
+  height: 276px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.trustHeader {
+  display: flex;
+  width: 334px;
+  align-items: center;
+  gap: 4px;
+}
+
+.adminTitle {
+  color: #000;
+  font-family: 'NanumSquare Neo OTF';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 20px; /* 83.333% */
+  letter-spacing: 0.1px;
+}
+
+.questionButton {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
 }
 
 .adminFootPrint {
@@ -29,6 +159,7 @@
   border-radius: $border-radius-lg;
   box-shadow: $shadow-yoohoo;
   display: flex;
+  flex-direction: column;
   padding: $spacing-lg;
   align-items: center;
   gap: $spacing-xl;
