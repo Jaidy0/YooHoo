@@ -5,14 +5,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import TabMenu from '@/components/common/TabMenu/TabMenu';
 import styles from './layout.module.scss';
-// import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
-// import HomeIcon from '@/assets/imgs/icons/iconHome.svg';
-
+import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
+import IconBox from '@/components/common/IconBox/IconBox';
 // 관리자 상단 네비게이션 항목 정의
 const adminNavItems = [
-  { name: '단체 정보 관리', link: '/admin/dogs' },
+  { name: '단체 정보 관리', link: '/admin' },
   { name: '후원금 관리', link: '/admin/donations' },
-  { name: '강아지 관리', link: '/admin/users' },
+  { name: '강아지 관리', link: '/admin/dogs' },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -26,7 +25,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <Image
                   width={100}
                   height={100}
-                  src='/yoohoo-logo.svg'
+                  src='/images/yoohoo-logo.svg'
                   alt='유후 로고'
                   className={styles.logo}
                 />
@@ -39,15 +38,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
         <div className={styles.mainNav}>
-          <TabMenu menuItems={adminNavItems} className={styles.adminTabMenu} />
-          {/* TO DO : svg 해결하기 */}
-          {/* <MoveButton
-            className={styles.smallButton}
-            leftIcon={<HomeIcon width={16} height={16} />} // SVG를 React 컴포넌트로 직접 사용
-            onClick={() => console.log('홈으로 이동')}
-          >
+          <TabMenu size='lg' menuItems={adminNavItems} />
+          <MoveButton leftIcon={<IconBox name='home' size={24} />}>
             메인 화면으로 가기
-          </MoveButton> */}
+          </MoveButton>
         </div>
       </header>
 
@@ -55,9 +49,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       <footer className={styles.adminFooter}>
         <div className={styles.footerContent}>
-          <p>
-            &copy; {new Date().getFullYear()} 유기견 후원 시스템 | 관리자 페이지
-          </p>
+          <p>&copy; 2025 유기견 후원 시스템 | 관리자 페이지</p>
         </div>
       </footer>
     </div>
