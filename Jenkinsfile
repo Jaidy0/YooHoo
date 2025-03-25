@@ -183,7 +183,7 @@ pipeline {
                                     echo "카나리 백엔드로 테스트 트래픽을 생성합니다..."
                                     sh """
                                         for i in \$(seq 1 ${duration}); do
-                                            curl -s http://${EC2_PUBLIC_HOST}/api/test || true
+                                            curl -s http://${EC2_PUBLIC_HOST}/api/actuator/health || true
                                             sleep 1
                                         done
                                     """
