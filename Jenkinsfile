@@ -277,9 +277,7 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml pull stable_backend &&
-                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend &&
-                                        docker compose -f docker-compose.develop.yml stop canary_backend &&
-                                        docker compose -f docker-compose.develop.yml rm -f canary_backend
+                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend
                                     "
                                 """
                             }
@@ -303,26 +301,58 @@ pipeline {
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml pull stable_frontend &&
-                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
-                                        docker compose -f docker-compose.develop.yml stop canary_frontend &&
-                                        docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend
                                     "
                                 """
                             }
                         }
                     }
                 }
-                stage('Update Nginx') {
-                    agent { label 'public-dev' }
+            }
+            stage('Update Nginx') {
+                agent { label 'public-dev' }
+                steps {
+                    script {
+                        withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                            sh """
+                                set -a
+                                . \${WORKSPACE}/.env
+                                set +a
+                                envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                                docker exec nginx_lb nginx -s reload
+                            """
+                        }
+                    }
+                }
+            }
+            parallel {
+                stage('Backend Canary Cleanup') {
+                    agent { label 'backend-dev' }
                     steps {
                         script {
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                                 sh """
-                                    set -a
-                                    . \${WORKSPACE}/.env
-                                    set +a
-                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
-                                    docker exec nginx_lb nginx -s reload
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml stop canary_backend &&
+                                        docker compose -f docker-compose.develop.yml rm -f canary_backend
+                                    "
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Frontend Canary Cleanup') {
+                    agent { label 'frontend-dev' }
+                    steps {
+                        script {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml stop canary_frontend &&
+                                        docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                                    "
                                 """
                             }
                         }
