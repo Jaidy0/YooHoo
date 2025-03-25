@@ -24,9 +24,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Link href='/admin'>
               <div className={styles.logoImage}>
                 <Image
-                  width={100}
-                  height={100}
-                  src='/yoohoo-logo.svg'
+                  width={80}
+                  height={80}
+                  src='/images/yoohoo-logo.svg'
                   alt='유후 로고'
                   className={styles.logo}
                 />
