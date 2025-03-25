@@ -1,0 +1,21 @@
+spring:
+    application:
+       name: backend
+
+    datasource:
+        url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${MYSQL_DATABASE}
+        username: ${DB_USER}
+        password: ${DB_PASSWORD}
+        driver-class-name: com.mysql.cj.jdbc.Driver
+    jpa:
+        database-platform: org.hibernate.dialect.MySQL8Dialect
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info,prometheus
+            base-path: /api/actuator
+    endpoint:
+      health:
+        show-details: always

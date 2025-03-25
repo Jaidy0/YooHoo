@@ -1,0 +1,426 @@
+pipeline {
+    agent none
+    options {
+        disableConcurrentBuilds()
+    }
+    parameters {
+        string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')
+    }
+    environment {
+        DOCKER_IMAGE_PREFIX = "murhyun2"
+        EC2_PUBLIC_HOST = ""
+        STABLE_BACKEND_PORT = ""
+        CANARY_BACKEND_PORT = ""
+        STABLE_FRONTEND_PORT = ""
+        CANARY_FRONTEND_PORT = ""
+        PROMETHEUS_PORT = ""
+        EC2_PUBLIC_SSH_CREDENTIALS_ID = "ec2-ssh-key"
+        GIT_CREDENTIALS_ID = "gitlab-token"
+        GIT_REPOSITORY_URL = "https://lab.ssafy.com/s12-fintech-finance-sub1/S12P21B209"
+        PROJECT_DIRECTORY = "YooHoo"
+        EC2_USER = "ubuntu"
+        DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
+        STABLE_TAG = "stable-${env.BUILD_NUMBER}"
+        CANARY_TAG = "canary-${env.BUILD_NUMBER}"
+        BACKEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-backend"
+        FRONTEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-frontend"
+        STABLE_WEIGHT = "${100 - params.TRAFFIC_SPLIT.toInteger()}"
+        CANARY_WEIGHT = "${params.TRAFFIC_SPLIT.toInteger()}"
+        ERROR_RATE_THRESHOLD = 1.0 // 오류율 임계값 (%)
+        RESPONSE_TIME_THRESHOLD = 200 // 응답 시간 임계값 (ms)
+        MONITORING_DURATION = 60 // 모니터링 지속 시간 (초)
+    }
+    stages {
+        stage('Checkout') {
+            agent any
+            steps {
+                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+            }
+        }
+
+        stage('Prepare Environment') {
+            agent any
+            steps {
+                withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {
+                    script {
+                        def envContent = readFile(ENV_FILE_PATH).replaceAll('\r', '')
+                        def extraEnv = """
+                        DOCKER_IMAGE_PREFIX=${DOCKER_IMAGE_PREFIX}
+                        STABLE_TAG=stable-${BUILD_NUMBER}
+                        CANARY_TAG=canary-${BUILD_NUMBER}
+                        BACKEND_IMAGE=${DOCKER_IMAGE_PREFIX}/yoohoo-backend
+                        FRONTEND_IMAGE=${DOCKER_IMAGE_PREFIX}/yoohoo-frontend
+                        """
+                        def finalEnvContent = envContent + "\n" + extraEnv.trim()
+                        writeFile file: '.env', text: finalEnvContent
+                        def envMap = [:]
+                        finalEnvContent.split('\n').each { line ->
+                            def keyValue = line.split('=', 2)
+                            if (keyValue.size() == 2) {
+                                envMap[keyValue[0].trim()] = keyValue[1].trim()
+                            }
+                        }
+                        EC2_PUBLIC_HOST = envMap['EC2_PUBLIC_HOST']
+                        STABLE_BACKEND_PORT = envMap['STABLE_BACKEND_PORT']
+                        CANARY_BACKEND_PORT = envMap['CANARY_BACKEND_PORT']
+                        STABLE_FRONTEND_PORT = envMap['STABLE_FRONTEND_PORT']
+                        CANARY_FRONTEND_PORT = envMap['CANARY_FRONTEND_PORT']
+                        PROMETHEUS_PORT = envMap['PROMETHEUS_PORT']
+                    }
+                }
+            }
+        }
+
+        stage('Build & Push Images') {
+            parallel {
+                stage('Build Backend') {
+                    agent { label 'backend-dev' }
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                dir("backend") {
+                                    sh """
+                                        docker build -t ${BACKEND_IMAGE}:${CANARY_TAG} .
+                                        docker push ${BACKEND_IMAGE}:${CANARY_TAG}
+                                    """
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Build Frontend') {
+                    agent { label 'frontend-dev' }
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                dir("frontend") {
+                                    sh """
+                                        docker build -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
+                                        docker push ${FRONTEND_IMAGE}:${CANARY_TAG}
+                                    """
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy Canary') {
+            agent { label 'public-dev' }
+            steps {
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            if ! dpkg -s gettext > /dev/null 2>&1; then
+                                sudo apt-get update && sudo apt-get install -y gettext
+                            fi
+                            set -a
+                            . \${WORKSPACE}/.env
+                            set +a
+
+                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
+
+                            if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
+                                echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
+                                envsubst < \${WORKSPACE}/prometheus.develop.template.yml > ./prometheus.yml
+                                docker compose -f docker-compose.develop.yml up -d mysql redis nginx canary_backend canary_frontend prometheus grafana node-exporter cadvisor
+                            else
+                                echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."
+                                docker compose -f docker-compose.develop.yml up -d canary_backend canary_frontend
+                                docker exec nginx_lb nginx -s reload
+                            fi
+                        """
+                    }
+                }
+            }
+        }
+        /* stage('Monitor Canary with Prometheus') {
+            agent { label 'public-dev' }
+            steps {
+                script {
+                    sleep(20) // 카나리 배포 후 안정화 대기 (15초)
+                    def startTime = System.currentTimeMillis()
+                    def endTime = startTime + (env.MONITORING_DURATION.toLong() * 1000) // 모니터링 지속 시간
+
+                    parallel(
+                        "Generate Traffic": {
+                            script {
+                                def duration = env.MONITORING_DURATION.toInteger()
+                                echo "카나리 백엔드로 테스트 트래픽을 생성합니다..."
+                                sh """
+                                    for i in \$(seq 1 ${duration}); do
+                                        curl -s http://${EC2_PUBLIC_HOST}/api/test || true
+                                        sleep 1
+                                    done
+                                """
+                                echo "테스트 트래픽 생성 완료!"
+                            }
+                        },
+                        "Monitor Metrics": {
+                            script {
+                                def success = true
+                                def metricCheckStart = System.currentTimeMillis()
+
+                                while (System.currentTimeMillis() < endTime) {
+                                    try {
+                                        def upQuery = "up{job=\"backend-canary\"}"
+                                        def encodedUpQuery = URLEncoder.encode(upQuery, "UTF-8")
+                                        def upResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedUpQuery}\"", returnStdout: true).trim()
+                                        echo "Up Status Response: ${upResponse}"
+
+                                        def upJson = readJSON(text: upResponse)
+                                        def isUp = false
+
+                                        if (upJson.data.result && !upJson.data.result.isEmpty()) {
+                                            for (def result in upJson.data.result) {
+                                                if (result.metric.job == "backend-canary" && result.value[1] == "1") {
+                                                    isUp = true
+                                                    break
+                                                }
+                                            }
+                                        }
+
+                                        if (!isUp) {
+                                            echo "backend-canary 서비스가 아직 준비되지 않았습니다. 대기 중..."
+                                            sleep(10)
+                                            continue
+                                        }
+
+                                        def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
+                                        def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
+                                        def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
+                                        echo "Error Rate Response: ${errorRateResponse}"
+
+                                        def errorRateJson = readJSON(text: errorRateResponse)
+                                        def errorRate = 0.0
+                                        def hasErrorRateMetric = false
+
+                                        if (errorRateJson.data.result && !errorRateJson.data.result.isEmpty()) {
+                                            hasErrorRateMetric = true
+                                            errorRate = errorRateJson.data.result[0].value[1].toFloat()
+                                        } else {
+                                            errorRate = 0.0
+                                            hasErrorRateMetric = true
+                                        }
+
+                                        def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m]))"
+                                        def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
+                                        def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
+                                        echo "Response Time Response: ${responseTimeResponse}"
+
+                                        def responseTimeJson = readJSON(text: responseTimeResponse)
+                                        def responseTime = 0.0
+                                        def hasResponseTimeMetric = false
+
+                                        if (responseTimeJson.data.result && !responseTimeJson.data.result.isEmpty()) {
+                                            hasResponseTimeMetric = true
+                                            if (responseTimeJson.data.result[0]?.value && responseTimeJson.data.result[0].value.size() > 1) {
+                                                responseTime = responseTimeJson.data.result[0].value[1].toFloat()
+                                            }
+                                        }
+
+                                        if (!hasErrorRateMetric || !hasResponseTimeMetric) {
+                                            def elapsedTime = System.currentTimeMillis() - metricCheckStart
+                                            def remainingTime = 60000 - elapsedTime
+
+                                            if (elapsedTime > 60000) {
+                                                error("❌ 카나리 모니터링 실패: 1분 이상 메트릭이 수집되지 않았습니다!")
+                                            }
+
+                                            echo "메트릭이 아직 수집되지 않았습니다. 대기 중... (제한 시간까지 ${remainingTime / 1000}초 남음)"
+                                            sleep(10)
+                                            continue
+                                        }
+
+                                        echo "현재 오류율: ${errorRate}%, 응답 시간: ${responseTime}초"
+
+                                        if (errorRate > env.ERROR_RATE_THRESHOLD.toFloat() || responseTime > env.RESPONSE_TIME_THRESHOLD.toFloat()) {
+                                            success = false
+                                            error("❌ 카나리 모니터링 실패: 오류율(${errorRate}%) 또는 응답 시간(${responseTime}초)이 임계값을 초과했습니다!")
+                                        }
+
+                                        sleep(10)
+                                    } catch (Exception e) {
+                                        echo "모니터링 중 오류 발생: ${e.message}"
+                                        if (e.message.contains("카나리 모니터링 실패")) {
+                                            throw e
+                                        }
+                                        sleep(10)
+                                    }
+                                }
+
+                                if (success) {
+                                    echo "✅ 카나리 모니터링 성공: 모든 메트릭이 정상 범위 내에 있습니다."
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        } */
+        stage('Promote to Stable') {
+            parallel {
+                stage('Backend Promotion') {
+                    agent { label 'backend-dev' }
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                sh """
+                                    docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
+                                    docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:latest
+                                    docker push ${BACKEND_IMAGE}:${STABLE_TAG}
+                                    docker push ${BACKEND_IMAGE}:latest
+                                """
+                            }
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml pull stable_backend &&
+                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_backend &&
+                                        docker compose -f docker-compose.develop.yml stop canary_backend &&
+                                        docker compose -f docker-compose.develop.yml rm -f canary_backend
+                                    "
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Frontend Promotion') {
+                    agent { label 'frontend-dev' }
+                    steps {
+                        script {
+                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                sh """
+                                    docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
+                                    docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:latest
+                                    docker push ${FRONTEND_IMAGE}:${STABLE_TAG}
+                                    docker push ${FRONTEND_IMAGE}:latest
+                                """
+                            }
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                        cd ${WORKSPACE} &&
+                                        docker compose -f docker-compose.develop.yml pull stable_frontend &&
+                                        docker compose -f docker-compose.develop.yml up -d --no-deps stable_frontend &&
+                                        docker compose -f docker-compose.develop.yml stop canary_frontend &&
+                                        docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                                    "
+                                """
+                            }
+                        }
+                    }
+                }
+                stage('Update Nginx') {
+                    agent { label 'public-dev' }
+                    steps {
+                        script {
+                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                                sh """
+                                    set -a
+                                    . \${WORKSPACE}/.env
+                                    set +a
+                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                                    docker exec nginx_lb nginx -s reload
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        failure {
+            node('public-dev') {
+                echo "배포 실패: 롤백을 진행합니다."
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            set -a
+                            . \${WORKSPACE}/.env
+                            set +a
+                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                            docker exec nginx_lb nginx -s reload
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml stop canary_backend
+                                docker compose -f docker-compose.develop.yml rm -f canary_backend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml stop canary_frontend
+                                docker compose -f docker-compose.develop.yml rm -f canary_frontend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml up -d stable_backend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml up -d stable_frontend
+                            "
+                        """
+                    }
+                }
+            }
+        }
+        always {
+            node('public-dev') {
+                sh """
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
+                """
+                sh """
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
+                """
+                script {
+                    def Branch_Name = env.GIT_BRANCH ? env.GIT_BRANCH.replace('origin/', '') : sh(script: "git name-rev --name-only HEAD | sed 's/^origin\\///'", returnStdout: true).trim()
+                    def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                    def Author_Email = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                    def Commit_Message = sh(script: "git log -1 --pretty=%s", returnStdout: true).trim()
+                    def Build_Time = new Date(currentBuild.startTimeInMillis).format("yyyy년 MM월 dd일 HH시 mm분 ss초", TimeZone.getTimeZone("Asia/Seoul"))
+                    def Duration = currentBuild.durationString.replace(' and counting', '')
+                    def Status = currentBuild.result ?: "SUCCESS"
+                    def Color = (Status == "SUCCESS") ? 'good' : 'danger'
+                    def Icon = (Status == "SUCCESS") ? "✅" : "❌"
+                    def BlueOcean_URL = "${env.JENKINS_URL}blue/organizations/jenkins/${env.JOB_NAME}/detail/${env.JOB_NAME}/${env.BUILD_NUMBER}/pipeline/"
+                    def Message = """\
+                    ${Icon} *BUILD ${Status}*
+                    - *Job:* ${env.JOB_NAME} #${env.BUILD_NUMBER}
+                    - *Branch:* ${Branch_Name}
+                    - *Author:* ${Author_ID} (${Author_Email})
+                    - *Commit:* ${Commit_Message}
+                    - *시작 시간:* ${Build_Time}
+                    - *소요 시간:* ${Duration}
+                    [🔍 *Details*](${BlueOcean_URL})
+                    """.stripIndent()
+                    mattermostSend(
+                        color: Color,
+                        message: Message,
+                        endpoint: 'https://meeting.ssafy.com/hooks/3wgn4b8xz7nnpcfb7rkdrwr1mo',
+                        channel: 'B209-Jenkins-Result'
+                    )
+                }
+            }
+        }
+    }
+}
