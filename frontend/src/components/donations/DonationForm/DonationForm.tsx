@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import ProgressBar from '../ProgressBar/ProgressBar';
+import ShelterSection from '../shelter/ShelterSection/ShelterSection';
 
 import { DonationFormData } from '@/types/donation';
 
@@ -19,8 +20,8 @@ export default function DonationForm({
 
   // 폼 데이터 상태
   const [formData, setFormData] = useState<DonationFormData>({
-    organization: initialShelterId ?? 0,
-    organizationName: '',
+    shelterId: initialShelterId ?? 0,
+    shelterName: '',
     donationType: 0, // 0: 정기후원 기본값
     paymentDay: 15,
     targetType: 'shelter', // 단체후원 기본값
@@ -35,7 +36,7 @@ export default function DonationForm({
 
   // 각 단계 완료 상태
   const [stepsCompleted, setStepsCompleted] = useState({
-    organization: !!initialShelterId,
+    shelter: !!initialShelterId,
     donationType: true,
     paymentDetails: false,
     targetSelection: true,
@@ -58,7 +59,7 @@ export default function DonationForm({
   // 프로그레스 계산
   const calculateProgress = (): number => {
     const requiredSteps = [
-      stepsCompleted.organization, // 필수
+      stepsCompleted.shelter, // 필수
       stepsCompleted.donationType, // 필수
     ];
 
@@ -83,6 +84,17 @@ export default function DonationForm({
     // router.push('/donate/complete');
   };
 
+    // 폼 데이터 업데이트 함수
+    const updateFormData = (data: Partial<DonationFormData>) => {
+        setFormData(prev => ({ ...prev, ...data }));
+      };
+
+    // 단체 선택 핸들러
+    const handleSelectShelter = (id: number, name: string) => {
+        updateFormData({ shelterId: id, shelterName: name });
+        completeStep('shelter');
+      };
+
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -90,7 +102,9 @@ export default function DonationForm({
       </div>
 
       {/* 1. 단체 선택 */}
-      <section>{/* <ShelterSection/> */}</section>
+      <section><ShelterSection
+                selectedShelterId={formData.shelterId}
+                onSelectShelter={handleSelectShelter}/></section>
     </form>
   );
 }
