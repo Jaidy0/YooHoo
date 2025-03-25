@@ -92,6 +92,15 @@
   align-self: stretch;
 }
 
+.adminShelterDetail {
+  display: flex;
+  flex-direction: row; // 명시적으로 row 추가
+  flex-wrap: nowrap; // 줄바꿈 방지
+  align-items: flex-end;
+  gap: 28px;
+  align-self: stretch;
+}
+
 .adminTrust {
   background-color: $color-background;
   border-radius: $border-radius-lg;
@@ -102,6 +111,47 @@
   align-items: center;
   gap: $spacing-xl;
   align-self: stretch;
+  flex-direction: column;
+}
+
+.trustContent {
+  display: flex;
+  height: 276px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.trustHeader {
+  display: flex;
+  width: 334px;
+  align-items: center;
+  gap: 4px;
+}
+
+.adminTitle {
+  color: #000;
+  font-family: 'NanumSquare Neo OTF';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 20px; /* 83.333% */
+  letter-spacing: 0.1px;
+}
+
+.questionButton {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
 }
 
 .adminFootPrint {
@@ -109,6 +159,7 @@
   border-radius: $border-radius-lg;
   box-shadow: $shadow-yoohoo;
   display: flex;
+  flex-direction: column;
   padding: $spacing-lg;
   align-items: center;
   gap: $spacing-xl;

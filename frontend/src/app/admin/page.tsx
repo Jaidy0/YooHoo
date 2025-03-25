@@ -8,7 +8,7 @@ export default function AdminPage() {
       <div className={styles.adminShelterInfo}>
         <div className={styles.shelterPhoto}>
           <Image
-            src='https://picsum.photos/345/345'
+            src='/images/dummy.jpeg'
             alt='보호소 사진'
             width={345}
             height={345}
@@ -72,8 +72,23 @@ export default function AdminPage() {
         </div>
       </div>
       <div className={styles.adminShelterDetail}>
-        <div className={styles.adminTrust}>신뢰지수</div>
-        <div className={styles.adminFootPrint}>발자국</div>
+        <div className={styles.adminTrust}>
+          <div className={styles.trustContent}>
+            <div className={styles.trustHeader}>
+              <div className={styles.adminTitle}>단체 신뢰 지수</div>
+              <div className={styles.questionButton}>
+                <IconBox name='zoom'></IconBox>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className={styles.adminFootPrint}>
+          <div className={styles.footPrintContent}>
+            <div className={styles.trustHeader}>
+              <div className={styles.adminTitle}>단체 신뢰 지수</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
