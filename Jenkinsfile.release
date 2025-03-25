@@ -417,10 +417,29 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
+                                docker compose -f docker-compose.backend.yml up -d stable_backend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
+                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
+                                docker compose -f docker-compose.frontend.yml up -d stable_frontend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.backend.yml stop canary_backend
                                 docker compose -f docker-compose.backend.yml rm -f canary_backend
+                                # 백엔드 이미지 정리
+                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
                             "
                         """
                     }
@@ -430,25 +449,6 @@ pipeline {
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.frontend.yml stop canary_frontend
                                 docker compose -f docker-compose.frontend.yml rm -f canary_frontend
-                            "
-                        """
-                    }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                docker compose -f docker-compose.backend.yml up -d stable_backend
-                                # 백엔드 이미지 정리
-                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
-                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
-                            "
-                        """
-                    }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_FRONTEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_FRONTEND_HOST} "
-                                cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
-                                docker compose -f docker-compose.frontend.yml up -d stable_frontend
                                 # 프론트엔드 이미지 정리
                                 docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
                                 docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true

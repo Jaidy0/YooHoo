@@ -115,7 +115,7 @@ pipeline {
                                 sudo apt-get update && sudo apt-get install -y gettext
                             fi
                             set -a
-                            . \${WORKSPACE}/.enveee
+                            . \${WORKSPACE}/.env
                             set +a
 
                             envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
@@ -379,6 +379,22 @@ pipeline {
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
                         sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml up -d stable_backend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
+                                cd ${WORKSPACE}
+                                docker compose -f docker-compose.develop.yml up -d stable_frontend
+                            "
+                        """
+                    }
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_backend
@@ -392,22 +408,6 @@ pipeline {
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_frontend
                                 docker compose -f docker-compose.develop.yml rm -f canary_frontend
-                            "
-                        """
-                    }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                cd ${WORKSPACE}
-                                docker compose -f docker-compose.develop.yml up -d stable_backend
-                            "
-                        """
-                    }
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
-                            ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
-                                cd ${WORKSPACE}
-                                docker compose -f docker-compose.develop.yml up -d stable_frontend
                             "
                         """
                     }
