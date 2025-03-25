@@ -66,7 +66,7 @@
   line-height: 1.5;
   // ... 설정
   display: -webkit-box;
-  -webkit-line-clamp: 2; // 표시할 줄 수 (2줄)
+  -webkit-line-clamp: 3; // 표시할 줄 수 (2줄)
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;

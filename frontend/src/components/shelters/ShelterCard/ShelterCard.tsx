@@ -45,11 +45,11 @@ export default function ShelterCard({
         </div>
         <div className={styles.stats}>
           <RoundButton className={styles.iconBtn} variant='primary'>
-            <IconBox name='dog' size={20} />
+            <IconBox name='dog' size={20} color='var(--yh-brown)' />
             <span>{dogCount}</span>
           </RoundButton>
           <RoundButton className={styles.iconBtn} variant='primary'>
-            <IconBox name='heart' size={20} />
+            <IconBox name='heart' size={20} color='var(--yh-orange)' />
             <span>{likeCount}</span>
           </RoundButton>
         </div>
