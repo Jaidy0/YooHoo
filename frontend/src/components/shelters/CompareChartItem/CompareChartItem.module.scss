@@ -12,7 +12,8 @@
 
     .bar1,
     .bar2 {
-      height: 26px;
+      border: 1px solid #333;
+      height: 30px;
       border-radius: 30px;
       display: flex;
       align-items: center;
@@ -27,7 +28,6 @@
 
     .bar2 {
       background-color: #fff;
-      border: 1px solid #ccc;
       color: $text-333;
     }
   }
