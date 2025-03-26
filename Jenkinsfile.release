@@ -395,7 +395,7 @@ pipeline {
                                 set -a
                                 . \${WORKSPACE}/.env
                                 set +a
-                                envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
+                                envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.canary.conf.template > ./nginx/nginx.conf
                                 docker exec nginx_lb nginx -s reload
                             """
                         }
