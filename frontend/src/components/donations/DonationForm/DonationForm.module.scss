@@ -1,3 +1,9 @@
 .donationForm {
-    margin-bottom: 100px;
+  margin-bottom: 100px;
+}
+
+.progressBarContainer {
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }

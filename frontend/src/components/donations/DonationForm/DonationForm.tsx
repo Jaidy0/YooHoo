@@ -102,7 +102,7 @@ export default function DonationForm({
 
   return (
     <div className={styles.donationForm} onSubmit={handleSubmit}>
-      <div>
+      <div className={styles.progressBarContainer}>
         <ProgressBar progress={calculateProgress()} />
       </div>
 
