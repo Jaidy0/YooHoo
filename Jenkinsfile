@@ -34,7 +34,7 @@ pipeline {
         stage('Checkout') {
             agent any
             steps {
-                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
             }
         }
 
@@ -155,7 +155,7 @@ pipeline {
                                 set -a
                                 . \${WORKSPACE}/.env
                                 set +a
-                                envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                                envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.canary.develop.conf.template > ./nginx/nginx.conf
                                 docker exec nginx_lb nginx -s reload
                             """
                         } else {
