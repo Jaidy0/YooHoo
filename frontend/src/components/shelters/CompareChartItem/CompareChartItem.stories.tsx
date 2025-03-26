@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import CompareChartItem from './CompareChartItem';
 
 const meta: Meta<typeof CompareChartItem> = {
-  title: 'Components/Common/CompareChartItem',
+  title: 'Components/Shelters/CompareChartItem',
   component: CompareChartItem,
   parameters: {
     layout: 'centered',
