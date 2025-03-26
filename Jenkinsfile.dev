@@ -140,7 +140,7 @@ pipeline {
                 script {
                     sleep(20) // 카나리 배포 후 안정화 대기 (20초)
 
-                    def trafficPercentages = [10, 40, 70, 100]
+                    def trafficPercentages = [10, 30, 60, 100]
                     def overallSuccess = true
 
                     for (def percent in trafficPercentages) {
