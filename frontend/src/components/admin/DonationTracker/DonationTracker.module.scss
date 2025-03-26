@@ -1,0 +1,82 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.trackerCard {
+  position: relative;
+  width: 100%;
+  padding: $spacing-xl;
+  border-radius: $border-radius-md;
+  border: 1px solid $color-border;
+  background-color: $color-background;
+  display: flex;
+  width: 655px;
+  padding: $spacing-lg $spacing-xxl;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+
+  &:hover {
+    box-shadow: $shadow-yoohoo;
+  }
+
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-bottom: $spacing-md;
+  }
+
+  .subText {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-medium;
+    color: $text-555;
+    margin: 0;
+  }
+}
+
+// variant별 스타일 차이
+.total {
+  .amount {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    color: $text-121212;
+  }
+  .compareWrapper {
+    display: flex;
+    align-items: flex-end;
+    gap: $spacing-sm;
+
+    .withdrawText {
+      color: $chart-blue;
+    }
+    .depositText {
+      padding: $shadow-sm;
+      color: $chart-hotpink;
+    }
+
+    .compareValue {
+      font-size: $font-size-lg;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+.simple {
+  display: flex;
+  width: 518px;
+  padding: 0px 30px;
+  justify-content: space-between;
+  align-items: center;
+  .amount {
+    font-size: $font-size-4xl;
+    font-weight: $font-weight-bold;
+    color: $text-121212;
+  }
+
+  .subText {
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .badge {
+  }
+}
