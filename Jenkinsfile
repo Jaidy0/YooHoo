@@ -34,7 +34,7 @@ pipeline {
         stage('Checkout') {
             agent any
             steps {
-                git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
             }
         }
 
