@@ -8,6 +8,7 @@ import SelectSection, {
   TargetType,
 } from '../donationType/SelectSection/SelectSection';
 import DogSection from '../donationType/DogSection/DogSection';
+import PaymentDateSection from '../donationType/PaymentDateSection/PaymentDateSection';
 import styles from './DonationForm.module.scss';
 
 import { DonationFormData } from '@/types/donation';
@@ -141,14 +142,14 @@ export default function DonationForm({
       {/* 3A. 정기 결제일 선택 - 정기후원 선택 시에만 표시 */}
       {formData.donationType === 0 && (
         <section>
-          {/* <PaymentDateSection
-              stepNumber={3}
-              selectedDay={formData.paymentDay}
-              onSelectDay={(day) => {
-                updateFormData({ paymentDay: day });
-                completeStep('paymentDetails', day > 0);
-              }}
-            /> */}
+          <PaymentDateSection
+            stepNumber={3}
+            selectedDay={formData.paymentDay}
+            onSelectDay={(day) => {
+              updateFormData({ paymentDay: day });
+              completeStep('paymentDetails', day > 0);
+            }}
+          />
         </section>
       )}
 
