@@ -84,27 +84,30 @@ export default function DonationForm({
     // router.push('/donate/complete');
   };
 
-    // 폼 데이터 업데이트 함수
-    const updateFormData = (data: Partial<DonationFormData>) => {
-        setFormData(prev => ({ ...prev, ...data }));
-      };
+  // 폼 데이터 업데이트 함수
+  const updateFormData = (data: Partial<DonationFormData>) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+  };
 
-    // 단체 선택 핸들러
-    const handleSelectShelter = (id: number, name: string) => {
-        updateFormData({ shelterId: id, shelterName: name });
-        completeStep('shelter');
-      };
+  // 단체 선택 핸들러
+  const handleSelectShelter = (id: number, name: string) => {
+    updateFormData({ shelterId: id, shelterName: name });
+    completeStep('shelter');
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <div onSubmit={handleSubmit}>
       <div>
         <ProgressBar progress={calculateProgress()} />
       </div>
 
       {/* 1. 단체 선택 */}
-      <section><ShelterSection
-                selectedShelterId={formData.shelterId}
-                onSelectShelter={handleSelectShelter}/></section>
-    </form>
+      <section>
+        <ShelterSection
+          selectedShelterId={formData.shelterId}
+          onSelectShelter={handleSelectShelter}
+        />
+      </section>
+    </div>
   );
 }
