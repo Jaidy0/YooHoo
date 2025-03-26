@@ -14,13 +14,13 @@ interface CompareChartItemProps {
   height?: number;
 }
 
-const CompareChartItem: React.FC<CompareChartItemProps> = ({
+export default function CompareChartItem({
   label1,
   label2,
   value1,
   value2,
   height = 36,
-}) => {
+}: CompareChartItemProps) {
   return (
     <div className={styles.container} style={{ height }}>
       <div className={styles.baseBar}>
@@ -39,6 +39,4 @@ const CompareChartItem: React.FC<CompareChartItemProps> = ({
       </div>
     </div>
   );
-};
-
-export default CompareChartItem;
+}
