@@ -228,7 +228,7 @@ const withdrawData = [
  * 재정 관리 페이지나 관리자 대시보드에서 사용됩니다.
  */
 const meta = {
-  title: 'Admin/FinanceTable',
+  title: 'Components/Admin/FinanceTable',
   component: FinanceTable,
   parameters: {
     layout: 'padded',
