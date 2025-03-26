@@ -13,7 +13,7 @@ interface DonationUseHistoryItemProps {
   isVerified?: boolean;
 }
 
-function DonationUseHistoryItem({
+export default function DonationUseHistoryItem({
   date,
   amount,
   description,
@@ -42,5 +42,3 @@ function DonationUseHistoryItem({
     </div>
   );
 }
-
-export default DonationUseHistoryItem;
