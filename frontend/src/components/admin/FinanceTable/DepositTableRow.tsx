@@ -1,4 +1,4 @@
-import styles from './DepositTableRow.module.scss';
+import styles from './FinanceTable.module.scss';
 import Badge from '@/components/common/Badge/Badge';
 import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
 

@@ -1,4 +1,4 @@
-import styles from './WithdrawTableRow.module.scss';
+import styles from './FinanceTable.module.scss';
 import Badge from '@/components/common/Badge/Badge';
 
 export interface WithdrawTableRowProps {
