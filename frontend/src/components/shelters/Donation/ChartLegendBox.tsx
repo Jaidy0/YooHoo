@@ -15,7 +15,10 @@ interface ChartLegendBoxProps {
   itemsPerRow?: 2 | 3;
 }
 
-function ChartLegendBox({ items, itemsPerRow = 3 }: ChartLegendBoxProps) {
+export default function ChartLegendBox({
+  items,
+  itemsPerRow = 3,
+}: ChartLegendBoxProps) {
   return (
     <div className={`${styles.container} ${styles[`grid${itemsPerRow}`]}`}>
       {items.map((item, index) => (
@@ -30,5 +33,3 @@ function ChartLegendBox({ items, itemsPerRow = 3 }: ChartLegendBoxProps) {
     </div>
   );
 }
-
-export default ChartLegendBox;
