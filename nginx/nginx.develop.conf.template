@@ -9,8 +9,8 @@ http {
         "" close;
     }
 
-    # 버전 분할 설정 (split_clients)
-    split_clients "${remote_addr}${http_user_agent}" $version_key {
+    # 버전 분할 설정 (같은 IP와 브라우저를 사용하는 경우 항상 동일한 버전을 배정, ${msec}을 추가해 테스트)
+    split_clients "${remote_addr}${http_user_agent}${msec}" $version_key {
         $STABLE_WEIGHT% "stable";
         * "canary";
     }
