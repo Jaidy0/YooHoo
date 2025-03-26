@@ -3,6 +3,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import ShelterSection from '../shelter/ShelterSection/ShelterSection';
+import SelectSection, {
+  DonationType,
+  TargetType,
+} from '../donationType/SelectSection/SelectSection';
 
 import { DonationFormData } from '@/types/donation';
 
@@ -108,6 +112,49 @@ export default function DonationForm({
           onSelectShelter={handleSelectShelter}
         />
       </section>
+
+      {/* 2. 후원 방식 선택 */}
+      <section>
+        <SelectSection
+          step='donationType'
+          stepNumber={2}
+          selectedValue={formData.donationType}
+          onSelect={(value) => {
+            updateFormData({ donationType: value as DonationType });
+            completeStep('donationType');
+
+            // 정기후원 선택 시 관련 단계 초기화
+            if (value === 0) {
+              completeStep('paymentDetails', false);
+            } else {
+              // 일시후원 선택 시 타겟 타입 초기화
+              updateFormData({ targetType: 'shelter' });
+              completeStep('targetSelection', true);
+              completeStep('dogSelection', false);
+            }
+          }}
+        />
+      </section>
+
+      {/* 3. 일시 후원 시 후원 대상 선택 섹션 */}
+      {formData.donationType === 1 && (
+        <section>
+          <SelectSection
+            step='targetType'
+            stepNumber={3}
+            selectedValue={formData.targetType}
+            onSelect={(value) => {
+              updateFormData({ targetType: value as TargetType });
+              completeStep('targetSelection');
+
+              // 강아지 선택 시 강아지 선택 단계 초기화
+              if (value === 'dog') {
+                completeStep('dogSelection', false);
+              }
+            }}
+          />
+        </section>
+      )}
     </div>
   );
 }
