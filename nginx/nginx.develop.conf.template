@@ -11,14 +11,14 @@ http {
 
     # 버전 분할 설정 (split_clients)
     split_clients "${remote_addr}${http_user_agent}" $version_key {
-        $CANARY_WEIGHT% "canary";
-        * "stable";
+        $STABLE_WEIGHT% "stable";
+        * "canary";
     }
 
     # 쿠키가 존재하면 쿠키의 값을, 없으면 split_clients 결과($version_key)를 사용
     map $cookie_service_version $final_version {
-        ""       $version_key;
-        default  $cookie_service_version;
+        "" $version_key;
+        default $cookie_service_version;
     }
 
     # 업스트림 그룹 정의
@@ -76,9 +76,9 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
 
             # 버전 쿠키 설정 (최초 요청시만 : 이후 동일한 클라이언트가 재방문할 때 같은 버전을 계속 사용하도록 하게)
-            if ($cookie_service_version = "") {
-                add_header Set-Cookie "service_version=$final_version; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax";
-            }
+            #if ($cookie_service_version = "") {
+            #    add_header Set-Cookie "service_version=$final_version; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax";
+            #}
         }
 
         # 정적 파일 제공 (Next.js 빌드된 파일)
