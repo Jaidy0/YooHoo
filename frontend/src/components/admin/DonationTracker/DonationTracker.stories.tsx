@@ -3,7 +3,7 @@ import DonationTracker from './DonationTracker';
 
 // 메타데이터 정의
 const meta: Meta<typeof DonationTracker> = {
-  title: 'Components/DonationTracker',
+  title: 'Components/Admin/DonationTracker',
   component: DonationTracker,
   parameters: {
     layout: 'centered',
