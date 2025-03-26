@@ -26,11 +26,11 @@ export default function WithdrawTableRow({
     <div className={styles.all}>
       {variant === 'header' ? (
         <div className={styles.header}>
-          <div className={styles.badgeWrapper}>{type}</div>
-          <div className={styles.name}>{name}</div>
+          <div className={styles.badgeWrapper}>구분</div>
+          <div className={styles.name}>입금자명</div>
           <div className={styles.amount}>금액</div>
-          <div className={styles.message}>{message}</div>
-          <div className={styles.date}>{date}</div>
+          <div className={styles.message}>응원 메세지</div>
+          <div className={styles.date}>날짜</div>
         </div>
       ) : (
         <div className={styles.row}>
