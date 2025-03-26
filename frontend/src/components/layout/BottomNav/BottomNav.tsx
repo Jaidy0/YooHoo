@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from './BottomNav.module.scss';
-import IconBox, { IconName } from '../IconBox/IconBox';
+import IconBox, { IconName } from '@/components/common/IconBox/IconBox';
 
 export type BottomNavItem = {
   label: string;
