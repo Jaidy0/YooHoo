@@ -1,46 +1,83 @@
 import styles from './FinanceTable.module.scss';
 import Badge from '@/components/common/Badge/Badge';
+import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
 
 export interface WithdrawTableRowProps {
   variant?: 'header' | 'row';
   type: string;
-  name: string;
+  category?: string;
+  content?: string;
   amount: number;
-  message?: string;
   date: string;
+  isEvidence: boolean;
+  evidence?: string;
+  isReceipt: boolean;
+  receipt?: string;
 }
 
-// 한국식 숫자 표기법으로 변환
 const formatAmount = (value: number) => {
   return new Intl.NumberFormat('ko-KR').format(value);
 };
+
 export default function WithdrawTableRow({
   variant = 'row',
   type,
-  name,
+  category = '-',
+  content = '-',
   amount,
-  message = '-',
   date,
+  isEvidence,
+  evidence = '',
+  isReceipt,
+  receipt = '',
 }: WithdrawTableRowProps) {
   return (
     <div className={styles.all}>
       {variant === 'header' ? (
         <div className={styles.header}>
           <div className={styles.badgeWrapper}>구분</div>
-          <div className={styles.name}>입금자명</div>
+          <div className={styles.category}>카테고리</div>
           <div className={styles.amount}>금액</div>
-          <div className={styles.message}>응원 메세지</div>
+          <div className={styles.content}>내용</div>
           <div className={styles.date}>날짜</div>
+          <div className={styles.evidence}>증빙자료</div>
+          <div className={styles.receipt}>영수증</div>
         </div>
       ) : (
         <div className={styles.row}>
           <div className={styles.badgeWrapper}>
-            <Badge className={styles.badge}>{type}</Badge>
+            <Badge variant='negative' className={styles.badge}>
+              {type}
+            </Badge>
           </div>
-          <div className={styles.name}>{name}</div>
+          <div className={styles.category}>{category}</div>
           <div className={styles.amount}>{formatAmount(amount)}</div>
-          <div className={styles.message}>{message}</div>
+          <div className={styles.content}>{content}</div>
           <div className={styles.date}>{date}</div>
+          <div className={styles.evidence}>
+            {isEvidence ? (
+              <RoundButton
+                variant='primary'
+                onClick={() => console.log(evidence)}
+              >
+                자료보기
+              </RoundButton>
+            ) : (
+              <RoundButton variant='secondary'>추가하기</RoundButton>
+            )}
+          </div>
+          <div className={styles.receipt}>
+            {isReceipt ? (
+              <RoundButton
+                variant='primary'
+                onClick={() => console.log(receipt)}
+              >
+                자료보기
+              </RoundButton>
+            ) : (
+              <RoundButton variant='secondary'>추가하기</RoundButton>
+            )}
+          </div>{' '}
         </div>
       )}
     </div>

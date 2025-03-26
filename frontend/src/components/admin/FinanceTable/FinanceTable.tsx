@@ -65,9 +65,6 @@ export default function FinanceTable({
             className={styles.smallTabMenu}
           />
         </div>
-        <div className={styles.tableTitle}>
-          {activeTab === 'deposit' ? '입금 내역' : '출금 내역'}
-        </div>
       </div>
 
       <div className={styles.tableWrapper}>
@@ -77,10 +74,10 @@ export default function FinanceTable({
             <DepositTableRow
               variant='header'
               type=''
+              name=''
               amount={0}
               date=''
-              isEvidence={false}
-              isReceipt={false}
+              message=''
             />
 
             {/* 입금 테이블 데이터 행 */}
@@ -101,9 +98,12 @@ export default function FinanceTable({
             <WithdrawTableRow
               variant='header'
               type=''
-              name=''
+              category=''
+              content=''
               amount={0}
               date=''
+              isEvidence={false}
+              isReceipt={false}
             />
 
             {/* 출금 테이블 데이터 행 */}
