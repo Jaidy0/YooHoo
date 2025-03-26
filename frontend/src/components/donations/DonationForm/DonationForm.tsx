@@ -7,6 +7,7 @@ import SelectSection, {
   DonationType,
   TargetType,
 } from '../donationType/SelectSection/SelectSection';
+import styles from './DonationForm.module.scss';
 
 import { DonationFormData } from '@/types/donation';
 
@@ -100,7 +101,7 @@ export default function DonationForm({
   };
 
   return (
-    <div onSubmit={handleSubmit}>
+    <div className={styles.donationForm} onSubmit={handleSubmit}>
       <div>
         <ProgressBar progress={calculateProgress()} />
       </div>
