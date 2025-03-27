@@ -99,6 +99,21 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        # /images/ 경로 fallback 설정
+        location /images/ {
+            proxy_intercept_errors on;
+            proxy_pass http://frontend_stable;
+            error_page 404 = @canary_images;
+        }
+
+        location @canary_images {
+            proxy_pass http://frontend_canary;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
         # API 요청은 백엔드 그룹으로 전달
         location /api/ {
             proxy_pass http://$backend_group;
