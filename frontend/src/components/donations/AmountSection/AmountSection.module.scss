@@ -43,17 +43,28 @@
   }
 
   .amountButtons {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
     padding: 10px 30px;
+    flex-wrap: nowrap;
+
+    // 화면 크기가 작아질 때 간격 줄이기
+    @media (max-width: 480px) {
+      gap: 0.5rem; // 작은 화면에서 간격 좁히기
+    }
+
+    @media (max-width: 380px) {
+      gap: 0.25rem; // 더 작은 화면에서 간격 최소화
+    }
   }
 
   .amountButton {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0.75rem;
+    padding: 0.25rem;
+    min-width: 90px;
     border: none;
     border-radius: 10px;
     background-color: $yh-ivory;
@@ -63,10 +74,23 @@
     color: $text-333;
     cursor: pointer;
     transition: all 0.3s ease;
+    @media (max-width: 480px) {
+      min-width: 70px; // 작은 화면에서 버튼 너비 감소
+      font-size: $font-size-xs; // 폰트 크기도 작게
+    }
+
+    @media (max-width: 380px) {
+      min-width: 60px; // 매우 작은 화면
+      padding: 0.15rem;
+    }
 
     span {
       font-size: $font-size-lg;
       transform: translateY(-1px);
+
+      @media (max-width: 480px) {
+        font-size: $font-size-md; // 작은 화면에서 기호 크기 조정
+      }
     }
 
     &:hover {
