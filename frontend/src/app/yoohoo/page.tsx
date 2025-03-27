@@ -3,6 +3,51 @@
 import Link from 'next/link';
 import styles from './page.module.scss';
 import Image from 'next/image';
+import ShelterCard from '@/components/shelters/ShelterCard/ShelterCard';
+import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
+
+const MOCK_SHELTERS = [
+  {
+    id: 1,
+    imageUrl: '/images/dummy.jpeg',
+    title: '행복한 멍멍이네',
+    description: '서울시 마포구에 위치한 유기견 보호소입니다.',
+    dogCount: 25,
+    likeCount: 128,
+  },
+  {
+    id: 2,
+    imageUrl: '/images/dummy.jpeg',
+    title: '사랑이 가득한 집',
+    description: '10년째 유기견들과 함께하고 있는 보호소입니다.',
+    dogCount: 18,
+    likeCount: 95,
+  },
+  {
+    id: 3,
+    imageUrl: '/images/dummy.jpeg',
+    title: '희망의 발자국',
+    description: '경기도 파주의 유기견 보호 센터입니다.',
+    dogCount: 32,
+    likeCount: 156,
+  },
+  {
+    id: 4,
+    imageUrl: '/images/dummy.jpeg',
+    title: '따뜻한 보금자리',
+    description: '유기견 재활과 입양을 전문으로 하는 보호소입니다.',
+    dogCount: 15,
+    likeCount: 89,
+  },
+  {
+    id: 5,
+    imageUrl: '/images/dummy.jpeg',
+    title: '천사의 집',
+    description: '부산 지역 최대 규모의 유기견 보호소입니다.',
+    dogCount: 40,
+    likeCount: 210,
+  },
+];
 
 export default function MainPage() {
   return (
@@ -30,6 +75,7 @@ export default function MainPage() {
               <span className={styles.arrow}>→</span>
             </Link>
           </div>
+
           <div className={styles.piggyImage}>
             <Image
               src='/images/piggy.png'
@@ -38,6 +84,46 @@ export default function MainPage() {
               height={78}
             />
           </div>
+        </div>
+
+        <div className={styles.dogImage}>
+          <Image
+            src='/images/mainbandi.png'
+            alt='강아지 이미지'
+            width={0}
+            height={0}
+            sizes='100vw'
+            style={{
+              width: '300px',
+              height: 'auto',
+            }}
+          />
+        </div>
+      </section>
+
+      <section className={styles.supportSection}>
+        <div className={styles.textContent}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.subtitle}>YooHoo와 함께하는</span>
+            <div className={styles.mainTitle}>유기견 후원단체</div>
+          </h2>
+          <MoveButton variant='secondary' className={styles.moreButton}>
+            더보기
+          </MoveButton>
+        </div>
+
+        <div className={styles.shelterCards}>
+          {MOCK_SHELTERS.map((shelter) => (
+            <ShelterCard
+              key={shelter.id}
+              imageUrl={shelter.imageUrl}
+              title={shelter.title}
+              description={shelter.description}
+              dogCount={shelter.dogCount}
+              likeCount={shelter.likeCount}
+              onClick={() => console.log(`Clicked shelter: ${shelter.title}`)}
+            />
+          ))}
         </div>
       </section>
     </div>

@@ -45,7 +45,7 @@ export type PageKey = keyof typeof PAGE_TITLES;
 
 export default function MainLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const isMainPage = pathname === '/main';
+  const isMainPage = pathname === '/yoohoo';
 
   // 경로에서 페이지 키 추출
   const pageKey = pathname.split('/').pop() as keyof typeof PAGE_TITLES;
@@ -55,7 +55,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     <div className={styles.container}>
       <Header
         title={pageTitle}
-        type={isMainPage ? 'main' : 'sub'}
+        type={isMainPage ? 'yoohoo' : 'sub'}
         onBackClick={!isMainPage ? () => window.history.back() : undefined}
       />
       <main className={styles.main}>{children}</main>
