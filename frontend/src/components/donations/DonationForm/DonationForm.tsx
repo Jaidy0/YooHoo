@@ -16,6 +16,7 @@ import AmountSection from '../AmountSection/AmountSection';
 import Button from '@/components/common/buttons/Button/Button';
 
 import { DonationFormData } from '@/types/donation';
+import { p } from 'node_modules/msw/lib/core/GraphQLHandler-Pox7fIFM';
 
 type DonationFormProps = {
   initialShelterId?: number;
@@ -221,15 +222,23 @@ export default function DonationForm({
             후원합니다.
           </p>
         ) : formData.targetType === 'dog' ? (
-          <p>
-            {formData.dogName}에게 {formData.amount.toLocaleString()}원을
-            후원합니다.
-          </p>
-        ) : (
+          !formData.shelterId ? (
+            <p>후원할 단체를 선택해주세요.</p>
+          ) : !formData.dogName ? (
+            <p>후원할 강아지를 선택해주세요.</p>
+          ) : (
+            <p>
+              {formData.dogName}에게 {formData.amount.toLocaleString()}원을
+              후원합니다.
+            </p>
+          )
+        ) : formData.shelterName ? (
           <p>
             {formData.shelterName}에 {formData.amount.toLocaleString()}원을
             후원합니다.
           </p>
+        ) : (
+          <p>후원할 단체를 선택해주세요.</p>
         )}
       </div>
       <div className={styles.buttonContainer}>
