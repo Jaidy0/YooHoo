@@ -1,42 +1,51 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.3'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.3' // Spring Boot 버전
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.yoohoo'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17) // Java 17 사용
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-web-services'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	// Prometheus
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'io.micrometer:micrometer-registry-prometheus'
-}
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // Spring Data JPA
+    implementation 'org.springframework.boot:spring-boot-starter-web' // Spring Web
+    implementation 'org.springframework.boot:spring-boot-starter-security' // Spring Security
+    implementation 'org.springframework.security:spring-security-oauth2-client:6.4.3' // OAuth2 Client
+    implementation 'org.springframework.security:spring-security-oauth2-core:6.4.3' // OAuth2 Core
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
+    compileOnly 'org.projectlombok:lombok' // Lombok
+    runtimeOnly 'com.mysql:mysql-connector-j' // MySQL Connector
+    annotationProcessor 'org.projectlombok:lombok' // Lombok Annotation Processor
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' // Spring Boot Test
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher' // JUnit Platform Launcher
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' // DevTools
 
-tasks.named('test') {
-	useJUnitPlatform()
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+
+    // Redis 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    // 세션을 Redis로 관리하기 위한 의존성 (선택사항)
+    implementation 'org.springframework.session:spring-session-data-redis'
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2'
+    implementation 'software.amazon.awssdk:s3:2.25.26'
+
+}
+// Dependency versions
+ext {
+    springSecurityVersion = '6.0.0' // Spring Security 버전
+    springDataJpaVersion = '3.0.0' // Spring Data JPA 버전
+    mysqlConnectorVersion = '8.0.30' // MySQL Connector 버전
 }
