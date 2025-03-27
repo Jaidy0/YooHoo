@@ -14,22 +14,22 @@ const navItems: BottomNavItem[] = [
   {
     label: '홈',
     iconName: 'home',
-    href: '/main',
+    href: '/yoohoo',
   },
   {
     label: '단체',
     iconName: 'dog',
-    href: '/main/dogs',
+    href: '/yoohoo/shelters',
   },
   {
     label: '후원',
     iconName: 'bone',
-    href: '/main/donate',
+    href: '/yoohoo/donate',
   },
   {
     label: '마이페이지',
     iconName: 'petfoot',
-    href: '/main/profile',
+    href: '/yoohoo/profile',
   },
 ];
 
