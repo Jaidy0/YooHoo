@@ -1962,6 +1962,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lottiefiles/dotlottie-react@npm:^0.13.2":
+  version: 0.13.2
+  resolution: "@lottiefiles/dotlottie-react@npm:0.13.2"
+  dependencies:
+    "@lottiefiles/dotlottie-web": "npm:0.41.0"
+  peerDependencies:
+    react: ^17 || ^18 || ^19
+  checksum: 10c0/31ecf3485d50e7358eaf50023cefbfbdebdb14c7d06ed8a16a839bdae38c7db40f75a6a4fb7281295e7097a0e633dcb7ac687560be1fae2d70722ced2eb0e97b
+  languageName: node
+  linkType: hard
+
+"@lottiefiles/dotlottie-web@npm:0.41.0":
+  version: 0.41.0
+  resolution: "@lottiefiles/dotlottie-web@npm:0.41.0"
+  checksum: 10c0/8fc17d5c38e5e4fe6efa8dd796c2e53fa2fb1927a4e7e65d295125bd6ce3a6b8b54569e107d1748260059d369e7d4d8f6da3cfbb8a2dda70d918bbbb34def602
+  languageName: node
+  linkType: hard
+
 "@mdx-js/react@npm:^3.0.0":
   version: 3.1.0
   resolution: "@mdx-js/react@npm:3.1.0"
@@ -6783,6 +6801,7 @@ __metadata:
     "@chromatic-com/storybook": "npm:3.2.5"
     "@eslint/eslintrc": "npm:^3"
     "@eslint/js": "npm:^9.22.0"
+    "@lottiefiles/dotlottie-react": "npm:^0.13.2"
     "@next/eslint-plugin-next": "npm:^15.2.3"
     "@storybook/addon-essentials": "npm:8.6.4"
     "@storybook/addon-onboarding": "npm:8.6.4"
