@@ -34,7 +34,12 @@ pipeline {
         stage('Checkout') {
             agent any
             steps {
-                git branch: "develop", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                sh 'rm -f .git/index.lock || true'
+                retry(3) {
+                    git branch: "develop",
+                        credentialsId: "${GIT_CREDENTIALS_ID}",
+                        url: "${GIT_REPOSITORY_URL}"
+                }
             }
         }
 
@@ -220,7 +225,9 @@ pipeline {
                                                 continue
                                             }
 
-                                            def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m])) * 100"
+                                            def timeRange = "5m"
+
+                                            def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[${timeRange}])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[${timeRange}])) * 100"
                                             def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
                                             def errorRateResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedQuery}\"", returnStdout: true).trim()
                                             echo "Error Rate Response: ${errorRateResponse}"
@@ -237,7 +244,7 @@ pipeline {
                                                 hasErrorRateMetric = true
                                             }
 
-                                            def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[5m])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[5m]))"
+                                            def responseTimeQuery = "sum(rate(http_server_requests_seconds_sum{job=\"backend-canary\"}[${timeRange}])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[${timeRange}]))"
                                             def encodedRespTimeQuery = URLEncoder.encode(responseTimeQuery, "UTF-8")
                                             def responseTimeResponse = sh(script: "curl -s \"http://${EC2_PUBLIC_HOST}:${PROMETHEUS_PORT}/api/v1/query?query=${encodedRespTimeQuery}\"", returnStdout: true).trim()
                                             echo "Response Time Response: ${responseTimeResponse}"
@@ -300,13 +307,19 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         stage('Promote to Stable') {
             parallel {
                 stage('Backend Promotion') {
                     agent { label 'backend-dev' }
                     steps {
                         script {
+                            sh """
+                                if [ -f .git/index.lock ]; then
+                                    echo "Removing existing .git/index.lock file"
+                                    rm -f .git/index.lock
+                                fi
+                            """
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 sh """
                                     docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
@@ -331,6 +344,12 @@ pipeline {
                     agent { label 'frontend-dev' }
                     steps {
                         script {
+                            sh """
+                                if [ -f .git/index.lock ]; then
+                                    echo "Removing existing .git/index.lock file"
+                                    rm -f .git/index.lock
+                                fi
+                            """
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 sh """
                                     docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
@@ -352,7 +371,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
         stage('Update Nginx') {
         agent { label 'public-dev' }
             steps {
