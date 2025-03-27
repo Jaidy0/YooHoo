@@ -4,13 +4,6 @@ services:
     image: ${BACKEND_IMAGE}:latest
     container_name: stable_backend
     env_file: .env
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      REDIS_HOST: ${REDIS_HOST}
     ports:
       - "${STABLE_BACKEND_PORT}:8080"
 
@@ -18,13 +11,6 @@ services:
     image: ${BACKEND_IMAGE}:${CANARY_TAG}
     container_name: canary_backend
     env_file: .env
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      REDIS_HOST: ${REDIS_HOST}
     ports:
       - "${CANARY_BACKEND_PORT}:8080"
 
