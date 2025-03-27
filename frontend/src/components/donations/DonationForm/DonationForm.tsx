@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+
+import styles from './DonationForm.module.scss';
 import ProgressBar from '../ProgressBar/ProgressBar';
 import ShelterSection from '../shelter/ShelterSection/ShelterSection';
 import SelectSection, {
@@ -11,7 +13,7 @@ import DogSection from '../donationType/DogSection/DogSection';
 import PaymentDateSection from '../donationType/PaymentDateSection/PaymentDateSection';
 import AccountSection from '../account/AccountSection/AccountSection';
 import AmountSection from '../AmountSection/AmountSection';
-import styles from './DonationForm.module.scss';
+import Button from '@/components/common/buttons/Button/Button';
 
 import { DonationFormData } from '@/types/donation';
 
@@ -210,6 +212,35 @@ export default function DonationForm({
           completeStep={completeStep}
         />
       </section>
+
+      {/* 후원 요약 및 완료 버튼 */}
+      <div className={styles.donationSummary}>
+        {formData.donationType === 0 ? (
+          <p>
+            매월 {formData.paymentDay}일 {formData.amount.toLocaleString()}원을
+            후원합니다.
+          </p>
+        ) : formData.targetType === 'dog' ? (
+          <p>
+            {formData.dogName}에게 {formData.amount.toLocaleString()}원을
+            후원합니다.
+          </p>
+        ) : (
+          <p>
+            {formData.shelterName}에 {formData.amount.toLocaleString()}원을
+            후원합니다.
+          </p>
+        )}
+      </div>
+      <div className={styles.buttonContainer}>
+        <Button
+          className={styles.submitButton}
+          variant={calculateProgress() === 100 ? 'primary' : 'disabled'}
+          disabled={calculateProgress() !== 100}
+        >
+          후원하기
+        </Button>
+      </div>
     </div>
   );
 }
