@@ -1,25 +1,30 @@
 // 메인 헤더 스타일
+
 .mainHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 16px;
-  position: sticky;
+  width: 100%;
+  position: absolute;
+  left: 0;
   top: 0;
   z-index: 100;
-  background-color: var(--color-background);
+  // background-color: var(--color-background);
 }
 
 // 서브 헤더 스타일
 .subHeader {
   display: grid;
   grid-template-columns: 48px 1fr 48px;
+  width: 100%;
   align-items: center;
   padding: 10px 16px;
-  position: sticky;
+  position: absolute;
   top: 0;
   z-index: 100;
   background-color: var(--color-background);
+  border-bottom: 1px solid #eee;
 }
 
 // 공통 스타일

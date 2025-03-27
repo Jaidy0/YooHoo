@@ -22,8 +22,8 @@
 
 .main {
   flex: 1;
-  overflow-y: auto; // 스크롤 허용
-  padding: 0 $spacing-md;
+  overflow-y: auto;
+  // padding: $spacing-md;
   position: relative;
 
   // 스크롤바 완전히 숨기기
