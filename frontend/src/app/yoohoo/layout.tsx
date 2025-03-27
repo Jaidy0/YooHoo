@@ -51,6 +51,10 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const pageKey = pathname.split('/').pop() as keyof typeof PAGE_TITLES;
   const pageTitle = pageKey ? PAGE_TITLES[pageKey] : PAGE_TITLES.main;
 
+  // 제외할 페이지
+  const hideLayoutForPaths = ['/yoohoo/donate/complete'];
+  const shouldHideLayout = hideLayoutForPaths.includes(pathname);
+
   return (
     <div className={styles.container}>
       <Header
@@ -59,7 +63,8 @@ export default function MainLayout({ children }: { children: ReactNode }) {
         onBackClick={!isMainPage ? () => window.history.back() : undefined}
       />
       <main className={styles.main}>{children}</main>
-      <BottomNav items={navItems} />
+
+      {!shouldHideLayout && <BottomNav items={navItems} />}
     </div>
   );
 }
