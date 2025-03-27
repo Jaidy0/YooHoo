@@ -1,0 +1,24 @@
+.accountSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .accountInfoContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding: 10px;
+  }
+
+  .accountNameContainer,
+  .supportMessageContainer {
+    margin-bottom: 1rem;
+    padding: 10px;
+
+    h3 {
+      font-size: $font-size-md;
+      font-weight: $font-weight-bold;
+    }
+  }
+}

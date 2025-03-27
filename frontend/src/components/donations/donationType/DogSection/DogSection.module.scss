@@ -1,0 +1,48 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.dogSection {
+  margin-bottom: 30px;
+}
+
+.subTitle {
+  margin: 10px;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-md;
+}
+
+.searchContainer {
+  margin: 20px 0;
+}
+
+.dogList {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 10px;
+  gap: 18px;
+  // 스크롤바 스타일링
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #ccc;
+  }
+}
+
+.noResults {
+  width: 100%;
+  padding: 30px 0;
+  text-align: center;
+  color: #ddd;
+}

@@ -1,0 +1,95 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.paymentDateSection {
+  margin-bottom: 24px;
+}
+
+.chevronIcon {
+  display: flex;
+  align-items: center;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+
+  &.rotated {
+    transform: rotate(270deg);
+  }
+}
+
+.dateSelector {
+  margin: 0 10px;
+  .label {
+    font-size: $font-size-sm;
+    color: #000;
+    margin-bottom: 8px;
+  }
+
+  .dropdownWrapper {
+    position: relative;
+    margin-bottom: 16px;
+  }
+
+  .dropdown {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    color: #000;
+    cursor: pointer;
+
+    &:hover {
+      border-color: #ddd;
+    }
+  }
+
+  .dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    z-index: 9;
+    margin-top: 4px;
+    padding: 0;
+    list-style: none;
+
+    li {
+      padding: 10px 16px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #eee;
+      }
+
+      &.selected {
+        background-color: #eee;
+        font-weight: $font-weight-bold;
+      }
+    }
+  }
+
+  .paymentInfo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .label {
+      width: 80px;
+      margin: 0 4px;
+      margin-bottom: 0;
+      color: #000;
+    }
+
+    .date {
+      font-weight: $font-weight-medium;
+      font-size: $font-size-sm;
+      color: $yh-orange;
+    }
+  }
+}
