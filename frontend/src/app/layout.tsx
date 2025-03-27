@@ -31,11 +31,11 @@ export const metadata: Metadata = {
   // PWA 매니페스트
   manifest: '/manifest.json',
   // 뷰포트 설정
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 1,
-  },
+  // viewport: {
+  //   width: 'device-width',
+  //   initialScale: 1,
+  //   maximumScale: 1,
+  // },
   // 모바일 웹앱 설정
   appleWebApp: {
     capable: true,

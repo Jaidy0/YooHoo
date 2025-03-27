@@ -1,7 +1,9 @@
+'use client';
+
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { useAuthStore } from '@/store/authStore';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 // useSearchParams를 사용하는 컴포넌트는 별도로 분리
