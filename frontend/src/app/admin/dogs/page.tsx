@@ -19,6 +19,11 @@ const dogStatusTabs = [
 ];
 
 // 더미 데이터 - 실제로는 API에서 가져옵니다
+// DogStatus enum 값을 배열로 변환하여 랜덤 선택을 쉽게 만듭니다
+const dogStatusValues = Object.values(DogStatus).filter(
+  (value) => typeof value === 'number'
+);
+
 const dummyDogs: DogSummary[] = Array(20)
   .fill(null)
   .map((_, index) => ({
@@ -26,7 +31,10 @@ const dummyDogs: DogSummary[] = Array(20)
     name: '봄이',
     age: 2,
     gender: Math.random() > 0.5 ? Gender.MALE : Gender.FEMALE,
-    status: DogStatus.PROTECTED,
+    // 랜덤하게 DogStatus 값을 선택합니다
+    status: dogStatusValues[
+      Math.floor(Math.random() * dogStatusValues.length)
+    ] as DogStatus,
     mainImage: {
       imageId: index + 1,
       dogId: index + 1,
