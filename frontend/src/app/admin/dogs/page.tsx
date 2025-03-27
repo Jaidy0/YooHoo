@@ -109,7 +109,7 @@ export default function DogsPage() {
   };
 
   const handleAddDog = () => {
-    console.log('신규 강아지 등록!!');
+    router.push(`/admin/dogs/register`);
   };
 
   return (
