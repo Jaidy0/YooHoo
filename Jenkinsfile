@@ -225,8 +225,7 @@ pipeline {
                                                 continue
                                             }
 
-                                            // MONITORING_DURATION을 초 단위로 사용하여 동적 시간 범위 설정
-                                            def timeRange = "${env.MONITORING_DURATION}s"
+                                            def timeRange = "5m"
 
                                             def errorRateQuery = "sum(rate(http_server_requests_seconds_count{outcome=\"SERVER_ERROR\", job=\"backend-canary\"}[${timeRange}])) / sum(rate(http_server_requests_seconds_count{job=\"backend-canary\"}[${timeRange}])) * 100"
                                             def encodedQuery = URLEncoder.encode(errorRateQuery, "UTF-8")
