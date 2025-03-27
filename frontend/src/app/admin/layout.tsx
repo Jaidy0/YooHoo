@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import TabMenu from '@/components/common/TabMenu/TabMenu';
+import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 import styles from './layout.module.scss';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import IconBox from '@/components/common/IconBox/IconBox';
@@ -34,7 +34,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   // 탭 클릭 시 상태 업데이트 및 페이지 이동
-  const handleTabClick = (item: any, index: number) => {
+  const handleTabClick = (item: TabMenuItem, index: number) => {
     setActiveTabIndex(index);
     router.push(item.link);
   };
