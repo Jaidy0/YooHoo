@@ -33,7 +33,7 @@ const navItems: BottomNavItem[] = [
   },
 ];
 
-export const PAGE_TITLES = {
+const PAGE_TITLES = {
   main: '유후',
   dogs: '보호소',
   donate: '후원하기',
