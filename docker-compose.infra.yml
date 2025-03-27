@@ -34,7 +34,7 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     ports:
-      - "${PROMETHEUS_PORT}:9090"  # Jenkins와 충돌 방지
+      - "${PROMETHEUS_PORT}:9090"
     restart: always
 
   grafana:
@@ -43,7 +43,7 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
     ports:
-      - "${GRAFANA_PORT}:3000"  # Frontend와 충돌 방지
+      - "${GRAFANA_PORT}:3000"
     depends_on:
       - prometheus
     restart: always
