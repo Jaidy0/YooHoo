@@ -1,0 +1,76 @@
+.amountSection {
+  display: flex;
+  flex-direction: column;
+
+  .amountInputContainer {
+    padding: 0 30px;
+
+    h3 {
+      font-size: $font-size-md;
+      font-weight: $font-weight-bold;
+      color: $text-333;
+      margin-bottom: 0.5rem;
+    }
+
+    .inputWrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      font-weight: $font-weight-bold;
+      padding: 0.75rem;
+
+      &:focus-within {
+        border-bottom: 2px solid $text-333; // 또는 원하는 색상
+      }
+    }
+
+    .amountInput {
+      outline: none;
+      width: 100%;
+      border: none;
+      text-align: right;
+      font-size: $font-size-lg;
+      font-weight: $font-weight-bold;
+      color: $text-333;
+    }
+
+    .wonText {
+      color: $text-333;
+      font-size: $font-size-lg;
+      margin-left: 0.5rem;
+    }
+  }
+
+  .amountButtons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    padding: 10px 30px;
+  }
+
+  .amountButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 10px;
+    background-color: $yh-ivory;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    font-family: $font-family-base;
+    color: $text-333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    span {
+      font-size: $font-size-lg;
+      transform: translateY(-1px);
+    }
+
+    &:hover {
+      background-color: $yh-yellow;
+    }
+  }
+}

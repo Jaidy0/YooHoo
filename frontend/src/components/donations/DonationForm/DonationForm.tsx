@@ -10,6 +10,7 @@ import SelectSection, {
 import DogSection from '../donationType/DogSection/DogSection';
 import PaymentDateSection from '../donationType/PaymentDateSection/PaymentDateSection';
 import AccountSection from '../account/AccountSection/AccountSection';
+import AmountSection from '../AmountSection/AmountSection';
 import styles from './DonationForm.module.scss';
 
 import { DonationFormData } from '@/types/donation';
@@ -197,6 +198,16 @@ export default function DonationForm({
           updateFormData={updateFormData}
           completeStep={completeStep}
           donationType={formData.donationType}
+        />
+      </section>
+
+      {/* 5. 후원 금액 입력 */}
+      <section>
+        <AmountSection
+          stepNumber={5}
+          currentAmount={formData.amount}
+          updateFormData={updateFormData}
+          completeStep={completeStep}
         />
       </section>
     </div>
