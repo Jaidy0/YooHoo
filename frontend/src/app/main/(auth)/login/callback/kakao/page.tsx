@@ -1,4 +1,4 @@
-import OAuthRedirectHandler from '@/components/auth/OAuthRedirectHandler';
+import OAuthRedirectHandler from '@/components/auth/OAuthRedirectHandler/OAuthRedirectHandler';
 import React from 'react';
 
 export default function KakaoLoginCallback() {

@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import LoadingSpinner from '../common/LoadingSpinner/LoadingSpinner';
+import LoadingSpinner from '../../common/LoadingSpinner/LoadingSpinner';
 
 export default function OAuthRedirectHandler() {
   const router = useRouter();
