@@ -22,6 +22,9 @@ import iconZoom from '@/assets/imgs/icons/iconZoom.svg';
 import iconSearch from '@/assets/imgs/icons/iconSearch.svg';
 import iconHandshake from '@/assets/imgs/icons/iconHandshake.svg';
 import iconCutiDog from '@/assets/imgs/icons/iconCutiDog.svg';
+import iconKakao from '@/assets/imgs/icons/iconKakao.svg';
+import AccountIcon from '@/assets/imgs/icons/iconAccount.svg';
+
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -44,6 +47,8 @@ const ICON_COMPONENTS = {
   search: iconSearch,
   handShake: iconHandshake,
   cutiDog: iconCutiDog,
+  kakao: iconKakao,
+  account: AccountIcon,
 } as const;
 
 // 아이콘 이름 타입

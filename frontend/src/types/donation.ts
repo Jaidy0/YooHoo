@@ -18,7 +18,7 @@ export interface Donation {
 export interface DonationFormData {
   shelterId: number; // 단체 ID (shelterId)
   shelterName: string; // 단체 이름 (화면 표시용)
-  donationType: number; // 0: 정기 후원, 1: 일시 후원
+  donationType: 0 | 1; // 0: 정기 후원, 1: 일시 후원
   paymentDay: number; // 정기 결제일 (1-28)
   targetType: 'shelter' | 'dog'; // 단체 또는 강아지 지정 후원 (UI 구분용)
   dogId: number; // 강아지 ID

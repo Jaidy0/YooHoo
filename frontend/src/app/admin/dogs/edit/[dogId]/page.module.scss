@@ -1,0 +1,187 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.dogsEditPage {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+// 헤더 액션 영역 스타일
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.pageTitle {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  margin: 0;
+}
+
+// 공통 관리자 페이지 카드 스타일
+.adminCard {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// 에러 메시지
+.errorMessage {
+  background-color: rgba($yh-orange, 0.1);
+  border-left: 3px solid $yh-orange;
+  color: $yh-orange;
+  padding: $spacing-md;
+  border-radius: $border-radius-sm;
+  margin-bottom: $spacing-md;
+}
+
+// 섹션 제목
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  color: $text-333;
+  margin: 0 0 $spacing-md 0;
+}
+
+// 폼 콘텐츠 컨테이너
+.formContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-xl;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+  }
+}
+
+// 이미지 섹션
+.imageSection {
+  flex: 0 0 300px;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+
+  @media (max-width: $breakpoint-md) {
+    flex: 1 0 auto;
+  }
+}
+
+// 현재 이미지 섹션
+.currentImages {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: $spacing-sm;
+}
+
+.currentImage {
+  position: relative;
+  width: 100%;
+  height: 80px;
+  border-radius: $border-radius-sm;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+
+  &.mainImage {
+    grid-column: span 2;
+    grid-row: span 2;
+    height: 170px;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.mainTag {
+  position: absolute;
+  top: $spacing-xs;
+  right: $spacing-xs;
+  background-color: $yh-yellow;
+  color: $text-333;
+  padding: 2px $spacing-xs;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-bold;
+}
+
+// 이미지 업로드 섹션
+.imageUploadSection {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// 폼 필드 컨테이너
+.formFields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+// 폼 그룹
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.groupLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $text-333;
+}
+
+// 버튼 그룹 (라디오 버튼 대체)
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+// 옵션 버튼 추가 스타일
+.optionButton {
+  min-width: auto;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+}
+
+// 폼 액션 버튼
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+}
+
+// 로딩 상태
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  color: $text-555;
+  font-size: $font-size-lg;
+}

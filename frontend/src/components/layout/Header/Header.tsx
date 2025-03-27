@@ -1,7 +1,7 @@
 import { MainHeader } from './MainHeader';
 import { SubHeader } from './SubHeader';
 
-export type HeaderType = 'main' | 'sub';
+export type HeaderType = 'yoohoo' | 'sub';
 
 interface HeaderProps {
   type: HeaderType;
@@ -11,7 +11,7 @@ interface HeaderProps {
 }
 
 export function Header(props: HeaderProps) {
-  if (props.type === 'main') {
+  if (props.type === 'yoohoo') {
     return <MainHeader onNotificationClick={props.onNotificationClick} />;
   }
   return (

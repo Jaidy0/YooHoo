@@ -1,0 +1,15 @@
+.selectSection {
+  margin: 50px 0;
+}
+
+.cardRow {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  margin: 0 14px;
+
+  .selectCard {
+    flex: 1;
+    min-width: 0;
+  }
+}

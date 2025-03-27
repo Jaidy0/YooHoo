@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './Header.module.scss';
 import IconBox from '@/components/common/IconBox/IconBox';
 import Image from 'next/image';
@@ -9,8 +9,38 @@ interface MainHeaderProps {
 }
 
 export function MainHeader({ onNotificationClick }: MainHeaderProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleScroll() {
+      if (!headerRef.current) return;
+
+      // 헤더의 높이를 가져옵니다
+      const headerHeight = headerRef.current.offsetHeight;
+
+      // 스크롤 위치가 헤더 높이보다 크거나 같으면 배경색을 변경합니다
+      if (window.scrollY >= headerHeight) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    }
+
+    // 스크롤 이벤트 리스너 등록
+    window.addEventListener('scroll', handleScroll);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <header className={styles.mainHeader}>
+    <header
+      ref={headerRef}
+      className={`${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`}
+    >
       <div className={styles.left}>
         <Link href='/main' className={styles.logoLink}>
           <Image

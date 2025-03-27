@@ -14,7 +14,7 @@ export default function Home() {
   // const isAdmin = false; // 추후 로그인 상태에 따라 변경
 
   useEffect(() => {
-    router.push('/main');
+    router.push('/yoohoo');
   }, [router]);
 
   return null; // 또는 로딩 상태 표시

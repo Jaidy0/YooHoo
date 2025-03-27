@@ -68,7 +68,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             defaultActiveIndex={activeTabIndex}
             onMenuItemClick={handleTabClick}
           />
-          <MoveButton leftIcon={<IconBox name='home' size={24} />}>
+          <MoveButton
+            leftIcon={<IconBox name='home' size={24} />}
+            onClick={() => router.push('/main')}
+          >
             메인 화면으로 가기
           </MoveButton>
         </div>
