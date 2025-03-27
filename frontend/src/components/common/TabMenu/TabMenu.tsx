@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import styles from './TabMenu.module.scss';
 
 // 인터페이스 정의
@@ -57,9 +58,6 @@ export interface TabMenuProps {
   className?: string;
 }
 
-/**
- * 유기견 후원 플랫폼의 탭 메뉴 컴포넌트
- */
 export default function TabMenu({
   menuItems = [],
   defaultActiveIndex = 0,
@@ -70,7 +68,23 @@ export default function TabMenu({
   ...props
 }: TabMenuProps) {
   const [activeIndex, setActiveIndex] = useState<number>(defaultActiveIndex);
+  const pathname = usePathname();
 
+  // 경로가 변경될 때마다 활성 탭 인덱스 업데이트
+  useEffect(() => {
+    // 현재 경로와 가장 일치하는 메뉴 아이템 찾기
+    const index = menuItems.findIndex(
+      (item) =>
+        pathname === item.link ||
+        (item.link !== '/admin' && pathname.startsWith(item.link))
+    );
+
+    if (index !== -1) {
+      setActiveIndex(index);
+    }
+  }, [pathname, menuItems]);
+
+  // 나머지 코드는 그대로 유지
   const handleItemClick = (item: TabMenuItem, index: number) => {
     setActiveIndex(index);
     onMenuItemClick?.(item, index);
