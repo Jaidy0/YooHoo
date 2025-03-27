@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 import styles from './DonationForm.module.scss';
 import ProgressBar from '../ProgressBar/ProgressBar';
@@ -27,7 +27,7 @@ export default function DonationForm({
   initialShelterId,
   initialDogId,
 }: DonationFormProps) {
-  //   const router = useRouter();
+  const router = useRouter();
   //   const { mutate: submitDonation} = useDonationSubmit();
 
   // 폼 데이터 상태
@@ -93,7 +93,7 @@ export default function DonationForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // submitDonation(FormData, {});
-    // router.push('/donate/complete');
+    router.push('/yoohoo/donate/complete');
   };
 
   // 폼 데이터 업데이트 함수
@@ -108,7 +108,7 @@ export default function DonationForm({
   };
 
   return (
-    <div className={styles.donationForm} onSubmit={handleSubmit}>
+    <div className={styles.donationForm}>
       <div className={styles.progressBarContainer}>
         <ProgressBar progress={calculateProgress()} />
       </div>
@@ -243,6 +243,7 @@ export default function DonationForm({
       </div>
       <div className={styles.buttonContainer}>
         <Button
+          onClick={handleSubmit}
           className={styles.submitButton}
           variant={calculateProgress() === 100 ? 'primary' : 'disabled'}
           disabled={calculateProgress() !== 100}
