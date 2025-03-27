@@ -309,10 +309,7 @@ pipeline {
         stage('Promote to Stable') {
             parallel {
                 stage('Backend Promotion') {
-                    agent {
-                        label 'backend-dev'
-                        customWorkspace "YooHoo-Backend-${env.BUILD_NUMBER}"
-                    }
+                    agent { label 'backend-dev' }
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
@@ -336,10 +333,7 @@ pipeline {
                     }
                 }
                 stage('Frontend Promotion') {
-                    agent {
-                        label 'frontend-dev'
-                        customWorkspace "YooHoo-Frontend-${env.BUILD_NUMBER}"
-                    }
+                    agent { label 'frontend-dev' }
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
