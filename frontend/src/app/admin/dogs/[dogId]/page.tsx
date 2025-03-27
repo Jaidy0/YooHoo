@@ -1,0 +1,282 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
+import RatingScale from '@/components/common/RatingScale/RatingScale';
+import Image from 'next/image';
+import Button from '@/components/common/buttons/Button/Button';
+import styles from './page.module.scss';
+
+import { Dog, DogStatus, Gender, DogImage } from '@/types/dog';
+
+export default function DogDetailPage() {
+  const router = useRouter();
+  const params = useParams();
+  const dogId = params.dogId as string;
+
+  // 상태 관리
+  const [dogData, setDogData] = useState<Dog | null>(null);
+  const [mainImage, setMainImage] = useState<DogImage | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // 강아지 데이터 불러오기
+    const fetchDogData = async () => {
+      setIsLoading(true);
+
+      try {
+        // TODO: 실제 API 호출로 대체
+        // const response = await fetch(`/api/dogs/${dogId}`);
+        // if (!response.ok) throw new Error('강아지 정보를 불러오는데 실패했습니다.');
+        // const dogResponse = await response.json();
+        // const dog = dogResponse.data;
+
+        // 목업 데이터
+        const mockData: Dog = {
+          dogId: parseInt(dogId),
+          name: '멍멍이',
+          age: 3,
+          weight: 5.5,
+          gender: Gender.MALE,
+          breed: '믹스견',
+          energetic: 3, // 활발함 정도
+          familiarity: 4, // 친화력
+          isVaccination: true,
+          isNeutered: true,
+          status: DogStatus.PROTECTED,
+          admissionDate: '2023-10-15T09:00:00.000+00:00',
+          images: [
+            {
+              imageId: 1,
+              dogId: parseInt(dogId),
+              imageUrl: '/images/dummy.jpeg',
+              isMain: true,
+              uploadDate: '2023-10-15T09:00:00.000+00:00',
+            },
+          ],
+        };
+
+        // 메인 이미지 설정
+        const mainImg =
+          mockData.images?.find((img) => img.isMain) ||
+          mockData.images?.[0] ||
+          null;
+
+        // API 호출 시뮬레이션을 위한 지연
+        setTimeout(() => {
+          setDogData(mockData);
+          setMainImage(mainImg);
+          setIsLoading(false);
+        }, 500);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (err) {
+        setError('강아지 정보를 불러오는데 실패했습니다.');
+        setIsLoading(false);
+      }
+    };
+
+    fetchDogData();
+  }, [dogId]);
+
+  // 편집 페이지로 이동
+  const handleEdit = () => {
+    router.push(`/admin/dogs/edit/${dogId}`);
+  };
+
+  // 목록으로 돌아가기
+  const handleBackToList = () => {
+    router.push('/admin/dogs');
+  };
+
+  // 강아지 상태 텍스트 변환
+  const getDogStatusText = (status: DogStatus): string => {
+    switch (status) {
+      case DogStatus.PROTECTED:
+        return '보호 중';
+      case DogStatus.TEMPORARY:
+        return '임시 보호 중';
+      case DogStatus.ADOPTED:
+        return '입양 완료';
+      case DogStatus.DECEASED:
+        return '사망';
+      default:
+        return '알 수 없음';
+    }
+  };
+
+  // 성별 텍스트 변환
+  const getGenderText = (gender: Gender): string => {
+    return gender === Gender.MALE ? '남' : '여';
+  };
+
+  // 날짜 포맷 변환
+  const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+  };
+
+  // 로딩 상태 표시
+  if (isLoading) {
+    return (
+      <div className={styles.dogsDetailPage}>
+        <div className={styles.adminCard}>
+          <div className={styles.loading}>정보를 불러오는 중...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // 에러 상태 표시
+  if (error || !dogData) {
+    return (
+      <div className={styles.dogsDetailPage}>
+        <div className={styles.adminCard}>
+          <div className={styles.error}>
+            {error || '강아지 정보를 불러오는데 실패했습니다.'}
+            <Button variant='primary' onClick={handleBackToList}>
+              목록으로 돌아가기
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.dogsDetailPage}>
+      <div className={styles.adminCard}>
+        <div className={styles.headerActions}>
+          <h1 className={styles.pageTitle}>강아지 상세 정보</h1>
+          <div className={styles.actionButtons}>
+            <Button variant='outline' onClick={handleBackToList}>
+              목록으로
+            </Button>
+            <Button variant='primary' onClick={handleEdit}>
+              수정하기
+            </Button>
+          </div>
+        </div>
+
+        <div className={styles.formContent}>
+          <div className={styles.imageSection}>
+            {mainImage && (
+              <div className={styles.imageContainer}>
+                <Image
+                  src={mainImage.imageUrl}
+                  alt={dogData?.name || '강아지 이미지'}
+                  width={300}
+                  height={300}
+                  className={styles.dogImage}
+                />
+              </div>
+            )}
+
+            {/* 이미지가 여러 개일 경우 썸네일 목록 표시 */}
+            {dogData?.images && dogData.images.length > 1 && (
+              <div className={styles.thumbnailList}>
+                {dogData.images.map((img) => (
+                  <div
+                    key={img.imageId}
+                    className={`${styles.thumbnail} ${img.isMain ? styles.activeThumb : ''}`}
+                    onClick={() => setMainImage(img)}
+                  >
+                    <Image
+                      src={img.thumbnailUrl || img.imageUrl}
+                      alt={`${dogData.name} 썸네일`}
+                      width={60}
+                      height={60}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className={styles.formFields}>
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>이름</span>
+              <span className={styles.detailValue}>{dogData?.name}</span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>품종</span>
+              <span className={styles.detailValue}>{dogData?.breed}</span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>상태</span>
+              <span
+                className={`${styles.detailValue} ${styles.statusBadge} ${styles[`status${dogData?.status}`]}`}
+              >
+                {dogData && getDogStatusText(dogData.status)}
+              </span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>성별</span>
+              <span className={styles.detailValue}>
+                {dogData && getGenderText(dogData.gender)}
+              </span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>나이</span>
+              <span className={styles.detailValue}>{dogData?.age}세</span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>체중</span>
+              <span className={styles.detailValue}>{dogData?.weight}kg</span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>입소일</span>
+              <span className={styles.detailValue}>
+                {dogData && formatDate(dogData.admissionDate)}
+              </span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>친화력</span>
+              <span className={styles.detailValue}>
+                <RatingScale
+                  value={dogData?.familiarity || 1}
+                  onChange={() => {}} // 상세 페이지에서는 수정 불가능하므로 빈 함수
+                  maxRating={5}
+                  readOnly={true}
+                />
+              </span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>활발함</span>
+              <span className={styles.detailValue}>
+                <RatingScale
+                  value={dogData?.energetic || 1}
+                  onChange={() => {}} // 상세 페이지에서는 수정 불가능하므로 빈 함수
+                  maxRating={5}
+                  readOnly={true}
+                />
+              </span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>중성화 여부</span>
+              <span className={styles.detailValue}>
+                {dogData?.isNeutered ? '완료' : '미완'}
+              </span>
+            </div>
+
+            <div className={styles.detailItem}>
+              <span className={styles.detailLabel}>접종 여부</span>
+              <span className={styles.detailValue}>
+                {dogData?.isVaccination ? '완료' : '미완'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
