@@ -6,7 +6,19 @@
 
 html,
 body,
-input {
+input,
+button,
+textarea,
+select,
+div,
+span,
+p,
+a,
+li,
+ul,
+ol,
+nav {
+  // 모든 텍스트 요소 추가
   padding: 0;
   margin: 0;
   font-family:
@@ -22,7 +34,6 @@ input {
     'Malgun Gothic',
     sans-serif;
   color: $color-text;
-  // background-color: $color-background;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -34,6 +45,7 @@ a {
 
 * {
   box-sizing: border-box;
+  font-family: inherit; // 폰트 상속 추가
 }
 
 // 색상 변수 설정
