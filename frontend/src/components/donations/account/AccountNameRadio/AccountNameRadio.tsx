@@ -1,28 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './AccountNameRadio.module.scss';
 
 type AccountNameRadioProps = {
   value: string;
   onChange: (value: string) => void;
+  nickname: string;
 };
 
 export default function AccountNameRadio({
   value,
   onChange,
+  nickname,
 }: AccountNameRadioProps) {
   const [inputValue, setInputValue] = useState(value);
   const [selectedOption, setSelectedOption] = useState<
     'nickname' | 'input' | 'unknown'
   >('nickname');
 
+  useEffect(() => {
+    onChange(nickname);
+  }, []);
+
   const handleOptionChange = (option: 'nickname' | 'input' | 'unknown') => {
     setSelectedOption(option);
 
     switch (option) {
       case 'nickname':
-        onChange('');
+        onChange(nickname);
         break;
       case 'input':
         onChange(inputValue);

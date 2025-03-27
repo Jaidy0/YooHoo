@@ -54,6 +54,7 @@ export default function AccountSection({
         <AccountNameRadio
           value={accountName}
           onChange={handleAccountNameChange}
+          nickname="닉네임" // 추후 불러올 데이터
         />
       </div>
 
