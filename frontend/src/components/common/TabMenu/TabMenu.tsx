@@ -72,7 +72,8 @@ export default function TabMenu({
 
   // 경로가 변경될 때마다 활성 탭 인덱스 업데이트
   useEffect(() => {
-    // 현재 경로와 가장 일치하는 메뉴 아이템 찾기
+    if (!pathname) return; // pathname이 null이면 실행하지 않음
+
     const index = menuItems.findIndex(
       (item) =>
         pathname === item.link ||

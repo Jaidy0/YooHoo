@@ -34,9 +34,7 @@ export default function DogCard({ dog, onClick }: DogCardProps) {
 
   // 기본 이미지 URL (이미지가 없을 경우)
   // TODO: 더미 이미지 교체
-  const imageUrl =
-    mainImage?.imageUrl ||
-    'https://dummyimage.com/600x400/000/fcfcfc&text=yoohoo';
+  const imageUrl = mainImage?.imageUrl || '/images/dummy.jpeg';
 
   // 카드 클릭 핸들러
   const handleCardClick = () => {
