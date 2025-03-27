@@ -34,7 +34,12 @@ pipeline {
         stage('Checkout') {
             agent any
             steps {
-                git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                sh 'rm -f .git/index.lock || true'
+                retry(3) {
+                    git branch: "infra-dev",
+                        credentialsId: "${GIT_CREDENTIALS_ID}",
+                        url: "${GIT_REPOSITORY_URL}"
+                }
             }
         }
 
@@ -304,7 +309,10 @@ pipeline {
         stage('Promote to Stable') {
             parallel {
                 stage('Backend Promotion') {
-                    agent { label 'backend-dev' }
+                    agent {
+                        label 'backend-dev'
+                        customWorkspace "YooHoo-Backend-${env.BUILD_NUMBER}"
+                    }
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
@@ -328,7 +336,10 @@ pipeline {
                     }
                 }
                 stage('Frontend Promotion') {
-                    agent { label 'frontend-dev' }
+                    agent {
+                        label 'frontend-dev'
+                        customWorkspace "YooHoo-Frontend-${env.BUILD_NUMBER}"
+                    }
                     steps {
                         script {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
