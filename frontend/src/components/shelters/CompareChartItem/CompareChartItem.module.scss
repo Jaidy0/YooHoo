@@ -1,0 +1,42 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  .baseBar {
+    width: 100%;
+    height: 36px;
+    background-color: #eee;
+    border-radius: 30px;
+    position: relative;
+
+    .bar1,
+    .bar2 {
+      border: 1px solid #333;
+      height: 30px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      padding: 6px 16px;
+      transition: width 0.3s ease-in-out;
+    }
+
+    .bar1 {
+      background-color: var(--yh-yellow);
+      color: $text-333;
+    }
+
+    .bar2 {
+      background-color: #fff;
+      color: $text-333;
+    }
+  }
+}
+
+.label {
+  position: absolute;
+  right: 13px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+}

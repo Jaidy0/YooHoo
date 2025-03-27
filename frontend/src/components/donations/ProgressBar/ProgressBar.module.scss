@@ -1,0 +1,17 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.progressContainer {
+  width: 100%;
+  height: 4px;
+  background-color: #eeeeee;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 30px;
+
+  .progressBar {
+    height: 100%;
+    background-color: $yh-yellow;
+    border-radius: 2px;
+    transition: width 0.3s ease-out;
+  }
+}
