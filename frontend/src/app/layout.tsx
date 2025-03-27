@@ -47,6 +47,7 @@ export const metadata: Metadata = {
 export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='ko'>
+      <head></head>
       <body className={styles.body}>
         <main className={styles.main}>{children}</main>
       </body>

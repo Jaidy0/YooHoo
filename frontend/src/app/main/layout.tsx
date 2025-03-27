@@ -33,13 +33,28 @@ const navItems: BottomNavItem[] = [
   },
 ];
 
+export const PAGE_TITLES = {
+  main: '유후',
+  dogs: '보호소',
+  donate: '후원하기',
+  profile: '마이페이지',
+  kakao: '카카오 로그인',
+} as const;
+
+export type PageKey = keyof typeof PAGE_TITLES;
+
 export default function MainLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isMainPage = pathname === '/main';
+
+  // 경로에서 페이지 키 추출
+  const pageKey = pathname.split('/').pop() as keyof typeof PAGE_TITLES;
+  const pageTitle = pageKey ? PAGE_TITLES[pageKey] : PAGE_TITLES.main;
+
   return (
     <div className={styles.container}>
       <Header
-        title='유후'
+        title={pageTitle}
         type={isMainPage ? 'main' : 'sub'}
         onBackClick={!isMainPage ? () => window.history.back() : undefined}
       />

@@ -98,7 +98,7 @@ export default function TabMenu({
             .join(' ');
 
           return (
-            <li key={`tab-menu-item-${index}`} className={itemClasses}>
+            <div key={`tab-menu-item-${index}`} className={itemClasses}>
               <a
                 href={item.link}
                 className={styles.menuLink}
@@ -111,7 +111,7 @@ export default function TabMenu({
               >
                 {item.name}
               </a>
-            </li>
+            </div>
           );
         })}
       </ul>
