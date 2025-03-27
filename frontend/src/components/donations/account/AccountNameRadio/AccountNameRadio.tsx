@@ -1,0 +1,92 @@
+'use client';
+
+import { useState } from 'react';
+import styles from './AccountNameRadio.module.scss';
+
+type AccountNameRadioProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
+
+export default function AccountNameRadio({
+  value,
+  onChange,
+}: AccountNameRadioProps) {
+  const [inputValue, setInputValue] = useState(value);
+  const [selectedOption, setSelectedOption] = useState<
+    'nickname' | 'input' | 'unknown'
+  >('nickname');
+
+  const handleOptionChange = (option: 'nickname' | 'input' | 'unknown') => {
+    setSelectedOption(option);
+
+    switch (option) {
+      case 'nickname':
+        onChange('');
+        break;
+      case 'input':
+        onChange(inputValue);
+        break;
+      case 'unknown':
+        onChange('익명');
+        break;
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setInputValue(newValue);
+
+    if (selectedOption === 'input') {
+      onChange(newValue);
+    }
+  };
+
+  return (
+    <div className={styles.accountNameRadio}>
+      <div className={styles.radioGroup}>
+        <label className={styles.radioLabel}>
+          <input
+            type='radio'
+            name='accountName'
+            checked={selectedOption === 'nickname'}
+            onChange={() => handleOptionChange('nickname')}
+          />
+          <span>닉네임</span>
+        </label>
+
+        <label className={styles.radioLabel}>
+          <input
+            type='radio'
+            name='accountName'
+            checked={selectedOption === 'unknown'}
+            onChange={() => handleOptionChange('unknown')}
+          />
+          <span>익명</span>
+        </label>
+
+        <label className={styles.radioLabel}>
+          <input
+            type='radio'
+            name='accountName'
+            checked={selectedOption === 'input'}
+            onChange={() => handleOptionChange('input')}
+          />
+          <span>직접 입력</span>
+        </label>
+      </div>
+
+      {selectedOption === 'input' && (
+        <div className={styles.inputContainer}>
+          <input
+            type='text'
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder='입금자명을 입력하세요'
+            className={styles.accountNameInput}
+          />
+        </div>
+      )}
+    </div>
+  );
+}

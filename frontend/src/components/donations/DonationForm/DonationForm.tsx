@@ -9,6 +9,7 @@ import SelectSection, {
 } from '../donationType/SelectSection/SelectSection';
 import DogSection from '../donationType/DogSection/DogSection';
 import PaymentDateSection from '../donationType/PaymentDateSection/PaymentDateSection';
+import AccountSection from '../account/AccountSection/AccountSection';
 import styles from './DonationForm.module.scss';
 
 import { DonationFormData } from '@/types/donation';
@@ -139,7 +140,7 @@ export default function DonationForm({
         />
       </section>
 
-      {/* 3A. 정기 결제일 선택 - 정기후원 선택 시에만 표시 */}
+      {/* 3A. 정기후원-정기 결제일 선택 */}
       {formData.donationType === 0 && (
         <section>
           <PaymentDateSection
@@ -153,7 +154,7 @@ export default function DonationForm({
         </section>
       )}
 
-      {/* 3. 일시 후원 시 후원 대상 선택 섹션 */}
+      {/* 3B. 일시후원-후원 대상 선택 */}
       {formData.donationType === 1 && (
         <section>
           <SelectSection
@@ -173,7 +174,7 @@ export default function DonationForm({
         </section>
       )}
 
-      {/* 3C. 강아지 선택 - 강아지 후원 선택 시에만 표시 */}
+      {/* 3C. 일시후원-강아지 선택 */}
       {formData.donationType === 1 && formData.targetType === 'dog' && (
         <section>
           <DogSection
@@ -187,6 +188,17 @@ export default function DonationForm({
           />
         </section>
       )}
+
+      {/* 4. 계좌 정보 및 응원 메시지 */}
+      <section>
+        <AccountSection
+          stepNumber={4}
+          formData={formData}
+          updateFormData={updateFormData}
+          completeStep={completeStep}
+          donationType={formData.donationType}
+        />
+      </section>
     </div>
   );
 }
