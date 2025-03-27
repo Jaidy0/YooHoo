@@ -314,6 +314,12 @@ pipeline {
                     agent { label 'backend-dev' }
                     steps {
                         script {
+                            sh """
+                                if [ -f .git/index.lock ]; then
+                                    echo "Removing existing .git/index.lock file"
+                                    rm -f .git/index.lock
+                                fi
+                            """
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 sh """
                                     docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
@@ -338,6 +344,12 @@ pipeline {
                     agent { label 'frontend-dev' }
                     steps {
                         script {
+                            sh """
+                                if [ -f .git/index.lock ]; then
+                                    echo "Removing existing .git/index.lock file"
+                                    rm -f .git/index.lock
+                                fi
+                            """
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 sh """
                                     docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
