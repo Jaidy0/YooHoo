@@ -13,9 +13,17 @@ import IconBox from '@/components/common/IconBox/IconBox';
 
 // 탭 메뉴 아이템
 const dogStatusTabs = [
-  { name: '전체', link: '/admin/dogs?status=all' },
-  { name: '보호중', link: '/admin/dogs?status=protected' },
-  { name: '임시보호', link: '/admin/dogs?status=temporary' },
+  { name: '전체', link: '/admin/dogs?status=all', status: 'all' },
+  {
+    name: '보호중',
+    link: '/admin/dogs?status=protected',
+    status: DogStatus.PROTECTED,
+  },
+  {
+    name: '임시보호',
+    link: '/admin/dogs?status=temporary',
+    status: DogStatus.TEMPORARY,
+  },
 ];
 
 // 더미 데이터 - 실제로는 API에서 가져옵니다
@@ -46,18 +54,35 @@ const dummyDogs: DogSummary[] = Array(20)
 
 export default function DogsPage() {
   const router = useRouter();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [dogs, setDogs] = useState<DogSummary[]>(dummyDogs);
+  const [allDogs] = useState<DogSummary[]>(dummyDogs); // 원본 데이터 저장
+  const [filteredDogs, setFilteredDogs] = useState<DogSummary[]>(dummyDogs); // 필터링된 데이터
   const [activeTab, setActiveTab] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalPages, setTotalPages] = useState(32); // 예시로 설정
 
+  // 탭 변경 시 강아지 필터링
   useEffect(() => {
+    const selectedStatus = dogStatusTabs[activeTab].status;
+
+    // '전체' 탭이 선택된 경우 모든 강아지 표시
+    if (selectedStatus === 'all') {
+      setFilteredDogs(allDogs);
+    } else {
+      // 선택된 status에 맞는 강아지만 필터링
+      const filtered = allDogs.filter((dog) => dog.status === selectedStatus);
+      setFilteredDogs(filtered);
+    }
+
     // 실제 구현에서는 여기서 API 호출을 통해 데이터를 가져옵니다
     // 예: fetchDogs(selectedStatus, currentPage, pageSize)
-    console.log('페이지 로드 및 데이터 요청:', activeTab, currentPage);
-  }, [activeTab, currentPage]);
+    console.log(
+      '페이지 로드 및 데이터 요청:',
+      activeTab,
+      currentPage,
+      dogStatusTabs[activeTab].status
+    );
+  }, [activeTab, currentPage, allDogs]);
 
   const handleTabClick = (item: TabMenuItem, index: number) => {
     setActiveTab(index);
@@ -79,7 +104,7 @@ export default function DogsPage() {
   };
 
   const handleAddDog = () => {
-    console.log('SEARCH!!');
+    console.log('신규 강아지 등록!!');
   };
 
   return (
@@ -113,9 +138,13 @@ export default function DogsPage() {
         </div>
 
         <div className={styles.dogGrid}>
-          {dogs.map((dog) => (
-            <DogCard key={dog.dogId} dog={dog} onClick={handleDogClick} />
-          ))}
+          {filteredDogs.length > 0 ? (
+            filteredDogs.map((dog) => (
+              <DogCard key={dog.dogId} dog={dog} onClick={handleDogClick} />
+            ))
+          ) : (
+            <p className={styles.noDogs}>해당 상태의 강아지가 없습니다.</p>
+          )}
         </div>
 
         <div className={styles.paginationContainer}>
