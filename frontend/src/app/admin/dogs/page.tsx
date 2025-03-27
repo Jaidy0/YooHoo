@@ -36,7 +36,7 @@ const dummyDogs: DogSummary[] = Array(20)
   .fill(null)
   .map((_, index) => ({
     dogId: index + 1,
-    name: '봄이',
+    name: `봄이${index + 1}`, // 각 강아지에 고유한 이름 부여
     age: 2,
     gender: Math.random() > 0.5 ? Gender.MALE : Gender.FEMALE,
     // 랜덤하게 DogStatus 값을 선택합니다
@@ -58,31 +58,34 @@ export default function DogsPage() {
   const [filteredDogs, setFilteredDogs] = useState<DogSummary[]>(dummyDogs); // 필터링된 데이터
   const [activeTab, setActiveTab] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState(''); // 검색어 상태 추가
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [totalPages, setTotalPages] = useState(32); // 예시로 설정
 
-  // 탭 변경 시 강아지 필터링
+  // 탭 변경 또는 검색어 변경 시 강아지 필터링
   useEffect(() => {
     const selectedStatus = dogStatusTabs[activeTab].status;
 
-    // '전체' 탭이 선택된 경우 모든 강아지 표시
-    if (selectedStatus === 'all') {
-      setFilteredDogs(allDogs);
-    } else {
-      // 선택된 status에 맞는 강아지만 필터링
-      const filtered = allDogs.filter((dog) => dog.status === selectedStatus);
-      setFilteredDogs(filtered);
+    // 먼저 status로 필터링
+    let filtered = allDogs;
+
+    if (selectedStatus !== 'all') {
+      filtered = allDogs.filter((dog) => dog.status === selectedStatus);
     }
 
+    // 검색어가 있으면 이름으로도 필터링
+    if (searchTerm.trim() !== '') {
+      filtered = filtered.filter((dog) =>
+        dog.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredDogs(filtered);
+
     // 실제 구현에서는 여기서 API 호출을 통해 데이터를 가져옵니다
-    // 예: fetchDogs(selectedStatus, currentPage, pageSize)
-    console.log(
-      '페이지 로드 및 데이터 요청:',
-      activeTab,
-      currentPage,
-      dogStatusTabs[activeTab].status
-    );
-  }, [activeTab, currentPage, allDogs]);
+    // 예: fetchDogs(selectedStatus, searchTerm, currentPage, pageSize)
+    console.log('데이터 요청:', activeTab, searchTerm, currentPage);
+  }, [activeTab, searchTerm, currentPage, allDogs]);
 
   const handleTabClick = (item: TabMenuItem, index: number) => {
     setActiveTab(index);
@@ -99,8 +102,10 @@ export default function DogsPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleSearch = () => {
-    console.log('SEARCH!!');
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    setCurrentPage(1); // 검색 시 첫 페이지로 이동
+    console.log('검색어:', term);
   };
 
   const handleAddDog = () => {
@@ -143,7 +148,11 @@ export default function DogsPage() {
               <DogCard key={dog.dogId} dog={dog} onClick={handleDogClick} />
             ))
           ) : (
-            <p className={styles.noDogs}>해당 상태의 강아지가 없습니다.</p>
+            <p className={styles.noDogs}>
+              {searchTerm
+                ? `'${searchTerm}' 검색 결과가 없습니다.`
+                : '해당 상태의 강아지가 없습니다.'}
+            </p>
           )}
         </div>
 
