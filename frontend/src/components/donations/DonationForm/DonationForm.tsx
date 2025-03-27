@@ -35,7 +35,7 @@ export default function DonationForm({
     shelterId: initialShelterId ?? 0,
     shelterName: '',
     donationType: 0, // 0: 정기후원 기본값
-    paymentDay: 15,
+    paymentDay: 0,
     targetType: 'shelter', // 단체후원 기본값
     dogId: initialDogId ?? 0,
     dogName: '',
