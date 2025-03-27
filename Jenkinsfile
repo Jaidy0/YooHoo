@@ -43,7 +43,6 @@ pipeline {
                 }
             }
         }
-
         stage('Prepare Environment') {
             agent any
             steps {
@@ -76,7 +75,6 @@ pipeline {
                 }
             }
         }
-
         stage('Build & Push Images') {
             parallel {
                 stage('Build Backend') {

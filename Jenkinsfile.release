@@ -2,6 +2,7 @@ pipeline {
     agent none
     options {
         disableConcurrentBuilds()
+        skipDefaultCheckout(true)
     }
     parameters {
         string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')
@@ -40,10 +41,14 @@ pipeline {
         stage('Checkout') {
             agent any
             steps {
-                git branch: "infra-dev", credentialsId: "${GIT_CREDENTIALS_ID}", url: "${GIT_REPOSITORY_URL}"
+                sh 'rm -f .git/index.lock || true'
+                retry(3) {
+                    git branch: "infra-dev",
+                        credentialsId: "${GIT_CREDENTIALS_ID}",
+                        url: "${GIT_REPOSITORY_URL}"
+                }
             }
         }
-
         stage('Prepare Environment') {
             agent any
             steps {
@@ -78,7 +83,6 @@ pipeline {
                 }
             }
         }
-
         stage('Build & Push Images') {
             parallel {
                 stage('Build Backend') {
@@ -113,7 +117,6 @@ pipeline {
                 }
             }
         }
-
         stage('Deploy Canary') {
             agent { label 'public-dev' }
             steps {
