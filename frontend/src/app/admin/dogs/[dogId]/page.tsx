@@ -6,6 +6,7 @@ import RatingScale from '@/components/common/RatingScale/RatingScale';
 import Image from 'next/image';
 import Button from '@/components/common/buttons/Button/Button';
 import styles from './page.module.scss';
+import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 
 import { Dog, DogStatus, Gender, DogImage } from '@/types/dog';
 
@@ -13,6 +14,30 @@ export default function DogDetailPage() {
   const router = useRouter();
   const params = useParams();
   const dogId = params.dogId as string;
+
+  // 임시 입금 내역 데이터
+  const mockDepositData = Array(10)
+    .fill(null)
+    .map((_, index) => ({
+      type: index % 2 === 0 ? '단체' : '지정(강아지)',
+      name: '서울보호소',
+      amount: 99999,
+      date: '2025.03.04',
+      message: '보호소 후원금',
+    }));
+
+  // 임시 출금 내역 데이터
+  const mockWithdrawData = Array(10)
+    .fill(null)
+    .map((_, index) => ({
+      type: index % 2 === 0 ? '단체' : '지정(강아지)',
+      category: '의료비',
+      content: '중장형 수술',
+      amount: 99999,
+      date: '2025.03.04',
+      isEvidence: true,
+      isReceipt: true,
+    }));
 
   // 상태 관리
   const [dogData, setDogData] = useState<Dog | null>(null);
@@ -145,7 +170,7 @@ export default function DogDetailPage() {
 
   return (
     <div className={styles.dogsDetailPage}>
-      <div className={styles.adminCard}>
+      <section className={styles.adminCard}>
         <div className={styles.headerActions}>
           <h1 className={styles.pageTitle}>강아지 상세 정보</h1>
           <div className={styles.actionButtons}>
@@ -276,7 +301,18 @@ export default function DogDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>후원금 입출금 내역</h2>
+        </div>
+
+        {/* FinanceTable 컴포넌트 사용 */}
+        <FinanceTable
+          depositData={mockDepositData}
+          withdrawData={mockWithdrawData}
+          className={styles.financeTable}
+        />
+      </section>
     </div>
   );
 }
