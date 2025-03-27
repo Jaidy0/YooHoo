@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import DonateComplete from '@/components/donations/DonateComplete';
 import styles from './page.module.scss';
+import Button from '@/components/common/buttons/Button/Button';
 
 export default function DonationCompletePage() {
   return (
@@ -22,11 +23,11 @@ export default function DonationCompletePage() {
 
         {/* 버튼 그룹 */}
         <div className={styles.buttonGroup}>
-          <Link href='/' passHref>
-            {/* <Button as="a">홈으로</Button> */}
+          <Link href='/yoohoo'>
+            <Button>홈으로</Button>
           </Link>
-          <Link href='/mypage/donation' passHref>
-            {/* <Button as="a">기부 내역 보러가기</Button> */}
+          <Link href='/mypage'>
+            <Button>기부 내역 보러가기</Button>
           </Link>
         </div>
       </div>
