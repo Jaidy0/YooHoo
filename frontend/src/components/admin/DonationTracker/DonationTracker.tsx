@@ -26,26 +26,26 @@ export default function DonationTracker({
   const renderTotalContent = () => (
     <>
       <div className={styles.header}>
-        <span className={styles.subText}>총</span>
+        <span className={styles.label}>현재</span>
         <span className={styles.amount}>{formatAmount(amount)}</span>
-        <span className={styles.subText}> 원</span>
+        <span className={styles.subText}>원</span>
       </div>
       <div className={styles.totalContent}>
         <div className={styles.compareWrapper}>
-          <span className={styles.plainText}>지난 달</span>
-          <span className={styles.withdrawText}>수입</span>
+          <span className={styles.plainText}>지난 주</span>
+          <span className={styles.incomeText}>수입</span>
           <span className={styles.plainText}>대비</span>
-          <span className={styles.withdrawText}>
+          <span className={styles.incomeValue}>
             {formatAmount(compareWithdraw)}
           </span>
           <span className={styles.plainText}>원</span>
         </div>
 
         <div className={styles.compareWrapper}>
-          <span className={styles.plainText}>지난 달</span>
-          <span className={styles.depositText}>지출</span>
+          <span className={styles.plainText}>지난 주</span>
+          <span className={styles.expenseText}>지출</span>
           <span className={styles.plainText}>대비</span>
-          <span className={styles.depositText}>
+          <span className={styles.expenseValue}>
             {formatAmount(compareDeposit)}
           </span>
           <span className={styles.plainText}>원</span>
@@ -54,21 +54,19 @@ export default function DonationTracker({
     </>
   );
 
-  // 트렌드 콘텐츠 렌더링
+  // 입금/출금 콘텐츠 렌더링
   const renderSubContent = () => (
     <div className={styles.simple}>
-      {variant == 'deposit' ? (
-        <Badge variant='negative' className={styles.badge}>
-          출금
-        </Badge>
-      ) : (
-        <Badge variant='positive' className={styles.badge}>
-          입금
-        </Badge>
-      )}
-
-      <span className={styles.amount}>{formatAmount(amount)}</span>
-      <span className={styles.subText}> 원</span>
+      <Badge
+        variant={variant === 'deposit' ? 'positive' : 'negative'}
+        className={styles.badge}
+      >
+        {variant === 'deposit' ? '입금' : '출금'}
+      </Badge>
+      <div className={styles.amountWrapper}>
+        <span className={styles.amount}>{formatAmount(amount)}</span>
+        <span className={styles.subText}>원</span>
+      </div>
     </div>
   );
 

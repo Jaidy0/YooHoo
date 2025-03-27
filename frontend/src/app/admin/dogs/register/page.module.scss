@@ -1,0 +1,128 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.dogsRegisterPage {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+// 헤더 액션 영역 스타일
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.pageTitle {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  margin: 0;
+}
+
+// 공통 관리자 페이지 카드 스타일
+.adminCard {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// 폼 콘텐츠 컨테이너
+.formContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-xl;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+  }
+}
+
+// 이미지 섹션
+.imageSection {
+  flex: 0 0 300px;
+
+  @media (max-width: $breakpoint-md) {
+    flex: 1 0 auto;
+  }
+}
+
+// 폼 필드 컨테이너
+.formFields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+// 폼 그룹
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.groupLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $text-333;
+}
+
+// 버튼 그룹 (라디오 버튼 대체)
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+// 옵션 버튼 추가 스타일
+.optionButton {
+  min-width: auto;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-sm;
+}
+
+// 친화력 스케일
+.friendlinessScale {
+  display: flex;
+  gap: $spacing-sm;
+}
+
+.friendlinessButton {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid $color-border;
+  background-color: $color-background-light;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.active {
+    background-color: $yh-yellow;
+    border-color: $yh-yellow;
+  }
+
+  &:hover {
+    border-color: $yh-yellow;
+  }
+}
+
+// 폼 액션 버튼
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+}

@@ -1,82 +1,109 @@
-@use '@/assets/styles/abstracts/variables' as *;
-
 .trackerCard {
   position: relative;
   width: 100%;
-  padding: $spacing-xl;
+  padding: $spacing-lg;
   border-radius: $border-radius-md;
   border: 1px solid $color-border;
   background-color: $color-background;
   display: flex;
-  width: 655px;
-  padding: $spacing-lg $spacing-xxl;
   flex-direction: column;
   justify-content: center;
-  align-items: flex-end;
 
   &:hover {
     box-shadow: $shadow-yoohoo;
   }
+}
+
+.total {
+  height: 100%;
+  padding: $spacing-xl;
+  align-items: center;
 
   .header {
     display: flex;
-    flex-direction: row;
     align-items: center;
-    gap: $spacing-sm;
-    margin-bottom: $spacing-md;
+    justify-content: center;
+    margin-bottom: $spacing-lg;
+    width: 100%;
+    text-align: center;
+
+    .label {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-medium;
+      color: $text-555;
+      margin-right: $spacing-sm;
+    }
   }
 
-  .subText {
-    font-size: $font-size-2xl;
-    font-weight: $font-weight-medium;
-    color: $text-555;
-    margin: 0;
-  }
-}
-
-// variant별 스타일 차이
-.total {
   .amount {
-    font-size: $font-size-4xl;
+    font-size: 48px;
     font-weight: $font-weight-bold;
     color: $text-121212;
   }
+
+  .subText {
+    font-size: $font-size-xl;
+    margin-left: $spacing-xs;
+  }
+
+  .totalContent {
+    width: 100%;
+    text-align: right;
+    margin-top: $spacing-md;
+  }
+
   .compareWrapper {
     display: flex;
-    align-items: flex-end;
-    gap: $spacing-sm;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: $spacing-md;
 
-    .withdrawText {
-      color: $chart-blue;
-    }
-    .depositText {
-      padding: $shadow-sm;
-      color: $chart-hotpink;
+    .plainText {
+      font-size: $font-size-md;
+      color: $text-555;
+      margin-right: $spacing-xs;
     }
 
-    .compareValue {
-      font-size: $font-size-lg;
+    .incomeText {
+      color: #0099ff;
       font-weight: $font-weight-medium;
+      margin-right: $spacing-xs;
+    }
+
+    .expenseText {
+      color: #ff544c;
+      font-weight: $font-weight-medium;
+      margin-right: $spacing-xs;
+    }
+
+    .incomeValue {
+      color: #0099ff;
+      font-weight: $font-weight-medium;
+      margin: 0 $spacing-xs;
+    }
+
+    .expenseValue {
+      color: #ff544c;
+      font-weight: $font-weight-medium;
+      margin: 0 $spacing-xs;
     }
   }
 }
 
 .simple {
   display: flex;
-  width: 518px;
-  padding: 0px 30px;
+  padding: $spacing-lg;
   justify-content: space-between;
   align-items: center;
-  .amount {
-    font-size: $font-size-4xl;
-    font-weight: $font-weight-bold;
-    color: $text-121212;
+
+  .badge {
+    flex-shrink: 0;
   }
 
-  .subText {
-    justify-content: center;
-    align-items: flex-end;
-  }
-  .badge {
+  .amount {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-121212;
+    margin: 0 $spacing-xs;
   }
 }
