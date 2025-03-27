@@ -1,5 +1,6 @@
 @use '@/assets/styles/abstracts/variables' as *;
 
+// layout.module.scss 수정
 .container {
   min-height: 100vh;
   min-height: 100dvh; // 모바일 브라우저 주소창 고려
@@ -10,7 +11,9 @@
   flex-direction: column;
   background-color: var(--color-background);
   position: relative;
-  overflow: hidden;
+  overflow: hidden; // 중요: 컨테이너 자체에서는 오버플로우를 숨김
+  height: 100vh; // 고정 높이 추가
+  height: 100dvh; // 모바일에서는 동적 뷰포트 높이 사용
 
   @media screen and (max-width: $breakpoint-sm) {
     max-width: 100%;
@@ -19,22 +22,17 @@
 
 .main {
   flex: 1;
-  overflow-y: auto;
-  padding: $spacing-md;
+  overflow-y: auto; // 스크롤 허용
+  padding: 0 $spacing-md;
   position: relative;
 
-  // 스크롤바 스타일링
+  // 스크롤바 완전히 숨기기
+  -ms-overflow-style: none; // IE, Edge
+  scrollbar-width: none; // Firefox
+
+  // WebKit 브라우저 (Chrome, Safari 등)에서 스크롤바 숨기기
   &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: $border-radius-full;
+    display: none;
   }
 
   // iOS 스크롤 부드럽게

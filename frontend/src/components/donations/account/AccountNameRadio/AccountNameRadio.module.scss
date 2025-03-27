@@ -1,0 +1,68 @@
+.accountNameRadio {
+  margin-top: 1rem;
+
+  .radioGroup {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    position: relative;
+    padding-left: 24px;
+
+    input[type='radio'] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+
+      // 커스텀 라디오 버튼 스타일
+      & + span::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid $text-555;
+        background-color: white;
+      }
+
+      // 선택된 상태
+      &:checked + span::before {
+        border-color: $text-333;
+        background-color: $yh-yellow;
+      }
+
+      // 호버 상태
+      &:hover + span::before {
+        background-color: $yh-yellow;
+      }
+    }
+
+    span {
+      font-size: $font-size-sm;
+      color: $text-333;
+    }
+  }
+
+  .inputContainer {
+    margin-top: 0.5rem;
+  }
+
+  .accountNameInput {
+    width: 100%;
+    padding: 0.5rem;
+    border-bottom: 1px solid $text-555;
+    font-size: $font-size-sm;
+  }
+}
