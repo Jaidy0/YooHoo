@@ -31,7 +31,7 @@ export default function Home() {
         {isAdmin != 'user' ? (
           <div className={styles.admin}>관리자용</div>
         ) : (
-          <div className={styles.user}>사용자용페이지입니다.Pretendard
+          <div className={styles.user}>사용자용페이지입니다.Pretendard2
           </div>
           
         )}
