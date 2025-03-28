@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Service
 public class DonationService {
@@ -154,11 +155,18 @@ public class DonationService {
         // Reverse the list to have the most recent week last
         Collections.reverse(weeklySums);
 
-        // Calculate the prediction for the next week using extrapolation
-        int prediction = (int) weeklySums.subList(0, 5).stream().mapToInt(Integer::intValue).average().orElse(0);
+        // Exponential Smoothing for prediction
+        double alpha = 0.3; // Smoothing factor
+        double smoothedValue = weeklySums.get(0); // Initialize with the first week's value
 
-        // Create a map with named keys
-        Map<String, Integer> result = new HashMap<>();
+        for (int i = 1; i < 5; i++) {
+            smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
+        }
+
+        int prediction = (int) Math.round(smoothedValue);
+
+        // Create a map with named keys and maintain order
+        Map<String, Integer> result = new LinkedHashMap<>();
         result.put("5WeeksAgo", weeklySums.get(0));
         result.put("4WeeksAgo", weeklySums.get(1));
         result.put("3WeeksAgo", weeklySums.get(2));

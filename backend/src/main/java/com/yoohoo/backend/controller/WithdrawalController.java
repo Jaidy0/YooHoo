@@ -1,10 +1,19 @@
 package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.service.WithdrawalService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import com.yoohoo.backend.entity.Withdrawal;
+import com.yoohoo.backend.service.S3Service;
+import com.yoohoo.backend.repository.WithdrawalRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.yoohoo.backend.entity.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +25,16 @@ public class WithdrawalController {
 
     @Autowired
     private WithdrawalService withdrawalService;
+
+    @Autowired
+    private S3Service s3Service;
+
+    @Autowired
+    private RestTemplate RestTemplate;
+    
+    @Autowired
+    private WithdrawalRepository withdrawalRepository;
+    
 
     @PutMapping("/{withdrawalId}/dogId")
     public ResponseEntity<Map<String, String>> updateDogId(
@@ -69,6 +88,12 @@ public class WithdrawalController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/weekly-sums")
+    public ResponseEntity<Map<String, Double>> getWeeklyExpenditureSumsAndPrediction() {
+        Map<String, Double> weeklySums = withdrawalService.getWeeklyExpenditureSumsAndPrediction();
+        return ResponseEntity.ok(weeklySums);
+    }
+
     public static class DogIdRequest {
         private Long newDogId;
 
@@ -80,4 +105,49 @@ public class WithdrawalController {
             this.newDogId = newDogId;
         }
     }
-}
+
+
+    @PostMapping("/{withdrawalId}/imageupload")
+    public ResponseEntity<String> uploadwithdrawalImage(
+    @PathVariable Long withdrawalId,
+    @RequestPart(value = "file", required = false) MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return ResponseEntity.badRequest().body("파일이 없습니다.");
+        }
+
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", file.getResource());
+            
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+            
+            ResponseEntity<String> response = RestTemplate.exchange(
+                "http://localhost:8080/s3/upload",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+                );
+                
+                if (response.getStatusCode().is2xxSuccessful()) {
+                    String fileUrl = response.getBody();
+                    File savedFile = s3Service.saveFileEntity(file, 2, withdrawalId, fileUrl);                    
+                    // ✅ Withdrawal 업데이트
+                    Withdrawal withdrawal = withdrawalRepository.findById(withdrawalId)
+                            .orElseThrow(() -> new RuntimeException("해당 withdrawalId를 찾을 수 없습니다."));
+                            withdrawal.setFile(savedFile);
+                            withdrawalRepository.save(withdrawal);
+
+            return ResponseEntity.ok("업로드 완료: " + fileUrl);
+
+                } else {
+                    return ResponseEntity.status(500).body("S3 업로드 실패: " + response.getStatusCode());
+                }
+                
+            } catch (Exception e) {
+                throw new RuntimeException("이미지 업로드 중 예외 발생", e);
+            }
+        }
+    }

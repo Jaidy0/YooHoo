@@ -145,43 +145,6 @@ public class DogController {
     
     Map<String, Integer> statuses = dogService.getDogCountByShelterId(shelterId);
     return ResponseEntity.ok(statuses);
-}
-
-@PostMapping("/{dogId}/imageupload")
-public ResponseEntity<String> uploadDogImage(
-    @PathVariable Long dogId,
-    @RequestPart("file") MultipartFile file
-    ) {
-        if (file == null || file.isEmpty()) {
-            return ResponseEntity.badRequest().body("파일이 없습니다.");
-        }
-        
-        try {
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-            
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", file.getResource());
-            
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-            
-            ResponseEntity<String> response = restTemplate.exchange(
-                "http://localhost:8080/s3/upload",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-                );
-                
-                if (response.getStatusCode().is2xxSuccessful()) {
-                    String fileUrl = response.getBody();
-                    s3Service.saveFileEntity(file, 1, dogId, fileUrl);
-                    return ResponseEntity.ok("업로드 완료: " + fileUrl);
-                } else {
-                    return ResponseEntity.status(500).body("S3 업로드 실패: " + response.getStatusCode());
-                }
-                
-            } catch (Exception e) {
-                throw new RuntimeException("이미지 업로드 중 예외 발생", e);
-            }
-        }
     }
+
+}

@@ -40,7 +40,7 @@ public class Shelter {
     @Column(nullable = false, length = 30)
     private String businessNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer reliability;
 
     @OneToMany(mappedBy = "shelter", cascade = CascadeType.ALL, orphanRemoval = true)

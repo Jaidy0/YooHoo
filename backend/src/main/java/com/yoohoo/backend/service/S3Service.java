@@ -104,7 +104,7 @@ public class S3Service {
     }
 
     // File 엔티티 저장
-    public void saveFileEntity(MultipartFile file, int entityType, Long entityId, String fileUrl) throws IOException {
+    public File saveFileEntity(MultipartFile file, int entityType, Long entityId, String fileUrl) throws IOException {
         String fileName = createFileName(file.getOriginalFilename());
 
         File fileEntity = new File();
@@ -115,7 +115,7 @@ public class S3Service {
         fileEntity.setEntityId(entityId);
         fileEntity.setFileUrl(fileUrl);
         fileEntity.setCreatedAt(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        fileRepository.save(fileEntity);
+        return fileRepository.save(fileEntity); // ✅ return 추가!
     }
 
     // 파일 이름 생성 로직

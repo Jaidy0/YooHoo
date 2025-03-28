@@ -42,6 +42,9 @@ public class UserService {
     @Value("${KAKAO_CLIENT_SECRET}")
     private String kakaoClientSecret;
 
+    @Value("${KAKAO_REDIRECT_URI}")
+    private String kakaoRedirectUri;
+
     @Autowired
     private TokenService tokenService;
 
@@ -55,7 +58,7 @@ public class UserService {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("grant_type", "authorization_code");
         params.add("client_id", kakaoClientId);
-        params.add("redirect_uri", "http://localhost:8080/api/auth/kakao-login");
+        params.add("redirect_uri", kakaoRedirectUri);
         params.add("code", code);
 
         HttpHeaders headers = new HttpHeaders();

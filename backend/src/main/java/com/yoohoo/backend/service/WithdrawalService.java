@@ -17,6 +17,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.time.LocalDate;
+import java.time.DayOfWeek;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class WithdrawalService {
@@ -51,20 +57,32 @@ public class WithdrawalService {
 
     public void saveCardTransactions(CardResponseDTO response, Long shelterId) {
         for (CardResponseDTO.Transaction transaction : response.getRec().getTransactionList()) {
-            if (!withdrawalRepository.existsByTransactionUniqueNo(transaction.getTransactionUniqueNo())) {
-                Withdrawal withdrawal = new Withdrawal();
-                withdrawal.setDogId(null);
-                withdrawal.setCategory(transaction.getCategoryName());
-                withdrawal.setTransactionBalance(transaction.getTransactionBalance());
-                withdrawal.setContent(getMerchantCategory(Long.parseLong(transaction.getMerchantId())));
-                withdrawal.setDate(transaction.getTransactionDate());
-                withdrawal.setMerchantId(Long.parseLong(transaction.getMerchantId()));
-                withdrawal.setShelterId(shelterId);
-                withdrawal.setTransactionUniqueNo(transaction.getTransactionUniqueNo());
+            String merchantName = getMerchantNameByCategoryId(transaction.getCategoryId());
+            // String content = "Transaction with " + merchantName + " on " + transaction.getTransactionDate();
+            String content = merchantName;
+            
+            // Create or update the withdrawal object
+            Withdrawal withdrawal = new Withdrawal();
+            withdrawal.setContent(content);
+            withdrawal.setShelterId(shelterId);
+            withdrawal.setDogId(null);
+            withdrawal.setCategory(transaction.getCategoryName());
+            withdrawal.setTransactionBalance(transaction.getTransactionBalance());
+            withdrawal.setDate(transaction.getTransactionDate());
+            withdrawal.setMerchantId(Long.parseLong(transaction.getMerchantId()));
+            withdrawal.setTransactionUniqueNo(transaction.getTransactionUniqueNo());
 
-                withdrawalRepository.save(withdrawal);
-            }
+            // Save the withdrawal
+            withdrawalRepository.save(withdrawal);
         }
+    }
+
+    private String getMerchantNameByCategoryId(String categoryId) {
+        List<MerchantCategory> categories = merchantCategoryRepository.findByCategoryId(categoryId);
+        if (!categories.isEmpty()) {
+            return categories.get(0).getMerchantName();
+        }
+        return "Unknown Merchant";
     }
 
     private String getMerchantCategory(Long merchantId) {
@@ -148,5 +166,57 @@ public class WithdrawalService {
         return withdrawals.stream()
                 .mapToDouble(withdrawal -> Double.parseDouble(withdrawal.getTransactionBalance()))
                 .sum();
+    }
+
+    public Map<String, Double> getWeeklyExpenditureSumsAndPrediction() {
+        LocalDate today = LocalDate.now();
+        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
+        List<Double> weeklySums = new ArrayList<>();
+        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        // Fetch all withdrawals once
+        List<Withdrawal> allWithdrawals = withdrawalRepository.findAll();
+
+        // Calculate sums for the last 5 weeks and this week
+        for (int i = 0; i < 6; i++) {
+            LocalDate endOfWeek = startOfWeek.plusDays(6);
+            LocalDate finalStartOfWeek = startOfWeek;
+            LocalDate finalEndOfWeek = endOfWeek;
+
+            double weeklySum = allWithdrawals.stream()
+                    .filter(withdrawal -> {
+                        LocalDate withdrawalDate = LocalDate.parse(withdrawal.getDate(), dbFormatter);
+                        return !withdrawalDate.isBefore(finalStartOfWeek) && !withdrawalDate.isAfter(finalEndOfWeek);
+                    })
+                    .mapToDouble(withdrawal -> Double.parseDouble(withdrawal.getTransactionBalance()))
+                    .sum();
+            weeklySums.add(weeklySum);
+            startOfWeek = startOfWeek.minusWeeks(1);
+        }
+
+        // Reverse the list to have the most recent week last
+        Collections.reverse(weeklySums);
+
+        // Exponential Smoothing for prediction
+        double alpha = 0.3; // Smoothing factor
+        double smoothedValue = weeklySums.get(0); // Initialize with the first week's value
+
+        for (int i = 1; i < 5; i++) {
+            smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
+        }
+
+        double prediction = smoothedValue;
+
+        // Create a map with named keys and maintain order
+        Map<String, Double> result = new LinkedHashMap<>();
+        result.put("5WeeksAgo", weeklySums.get(0));
+        result.put("4WeeksAgo", weeklySums.get(1));
+        result.put("3WeeksAgo", weeklySums.get(2));
+        result.put("2WeeksAgo", weeklySums.get(3));
+        result.put("1WeeksAgo", weeklySums.get(4));
+        result.put("ThisWeek", weeklySums.get(5));
+        result.put("Prediction", prediction);
+
+        return result;
     }
 }

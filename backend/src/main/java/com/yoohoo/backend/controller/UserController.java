@@ -16,6 +16,8 @@ import jakarta.servlet.http.HttpSession;
 import com.yoohoo.backend.entity.User;
 import java.util.Map;
 import org.springframework.http.MediaType;
+import java.util.HashMap;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -85,10 +87,10 @@ public class UserController {
             // Redis에 userKey 저장
             userService.storeUserKeyInRedis(user.getUserId(), userKey);
             
-            return new RedirectView("/home");
+            return new RedirectView("/kakao/callback");
         } catch (Exception e) {
             logger.error("Kakao 로그인 중 오류 발생", e);
-            return new RedirectView("/error");
+            return new RedirectView("/login/error");
         }
     }
 
@@ -100,7 +102,7 @@ public class UserController {
             
             if (userId == null) {
                 logger.error("User not logged in");
-                return new RedirectView("/error");
+                return new RedirectView("/login/error");
             }
             
             // Redis에서 토큰 가져오기
@@ -108,7 +110,7 @@ public class UserController {
             
             if (accessToken == null) {
                 logger.error("Access token not found for user: {}", userId);
-                return new RedirectView("/error");
+                return new RedirectView("/login/error");
             }
             
             // 헤더 설정
@@ -128,7 +130,7 @@ public class UserController {
             // 카카오 연결 해제 성공 확인
             if (!unlinkResponse.getStatusCode().is2xxSuccessful()) {
                 logger.error("Failed to unlink with Kakao: {}", unlinkResponse.getBody());
-                return new RedirectView("/error");
+                return new RedirectView("/login/error");
             }
 
             // 토큰 삭제 및 사용자 정보 업데이트
@@ -147,7 +149,7 @@ public class UserController {
             return new RedirectView("/");
         } catch (Exception e) {
             logger.error("Error during unlink", e);
-            return new RedirectView("/error");
+            return new RedirectView("/login/error");
         }
     }
 
@@ -156,5 +158,24 @@ public class UserController {
         String newNickname = requestBody.get("newNickname");
         User updatedUser = userService.updateNickname(userId, newNickname);
         return ResponseEntity.ok(updatedUser);
+    }
+
+    @GetMapping("/user-info")
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        User user = userService.findById(userId);
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("userId", user.getUserId());
+        userInfo.put("kakaoEmail", user.getKakaoEmail());
+        userInfo.put("nickname", user.getNickname());
+        userInfo.put("isAdmin", user.getIsAdmin() != null && user.getIsAdmin());
+        userInfo.put("shelterId", user.getShelterId());
+        userInfo.put("createdAt", user.getCreatedAt());
+
+        return ResponseEntity.ok(userInfo);
     }
 }
