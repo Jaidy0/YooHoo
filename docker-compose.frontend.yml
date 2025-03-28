@@ -3,16 +3,14 @@ services:
   stable_frontend:
     image: ${FRONTEND_IMAGE}:latest
     container_name: stable_frontend
-    environment:
-      BACKEND_URL: http://${EC2_BACKEND_HOST}:${STABLE_BACKEND_PORT}
+    env_file: .env
     ports:
       - "${STABLE_FRONTEND_PORT}:3000"
 
   canary_frontend:
     image: ${FRONTEND_IMAGE}:${CANARY_TAG}
     container_name: canary_frontend
-    environment:
-      BACKEND_URL: http://${EC2_BACKEND_HOST}:${CANARY_BACKEND_PORT}
+    env_file: .env
     ports:
       - "${CANARY_FRONTEND_PORT}:3000"
 
