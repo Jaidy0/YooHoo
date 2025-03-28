@@ -184,20 +184,20 @@
   justify-content: center;
 }
 
-.moreButton {
-  width: 100%;
-  padding: $spacing-md;
-  background-color: $yh-yellow;
-  color: $text-333;
-  border: none;
-  border-radius: $border-radius-md;
-  font-weight: $font-weight-medium;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.yellowButton {
+  background-color: $yh-yellow !important;
+  color: $text-333 !important;
+  padding: $spacing-md !important;
+  border-radius: $border-radius-md !important;
+  font-weight: $font-weight-medium !important;
 
   &:hover {
-    background-color: darken($yh-yellow, 5%);
+    background-color: darken($yh-yellow, 5%) !important;
   }
+}
+
+.details {
+  align-items: center;
 }
 
 // 반응형 스타일
