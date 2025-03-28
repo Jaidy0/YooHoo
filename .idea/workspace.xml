@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ec70ab62-bbb7-422b-a307-791072c1d4d3" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.develop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.develop.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.frontend.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.frontend.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
