@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styles from './page.module.scss';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import DropDown from '@/components/common/DropDown/DropDown';
@@ -94,6 +95,7 @@ const sortOptions = [
 ];
 
 export default function Shelters() {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSort, setSelectedSort] = useState(sortOptions[0].value);
   const [shelterItems, setShelterItems] = useState(shelterData);
@@ -183,8 +185,7 @@ export default function Shelters() {
               dogCount={shelter.dogCount}
               likeCount={shelter.likeCount}
               onClick={() => {
-                // 보호소 상세 페이지로 이동하는 로직
-                console.log(`보호소 ${shelter.id} 클릭됨`);
+                router.push('/yoohoo/shelters/' + shelter.id);
               }}
             />
           ))}
