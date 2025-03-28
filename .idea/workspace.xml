@@ -7,9 +7,6 @@
     <list default="true" id="ec70ab62-bbb7-422b-a307-791072c1d4d3" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.develop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.develop.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.frontend.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.frontend.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,7 +78,7 @@
       <updated>1741329058880</updated>
       <workItem from="1741329059957" duration="121000" />
       <workItem from="1742429842017" duration="2000" />
-      <workItem from="1743147759989" duration="2115000" />
+      <workItem from="1743147759989" duration="2735000" />
     </task>
     <servers />
   </component>

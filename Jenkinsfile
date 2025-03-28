@@ -40,7 +40,7 @@ pipeline {
             steps {
                 sh 'rm -f .git/index.lock || true'
                 retry(3) {
-                    git branch: "infra-dev",
+                    git branch: "develop",
                         credentialsId: "${GIT_CREDENTIALS_ID}",
                         url: "${GIT_REPOSITORY_URL}"
                 }
