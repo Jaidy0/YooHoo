@@ -30,16 +30,17 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
     <div className={styles.profileLayout}>
       {/* 대시보드는 메인 프로필 페이지에서만 표시 */}
       <div className={styles.dashboardContainer}>
-      {isMainProfilePage && <Dashboard />}
+        {isMainProfilePage && <Dashboard />}
       </div>
 
       {/* 탭 메뉴 */}
-      <TabMenu
-        menuItems={menuItems}
-        fullWidth={true}
-        className={styles.tabMenu}
-      />
-
+      <div className={styles.tabMenu}>
+        <TabMenu
+          menuItems={menuItems}
+          fullWidth={true}
+          className={styles.tabMenu}
+        />
+      </div>
       {/* 페이지 컨텐츠 */}
       <main className={styles.content}>{children}</main>
     </div>
