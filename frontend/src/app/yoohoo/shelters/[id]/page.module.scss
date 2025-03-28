@@ -165,10 +165,48 @@
   white-space: pre-line;
 }
 
+// 보호 중인 강아지 탭 스타일
+.dogsContent {
+  padding: $spacing-md 0;
+}
+
+.dogsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+}
+
+.dogCardWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.moreButton {
+  width: 100%;
+  padding: $spacing-md;
+  background-color: $yh-yellow;
+  color: $text-333;
+  border: none;
+  border-radius: $border-radius-md;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: darken($yh-yellow, 5%);
+  }
+}
+
 // 반응형 스타일
 @media (min-width: $breakpoint-md) {
   .container {
     max-width: 768px;
     margin: 0 auto;
+  }
+
+  .dogsGrid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

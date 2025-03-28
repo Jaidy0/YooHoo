@@ -19,12 +19,6 @@ export default function GroupDetailPage({
     <div className={styles.container}>
       {/* 이미지 헤더 */}
       <div className={styles.headerImage}>
-        <div className={styles.backButtonContainer}>
-          <Link href='/yoohoo/shelters' className={styles.backButton}>
-            ←
-          </Link>
-          <h1 className={styles.pageTitle}>후원 단체 리스트</h1>
-        </div>
         <Image
           src='/images/dummy.jpeg'
           alt='동물보호연합'
@@ -42,13 +36,6 @@ export default function GroupDetailPage({
             더 이상 아프고 다치지 않도록, 다함께 돌보는 공동체
           </p>
         </div>
-      </div>
-
-      {/* 후원 버튼 */}
-      <div className={styles.donateButtonWrapper}>
-        <Button variant='primary' size='lg' className={styles.donateButton}>
-          후원 하기
-        </Button>
       </div>
 
       {/* 탭 컨텐츠 - 클라이언트 컴포넌트로 분리 */}
