@@ -195,6 +195,12 @@
     background-color: darken($yh-yellow, 5%) !important;
   }
 }
+.buttonWrapper {
+  margin-bottom: $spacing-md;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 .details {
   align-items: center;

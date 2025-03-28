@@ -183,6 +183,15 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
 
   return (
     <div className={styles.contentContainer}>
+      <div className={styles.buttonWrapper}>
+        <Button
+          width='90%'
+          className={styles.yellowButton}
+          onClick={() => router.push('/yoohoo/donate')}
+        >
+          이 단체 후원하기
+        </Button>
+      </div>
       {/* 탭 메뉴 */}
       <div className={styles.tabMenuWrapper}>
         <div className={styles.tabMenuInner}>
@@ -232,7 +241,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               className={styles.yellowButton}
               onClick={() => router.push('/yoohoo/donate')}
             >
-              후원하기
+              이 강아지 지정 후원하기
             </Button>
           </div>
         )}
