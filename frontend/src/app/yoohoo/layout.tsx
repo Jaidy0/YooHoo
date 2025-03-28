@@ -52,19 +52,27 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const pageTitle = pageKey ? PAGE_TITLES[pageKey] : PAGE_TITLES.main;
 
   // 제외할 페이지
-  const hideLayoutForPaths = ['/yoohoo/donate/complete'];
-  const shouldHideLayout = hideLayoutForPaths.includes(pathname);
+  const hideHeaderForPaths = ['/yoohoo/login/callback', '/yoohoo/login/kakao'];
+  const shouldHideHeader = hideHeaderForPaths.includes(pathname);
+  const hideBottomNavForPaths = [
+    '/yoohoo/donate/complete',
+    '/yoohoo/login/callback',
+    '/yoohoo/login/kakao',
+  ];
+  const shouldHideBottomNav = hideBottomNavForPaths.includes(pathname);
 
   return (
     <div className={styles.container}>
-      <Header
-        title={pageTitle}
-        type={isMainPage ? 'yoohoo' : 'sub'}
-        onBackClick={!isMainPage ? () => window.history.back() : undefined}
-      />
+      {!shouldHideHeader && (
+        <Header
+          title={pageTitle}
+          type={isMainPage ? 'yoohoo' : 'sub'}
+          onBackClick={!isMainPage ? () => window.history.back() : undefined}
+        />
+      )}
       <main className={styles.main}>{children}</main>
 
-      {!shouldHideLayout && <BottomNav items={navItems} />}
+      {!shouldHideBottomNav && <BottomNav items={navItems} />}
     </div>
   );
 }

@@ -1,87 +1,104 @@
+// store/authStore.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-
-interface User {
-  id: string;
-  email: string;
-  nickname: string;
-  profileImage?: string;
-}
+import { User } from '@/types/user';
+import { fetchCurrentUser, logoutUser } from '@/lib/api';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  accessToken: string | null;
-
-  // 액션들
-  setUser: (user: User | null) => void;
-  setAccessToken: (token: string | null) => void;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-  kakaoLogin: (code: string) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
+  checkAuthStatus: () => Promise<boolean>;
+  logout: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      // 초기 상태
-      user: null,
-      isAuthenticated: false,
-      accessToken: null,
+function createAuthStore() {
+  return create<AuthState>((set, get) => ({
+    user: null,
+    isAuthenticated: false,
+    isLoading: true,
+    error: null,
 
-      // 액션들
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
+    checkAuthStatus: async () => {
+      try {
+        set({ isLoading: true, error: null });
+        console.log('로딩 상태 변경 후:', get());
 
-      setAccessToken: (token) => set({ accessToken: token }),
+        const userData = await fetchCurrentUser();
 
-      login: (token, user) =>
-        set({
-          accessToken: token,
-          user,
-          isAuthenticated: true,
-        }),
+        if (userData) {
+          set({
+            user: userData,
+            isAuthenticated: true,
+            isLoading: false,
+          });
 
-      logout: () =>
+          // 상태 업데이트 후 현재 상태 로깅
+          console.log('인증 성공 후 상태:', get());
+          return true;
+        } else {
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+
+          // 상태 업데이트 후 현재 상태 로깅
+          console.log('인증 실패 후 상태:', get());
+          return false;
+        }
+      } catch (error) {
+        console.error('인증 상태 확인 실패:', error);
         set({
           user: null,
-          accessToken: null,
           isAuthenticated: false,
-        }),
+          isLoading: false,
+          error: '인증 확인 중 오류가 발생했습니다.',
+        });
 
-      kakaoLogin: async (code: string) => {
-        try {
-          const response = await fetch('/api/auth/kakao-callback', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ code }),
-          });
+        // 에러 상태 업데이트 후 현재 상태 로깅
+        console.log('인증 에러 후 상태:', get());
+        return false;
+      }
+    },
 
-          if (!response.ok) {
-            throw new Error('카카오 로그인 실패');
-          }
+    logout: async () => {
+      try {
+        set({ isLoading: true, error: null });
+        console.log('로그아웃 로딩 시작 후 상태:', get());
 
-          const data = await response.json();
+        const success = await logoutUser();
 
+        if (success) {
           set({
-            user: data.user,
-            accessToken: data.accessToken,
-            isAuthenticated: true,
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
           });
-        } catch (error) {
-          console.error('카카오 로그인 에러:', error);
-          throw error;
+
+          // 로그아웃 성공 후 상태 로깅
+          console.log('로그아웃 성공 후 상태:', get());
+        } else {
+          set({
+            isLoading: false,
+            error: '로그아웃 중 오류가 발생했습니다.',
+          });
+
+          // 로그아웃 실패 후 상태 로깅
+          console.log('로그아웃 실패 후 상태:', get());
         }
-      },
-    }),
-    {
-      name: 'auth-storage', // localStorage에 저장될 키 이름
-      partialize: (state) => ({
-        user: state.user,
-        accessToken: state.accessToken,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
-);
+      } catch (error) {
+        console.error('로그아웃 실패:', error);
+        set({
+          isLoading: false,
+          error: '로그아웃 중 오류가 발생했습니다.',
+        });
+
+        // 로그아웃 에러 후 상태 로깅
+        console.log('로그아웃 에러 후 상태:', get());
+      }
+    },
+  }));
+}
+
+export const useAuthStore = createAuthStore();
