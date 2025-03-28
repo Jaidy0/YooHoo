@@ -1,9 +1,86 @@
-// page.module.scss
-@import '@/assets/styles/abstracts/variables';
+@use '@/assets/styles/abstracts/variables' as *;
 
 .shelterPage {
+  display: flex;
+  padding: 37px 10px;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 0 0;
+  align-self: stretch;
   background-color: $yh-admin-bg;
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+  width: 100%;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.subTitle {
+  font-size: $font-size-sm;
+  color: $yh-orange;
+  font-weight: $font-weight-medium;
+}
+
+.mainTitle {
+  font-size: $font-size-3xl;
   color: $text-333;
-  padding: $spacing-md;
-  height: 100%;
+  font-weight: $font-weight-bold;
+}
+
+.searchBar {
+  width: 100%;
+  max-width: 400px;
+}
+
+.shelterList {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  width: 100%;
+}
+
+.dropdownContainer {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.shelters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+// 반응형 스타일
+@media (max-width: $breakpoint-md) {
+  .header {
+    align-items: center;
+    text-align: center;
+  }
+
+  .title {
+    align-items: center;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .shelterPage {
+    padding: 24px 8px;
+  }
+
+  .mainTitle {
+    font-size: $font-size-2xl;
+  }
 }
