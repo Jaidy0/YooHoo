@@ -1,0 +1,9 @@
+// page.module.scss
+@import '@/assets/styles/abstracts/variables';
+
+.shelterPage {
+  background-color: $yh-admin-bg;
+  color: $text-333;
+  padding: $spacing-md;
+  height: 100%;
+}
