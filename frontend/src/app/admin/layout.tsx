@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           />
           <MoveButton
             leftIcon={<IconBox name='home' size={24} />}
-            onClick={() => router.push('/main')}
+            onClick={() => router.push('/yoohoo')}
           >
             메인 화면으로 가기
           </MoveButton>
