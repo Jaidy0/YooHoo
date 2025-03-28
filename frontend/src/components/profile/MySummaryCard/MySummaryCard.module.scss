@@ -1,0 +1,45 @@
+.card {
+  border-radius: 10px;
+  padding: 0.875rem;
+  position: relative;
+  overflow: hidden;
+  height: 5rem;
+  width: 7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  align-items: center;
+  background-color: $yh-peach;
+}
+
+.title {
+  font-size: 0.75rem;
+  color: $yh-brown;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.value {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: $yh-orange;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.imageContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+}
+
+.footprintImage {
+  object-fit: contain;
+  width: 10rem;
+}
