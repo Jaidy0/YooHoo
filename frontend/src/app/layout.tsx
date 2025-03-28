@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     // 기본 favicon
     icon: '/favicon.ico',
     // Apple 기기용 아이콘
-    apple: '/apple-icon.png',
+    apple: '/icon.png',
     // PWA용 아이콘들
     shortcut: ['/favicon.ico'],
     other: [
