@@ -10,11 +10,16 @@ export const metadata: Metadata = {
   description: '유기견 보호 단체 상세 정보 페이지입니다.',
 };
 
-export default function GroupDetailPage({
+// Next.js 15.2.2에서는 params가 Promise<{ id: string }> 타입임
+export default async function GroupDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  // params를 await로 처리하여 id 값을 추출
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+
   return (
     <div className={styles.container}>
       {/* 이미지 헤더 */}
@@ -38,8 +43,8 @@ export default function GroupDetailPage({
         </div>
       </div>
 
-      {/* 탭 컨텐츠 - 클라이언트 컴포넌트로 분리 */}
-      <GroupDetailClient groupId={params.id} />
+      {/* 클라이언트 컴포넌트로 id 전달 */}
+      <GroupDetailClient groupId={id} />
     </div>
   );
 }
