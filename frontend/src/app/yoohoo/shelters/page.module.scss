@@ -11,18 +11,11 @@
   min-height: 100vh;
 }
 
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
 .header {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 40px;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
   width: 100%;
 }
 
@@ -31,7 +24,6 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  margin-bottom: 16px;
 }
 
 .subTitle {
@@ -49,13 +41,12 @@
 .searchBar {
   width: 100%;
   max-width: 400px;
-  margin-top: 8px;
 }
 
 .shelterList {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: $spacing-sm;
   width: 100%;
 }
 
