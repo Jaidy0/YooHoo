@@ -23,6 +23,9 @@ pipeline {
         DOCKER_HUB_CREDENTIALS_ID = "dockerhub-token"
         STABLE_TAG = "stable-${env.BUILD_NUMBER}"
         CANARY_TAG = "canary-${env.BUILD_NUMBER}"
+        NEXT_PUBLIC_API_URL=""
+        NEXT_PUBLIC_KAKAO_CLIENT_ID=""
+        NEXT_PUBLIC_KAKAO_REDIRECT_URI=""
         BACKEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-backend"
         FRONTEND_IMAGE = "${DOCKER_IMAGE_PREFIX}/yoohoo-frontend"
         STABLE_WEIGHT = "${100 - params.TRAFFIC_SPLIT.toInteger()}"
@@ -37,7 +40,7 @@ pipeline {
             steps {
                 sh 'rm -f .git/index.lock || true'
                 retry(3) {
-                    git branch: "develop",
+                    git branch: "infra-dev",
                         credentialsId: "${GIT_CREDENTIALS_ID}",
                         url: "${GIT_REPOSITORY_URL}"
                 }
@@ -71,6 +74,9 @@ pipeline {
                         STABLE_FRONTEND_PORT = envMap['STABLE_FRONTEND_PORT']
                         CANARY_FRONTEND_PORT = envMap['CANARY_FRONTEND_PORT']
                         PROMETHEUS_PORT = envMap['PROMETHEUS_PORT']
+                        NEXT_PUBLIC_API_URL = envMap['NEXT_PUBLIC_API_URL']
+                        NEXT_PUBLIC_KAKAO_CLIENT_ID = envMap['NEXT_PUBLIC_KAKAO_CLIENT_ID']
+                        NEXT_PUBLIC_KAKAO_REDIRECT_URI = envMap['NEXT_PUBLIC_KAKAO_REDIRECT_URI']
                     }
                 }
             }
@@ -99,7 +105,11 @@ pipeline {
                             docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
                                 dir("frontend") {
                                     sh """
-                                        docker build -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
+                                        docker build \\
+                                            --build-arg NEXT_PUBLIC_API_URL=${env.NEXT_PUBLIC_API_URL} \\
+                                            --build-arg NEXT_PUBLIC_KAKAO_CLIENT_ID=${env.NEXT_PUBLIC_KAKAO_CLIENT_ID} \\
+                                            --build-arg NEXT_PUBLIC_KAKAO_REDIRECT_URI=${env.NEXT_PUBLIC_KAKAO_REDIRECT_URI} \\
+                                            -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
                                         docker push ${FRONTEND_IMAGE}:${CANARY_TAG}
                                     """
                                 }
@@ -138,7 +148,7 @@ pipeline {
                 }
             }
         }
-        /* stage('Monitor Canary with Prometheus') {
+        stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
                 script {
@@ -306,7 +316,7 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         stage('Promote to Stable') {
             parallel {
                 stage('Backend Promotion') {
