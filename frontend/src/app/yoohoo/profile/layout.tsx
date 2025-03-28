@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './layout.module.scss';
 import TabMenu from '@/components/common/TabMenu/TabMenu';
-// import Dashboard from '@/components/profile/Dashboard';
+import Dashboard from '@/components/profile/Dashboard/Dashboard';
 
 interface ProfileLayoutProps {
   children: ReactNode;
@@ -29,7 +29,9 @@ export default function ProfileLayout({ children }: ProfileLayoutProps) {
   return (
     <div className={styles.profileLayout}>
       {/* 대시보드는 메인 프로필 페이지에서만 표시 */}
-      {/* {isMainProfilePage && <Dashboard />} */}
+      <div className={styles.dashboardContainer}>
+      {isMainProfilePage && <Dashboard />}
+      </div>
 
       {/* 탭 메뉴 */}
       <TabMenu
