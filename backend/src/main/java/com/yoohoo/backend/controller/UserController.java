@@ -87,10 +87,10 @@ public class UserController {
             // Redis에 userKey 저장
             userService.storeUserKeyInRedis(user.getUserId(), userKey);
             
-            return new RedirectView("/kakao/callback");
+            return new RedirectView("/yoohoo/login/callback");
         } catch (Exception e) {
             logger.error("Kakao 로그인 중 오류 발생", e);
-            return new RedirectView("/login/error");
+            return new RedirectView("/yoohoo/login/error");
         }
     }
 
@@ -102,7 +102,7 @@ public class UserController {
             
             if (userId == null) {
                 logger.error("User not logged in");
-                return new RedirectView("/login/error");
+                return new RedirectView("/yoohoo/login/error");
             }
             
             // Redis에서 토큰 가져오기
@@ -110,7 +110,7 @@ public class UserController {
             
             if (accessToken == null) {
                 logger.error("Access token not found for user: {}", userId);
-                return new RedirectView("/login/error");
+                return new RedirectView("/yoohoo/login/error");
             }
             
             // 헤더 설정
@@ -130,7 +130,7 @@ public class UserController {
             // 카카오 연결 해제 성공 확인
             if (!unlinkResponse.getStatusCode().is2xxSuccessful()) {
                 logger.error("Failed to unlink with Kakao: {}", unlinkResponse.getBody());
-                return new RedirectView("/login/error");
+                return new RedirectView("/yoohoo/login/error");
             }
 
             // 토큰 삭제 및 사용자 정보 업데이트
@@ -149,7 +149,7 @@ public class UserController {
             return new RedirectView("/");
         } catch (Exception e) {
             logger.error("Error during unlink", e);
-            return new RedirectView("/login/error");
+            return new RedirectView("/yoohoo/login/error");
         }
     }
 
