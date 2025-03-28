@@ -3,7 +3,7 @@ import Image from 'next/image';
 import styles from './page.module.scss';
 // import OAuthRedirectHandler from '@/components/auth/OAuthRedirectHandler';
 
-export default async function Login() {
+export default function Login() {
   return (
     <div className={styles.container}>
       <Image
