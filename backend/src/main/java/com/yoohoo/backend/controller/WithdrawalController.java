@@ -6,6 +6,7 @@ import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.repository.WithdrawalRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -35,6 +36,8 @@ public class WithdrawalController {
     @Autowired
     private WithdrawalRepository withdrawalRepository;
     
+    @Value("${app.domain}")
+    private String domain;
 
     @PutMapping("/{withdrawalId}/dogId")
     public ResponseEntity<Map<String, String>> updateDogId(
@@ -125,7 +128,7 @@ public class WithdrawalController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
             ResponseEntity<String> response = RestTemplate.exchange(
-                "http://localhost:8080/s3/upload",
+                domain + "/s3/upload",
                 HttpMethod.POST,
                 requestEntity,
                 String.class

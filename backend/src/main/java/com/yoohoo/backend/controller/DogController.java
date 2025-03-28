@@ -12,6 +12,7 @@ import com.yoohoo.backend.service.S3Service;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -41,6 +42,8 @@ public class DogController {
         this.restTemplate = restTemplate;
     }
 
+    @Value("${app.domain}")
+    private String domain;
 
     @GetMapping("/names")
     public ResponseEntity<List<DogIdNameDTO>> getDogsByUserShelter(HttpSession session) {
@@ -103,7 +106,7 @@ public class DogController {
                 HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
     
                 ResponseEntity<String> response = restTemplate.exchange(
-                    "http://localhost:8080/s3/upload",
+                    domain + "/s3/upload",
                     HttpMethod.POST,
                     requestEntity,
                     String.class

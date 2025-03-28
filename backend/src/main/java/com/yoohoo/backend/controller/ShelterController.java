@@ -9,6 +9,7 @@ import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.service.ShelterFinanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -38,6 +39,10 @@ public class ShelterController {
         this.s3Service = s3Service;
         this.restTemplate = restTemplate;
     }
+
+    @Value("${app.domain}")
+    private String domain;
+
     @GetMapping
     public List<ShelterListDTO> getAllSheltersWithDogCount(
         @RequestParam(required = false) String search,
@@ -131,7 +136,7 @@ public class ShelterController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    "http://localhost:8080/s3/upload", // S3Controller의 /s3/upload API URL
+                domain + "/s3/upload",
                     HttpMethod.POST,
                     requestEntity,
                     String.class
