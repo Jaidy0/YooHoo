@@ -2,16 +2,17 @@
 
 .shelterPage {
   display: flex;
-  padding: 37px 10px;
+  padding: $spacing-xl $spacing-sm;
   flex-direction: column;
   align-items: center;
-  flex: 1 0 0;
   align-self: stretch;
   background-color: $yh-admin-bg;
   min-height: 100vh;
 }
 
 .header {
+  align-items: center;
+  text-align: center;
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
@@ -22,11 +23,14 @@
 .title {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center; // flex-start에서 center로 변경
+  width: 100%; // 너비 100%로 설정
   gap: 8px;
+  text-align: center; // 텍스트도 가운데 정렬 유지
 }
-
 .subTitle {
+  align-items: center;
+  text-align: center;
   font-size: $font-size-sm;
   color: $yh-orange;
   font-weight: $font-weight-medium;
@@ -61,26 +65,4 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
-}
-
-// 반응형 스타일
-@media (max-width: $breakpoint-md) {
-  .header {
-    align-items: center;
-    text-align: center;
-  }
-
-  .title {
-    align-items: center;
-  }
-}
-
-@media (max-width: $breakpoint-sm) {
-  .shelterPage {
-    padding: 24px 8px;
-  }
-
-  .mainTitle {
-    font-size: $font-size-2xl;
-  }
 }
