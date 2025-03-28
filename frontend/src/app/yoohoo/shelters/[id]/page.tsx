@@ -1,7 +1,5 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import Link from 'next/link';
-import Button from '@/components/common/buttons/Button/Button';
 import GroupDetailClient from './client';
 import styles from './page.module.scss';
 
