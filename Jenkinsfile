@@ -106,9 +106,9 @@ pipeline {
                                 dir("frontend") {
                                     sh """
                                         docker build \\
-                                            --build-arg NEXT_PUBLIC_API_URL=${env.NEXT_PUBLIC_API_URL} \\
-                                            --build-arg NEXT_PUBLIC_KAKAO_CLIENT_ID=${env.NEXT_PUBLIC_KAKAO_CLIENT_ID} \\
-                                            --build-arg NEXT_PUBLIC_KAKAO_REDIRECT_URI=${env.NEXT_PUBLIC_KAKAO_REDIRECT_URI} \\
+                                            --build-arg NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \\
+                                            --build-arg NEXT_PUBLIC_KAKAO_CLIENT_ID=${NEXT_PUBLIC_KAKAO_CLIENT_ID} \\
+                                            --build-arg NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI} \\
                                             -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
                                         docker push ${FRONTEND_IMAGE}:${CANARY_TAG}
                                     """
