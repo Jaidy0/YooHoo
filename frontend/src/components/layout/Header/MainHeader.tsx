@@ -42,7 +42,7 @@ export function MainHeader({ onNotificationClick }: MainHeaderProps) {
       className={`${styles.mainHeader} ${isScrolled ? styles.scrolled : ''}`}
     >
       <div className={styles.left}>
-        <Link href='/main' className={styles.logoLink}>
+        <Link href='/yoohoo' className={styles.logoLink}>
           <Image
             src='/images/yoohoo-logo.svg'
             alt='유후 Logo'
