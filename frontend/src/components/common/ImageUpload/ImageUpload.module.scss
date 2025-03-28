@@ -40,10 +40,10 @@
   border: 1px dashed $yh-orange;
   background-color: lighten($yh-orange, 35%);
 
-  &:hover {
-    border-color: darken($yh-orange, 10%);
-    background-color: lighten($yh-orange, 33%);
-  }
+  // &:hover {
+  //   border-color: darken($yh-orange, 10%);
+  //   background-color: lighten($yh-orange, 33%);
+  // }
 }
 
 .previewContainer {
