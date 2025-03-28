@@ -99,7 +99,10 @@ export default function MainPage() {
                   <br />
                   <b>따뜻한 후원</b>
                 </p>
-                <Link href='/login' className={styles.donateButton}>
+                <Link
+                  href='/yoohoo/login/kakao'
+                  className={styles.donateButton}
+                >
                   로그인하기
                   <span className={styles.arrow}>→</span>
                 </Link>
