@@ -148,7 +148,7 @@ pipeline {
                 }
             }
         }
-        stage('Monitor Canary with Prometheus') {
+/*         stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
                 script {
@@ -316,7 +316,7 @@ pipeline {
                     }
                 }
             }
-        }
+        } */
         stage('Promote to Stable') {
             parallel {
                 stage('Backend Promotion') {
