@@ -173,6 +173,7 @@
 .dogsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: $spacing-sm;
   margin-bottom: $spacing-md;
 }
@@ -204,9 +205,5 @@
   .container {
     max-width: 768px;
     margin: 0 auto;
-  }
-
-  .dogsGrid {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
