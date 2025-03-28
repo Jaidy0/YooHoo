@@ -141,25 +141,6 @@ export default function DogDetailView({
               <li>정기 건강검진: 진행 중</li>
             </ul>
           </section>
-
-          <section className={styles.detailSection}>
-            <h3 className={styles.sectionTitle}>입양 요건</h3>
-            <p className={styles.sectionContent}>
-              {dogDetails.energetic >= 4
-                ? '활발한 성격이므로 산책을 자주 해줄 수 있는 가정환경이 필요합니다.'
-                : '차분한 성격이므로 조용한 환경에서 지낼 수 있는 가정을 선호합니다.'}{' '}
-              {dogDetails.familiarity >= 4
-                ? '다른 반려동물이나 아이들과도 잘 어울립니다.'
-                : '독립적인 성격이므로 조용한 환경에서 천천히 적응할 시간이 필요합니다.'}{' '}
-              입양 전 최소 1회 이상의 방문이 필요하며, 입양 후 정기적인 소식
-              공유를 부탁드립니다.
-            </p>
-          </section>
-
-          <div className={styles.actionButtons}>
-            <button className={styles.adoptButton}>입양 상담 신청</button>
-            <button className={styles.donateButton}>후원하기</button>
-          </div>
         </div>
       </div>
     </div>
