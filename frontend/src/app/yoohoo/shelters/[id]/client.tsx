@@ -104,9 +104,9 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
 
   // 탭 메뉴 아이템
   const tabMenuItems = [
-    { name: '소개', link: `/groups/${groupId}?tab=intro` },
-    { name: '보호 중인 강아지', link: `/groups/${groupId}?tab=dogs` },
-    { name: '후원금 운용 내역', link: `/groups/${groupId}?tab=funds` },
+    { name: '소개' },
+    { name: '보호 중인 강아지' },
+    { name: '후원금 운용 내역' },
   ];
 
   // 활성화된 탭 상태
@@ -115,7 +115,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   // TabMenuItem 인터페이스 정의 (이미 존재하는 인터페이스와 동일하게 맞춤)
   interface TabMenuItem {
     name: string;
-    link: string;
+    link?: string;
     isActive?: boolean;
   }
 
