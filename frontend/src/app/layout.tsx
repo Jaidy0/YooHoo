@@ -48,7 +48,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   return (
     <html lang='ko'>
       <head></head>
-      <body className={styles.body}>
+      <body className={styles.body} suppressHydrationWarning>
         <main className={styles.main}>{children}</main>
       </body>
     </html>
