@@ -20,8 +20,15 @@ RUN yarn install --immutable
 # 2단계: next.js 빌드 단계
 FROM node:18-alpine AS builder
 
-# Docker를 build할때 개발 모드 구분용 환경 변수를 명시함
-ARG ENV_MODE
+# 빌드 시 전달된 인자 정의
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_KAKAO_CLIENT_ID
+ARG NEXT_PUBLIC_KAKAO_REDIRECT_URI
+
+# 환경 변수 설정
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+ENV NEXT_PUBLIC_KAKAO_CLIENT_ID=${NEXT_PUBLIC_KAKAO_CLIENT_ID}
+ENV NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI}
 
 # 명령어를 실행할 디렉터리 지정
 WORKDIR /usr/src/app
