@@ -5,6 +5,9 @@ import styles from './page.module.scss';
 import Image from 'next/image';
 import ShelterCard from '@/components/shelters/ShelterCard/ShelterCard';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore';
+// import { useRouter } from 'next/navigation';
 
 const MOCK_SHELTERS = [
   {
@@ -50,6 +53,18 @@ const MOCK_SHELTERS = [
 ];
 
 export default function MainPage() {
+  // const router = useRouter();
+  const { user, isAuthenticated, checkAuthStatus } = useAuthStore();
+
+  // 컴포넌트 마운트 시 인증 상태 확인
+  useEffect(() => {
+    function checkAuth() {
+      checkAuthStatus();
+    }
+
+    checkAuth();
+  }, [checkAuthStatus]);
+
   return (
     <div className={styles.container}>
       <section className={styles.heroSection}>
@@ -65,15 +80,31 @@ export default function MainPage() {
 
         <div className={styles.donationCard}>
           <div className={styles.cardContent}>
-            <p className={styles.cardText}>
-              YooHoo와 함께 시작하는
-              <br />
-              <b>따뜻한 후원</b>
-            </p>
-            <Link href='/donation' className={styles.donateButton}>
-              후원하러가기
-              <span className={styles.arrow}>→</span>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <p className={styles.cardText}>
+                  <b>{user?.nickname}</b>님, 안녕하세요!
+                  <br />
+                  <b>따뜻한 후원</b>을 이어가볼까요?
+                </p>
+                <Link href='/donation' className={styles.donateButton}>
+                  후원하러가기
+                  <span className={styles.arrow}>→</span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className={styles.cardText}>
+                  YooHoo와 함께 시작하는
+                  <br />
+                  <b>따뜻한 후원</b>
+                </p>
+                <Link href='/login' className={styles.donateButton}>
+                  로그인하기
+                  <span className={styles.arrow}>→</span>
+                </Link>
+              </>
+            )}
           </div>
 
           <div className={styles.piggyImage}>
