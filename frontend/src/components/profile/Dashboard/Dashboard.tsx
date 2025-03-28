@@ -14,8 +14,8 @@ export default function Dashboard({ className = '' }: DashboardProps) {
 
   // 더미 데이터
   const [userInfo, setUserInfo] = useState({
-    nickname: '마이보미',
-    daysWithService: 24,
+    nickname: '닉네임',
+    createdAt: 24,
   });
 
   const [donationStats, setDonationStats] = useState({
@@ -34,9 +34,9 @@ export default function Dashboard({ className = '' }: DashboardProps) {
       {/* 사용자 정보 헤더 */}
       <div className={styles.userHeader}>
         <h2 className={styles.userText}>
-          닉네임님, <br />
-          <span className={styles.accentText}>유후</span>와 함께한지{' '}
-          <span className={styles.accentText}>24일</span>째예요!
+          {userInfo.nickname}님, <br />
+          <span className={styles.accentText}>유후</span>와 함께한지
+          <span className={styles.accentText}>{userInfo.createdAt}일</span>째예요!
         </h2>
         <div className={styles.userSettingsButton}>
           <IconBox name='gear' size={20} />
