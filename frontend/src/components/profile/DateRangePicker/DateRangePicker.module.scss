@@ -1,0 +1,40 @@
+.datePickers {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0.5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+
+  input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    outline: none;
+    transition: none;
+  }
+
+  span {
+    align-self: center;
+    font-size: 0.875rem;
+  }
+
+  :global(.react-datepicker-popper) {
+    z-index: 11;
+  }
+
+  :global(.react-datepicker__day:hover),
+  :global(.react-datepicker__day--selected),
+  :global(.react-datepicker__day--range-start),
+  :global(.react-datepicker__day--range-end) {
+    background-color: $yh-yellow;
+    color: black;
+  }
+
+  :global(.react-datepicker__day--in-range),
+  :global(.react-datepicker__day--in-selecting-range) {
+    background-color: rgba($yh-yellow, 0.3);
+    color: black;
+  }
+}
