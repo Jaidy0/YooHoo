@@ -1,12 +1,12 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './DogCard.module.scss';
-import { DogSummary, Gender, DogStatus } from '@/types/dog';
+import { Dog, Gender, DogStatus } from '@/types/dog';
 
 export interface DogCardProps {
-  dog: DogSummary;
+  dog: Dog;
   onClick?: (dogId: number) => void;
-  // 라우팅 여부를 결정하는 새 프롭 추가
+  // 라우팅 여부를 결정하는 프롭
   disableRouting?: boolean;
 }
 
@@ -15,7 +15,7 @@ export default function DogCard({
   onClick,
   disableRouting = false,
 }: DogCardProps) {
-  const { dogId, name, age, gender, status, mainImage } = dog;
+  const { dogId, name, age, gender, status, imageUrl } = dog;
 
   const genderText = gender === Gender.MALE ? '남' : '여';
 
@@ -38,7 +38,7 @@ export default function DogCard({
   const statusInfo = getStatusInfo(status);
 
   // 기본 이미지 URL (이미지가 없을 경우)
-  const imageUrl = mainImage?.imageUrl || '/images/dummy.jpeg';
+  const dogImageUrl = imageUrl || '/images/dummy.jpeg';
 
   // 카드 클릭 핸들러
   const handleCardClick = (e: React.MouseEvent) => {
@@ -58,7 +58,7 @@ export default function DogCard({
       {/* 이미지 컨테이너 */}
       <div className={styles.imageContainer}>
         <Image
-          src={imageUrl}
+          src={dogImageUrl}
           alt={`${name} 사진`}
           width={190}
           height={190}
