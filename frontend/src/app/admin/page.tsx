@@ -10,7 +10,8 @@ export default function AdminPage() {
   const shelterId = 1;
 
   // 커스텀 훅을 사용하여 보호소 데이터 가져오기
-  const { shelter, isLoading, error, refreshData } = useShelterData(shelterId);
+  const { shelter, isLoading, error, refreshData, dogCount } =
+    useShelterData(shelterId);
 
   // 실제 표시할 데이터 (API에서 불러오거나 로딩 중이면 더미 데이터 사용)
   const displayData = {
@@ -97,9 +98,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {/* 신뢰 지수 및 발자취 섹션 - 1:2 비율로 레이아웃 조정 */}
       <div className={styles.adminShelterDetail}>
-        {/* 신뢰 지수 (왼쪽 1/3) */}
         <div className={styles.adminTrust}>
           <div className={styles.trustContent}>
             <div className={styles.trustHeader}>
@@ -125,13 +124,58 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* 발자취 (오른쪽 2/3) */}
         <div className={styles.adminFootPrint}>
-          <div className={styles.footPrintContent}>
-            <div className={styles.trustHeader}>
-              <div className={styles.adminTitle}>우리의 발자취</div>
+          <div className={styles.footPrintHeader}>
+            <div className={styles.adminTitle}>우리의 발자취</div>
+            <button className={styles.dogManageBtn}>강아지 관리</button>
+          </div>
+          <div className={styles.footprintBox}>
+            <div className={styles.statsContainer}>
+              <div className={styles.statItem}>
+                <div className={styles.pawContainer}>
+                  <Image
+                    src='/images/paw.png'
+                    alt='강아지 발바닥'
+                    width={120}
+                    height={120}
+                    className={styles.pawImage}
+                  />
+                  <span className={styles.count}>{dogCount.rescue}</span>
+                </div>
+                <p className={styles.label}>구조된 강아지</p>
+              </div>
+
+              <div className={styles.statItem}>
+                <div className={styles.pawContainer}>
+                  <Image
+                    src='/images/paw.png'
+                    alt='강아지 발바닥'
+                    width={120}
+                    height={120}
+                    className={styles.pawImage}
+                  />
+                  <span className={styles.count}>{dogCount.protection}</span>
+                </div>
+                <p className={styles.label}>보호 중</p>
+              </div>
+
+              <div className={styles.statItem}>
+                <div className={styles.pawContainer}>
+                  <Image
+                    src='/images/paw.png'
+                    alt='강아지 발바닥'
+                    width={120}
+                    height={120}
+                    className={styles.pawImage}
+                  />
+                  <span className={styles.count}>{dogCount.adoption}</span>
+                </div>
+                <p className={styles.label}>입양 완료</p>
+              </div>
+
+              <div className={styles.dogImageContainer}></div>
             </div>
-            {/* 발자취 내용은 여기에 추가 */}
+            <div className={styles.pawprintBackground}></div>
           </div>
         </div>
       </div>
