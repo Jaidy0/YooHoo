@@ -29,6 +29,7 @@ export default function AdminPage() {
 
   return (
     <div className={styles.adminShelter}>
+      {/* 보호소 기본 정보 섹션 */}
       <div className={styles.adminShelterInfo}>
         <div className={styles.shelterPhoto}>
           <Image
@@ -95,7 +96,10 @@ export default function AdminPage() {
           </div>
         </div>
       </div>
+
+      {/* 신뢰 지수 및 발자취 섹션 - 1:2 비율로 레이아웃 조정 */}
       <div className={styles.adminShelterDetail}>
+        {/* 신뢰 지수 (왼쪽 1/3) */}
         <div className={styles.adminTrust}>
           <div className={styles.trustContent}>
             <div className={styles.trustHeader}>
@@ -104,7 +108,7 @@ export default function AdminPage() {
                 <IconBox name='zoom'></IconBox>
               </div>
             </div>
-            {/* API에서 받아온 신뢰도 표시 (필요한 경우) */}
+            {/* API에서 받아온 신뢰도 표시 */}
             {shelter && (
               <div className={styles.trustIndicator}>
                 <div className={styles.trustBar}>
@@ -120,16 +124,19 @@ export default function AdminPage() {
             )}
           </div>
         </div>
+
+        {/* 발자취 (오른쪽 2/3) */}
         <div className={styles.adminFootPrint}>
           <div className={styles.footPrintContent}>
             <div className={styles.trustHeader}>
-              <div className={styles.adminTitle}>단체 신뢰 지수</div>
+              <div className={styles.adminTitle}>우리의 발자취</div>
             </div>
+            {/* 발자취 내용은 여기에 추가 */}
           </div>
         </div>
       </div>
 
-      {/* 에러 메시지 표시 (개발 중에만 사용, 실제 배포 시 제거 또는 스타일 개선) */}
+      {/* 에러 메시지 표시 */}
       {error && (
         <div className={styles.errorMessage}>
           <p>{error}</p>
@@ -137,7 +144,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {/* 로딩 인디케이터 (필요한 경우) */}
+      {/* 로딩 인디케이터 */}
       {isLoading && (
         <div className={styles.loadingOverlay}>
           <p>정보를 불러오는 중...</p>
