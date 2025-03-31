@@ -6,7 +6,7 @@ import ImageUpload from '@/components/common/ImageUpload/ImageUpload';
 import Input from '@/components/common/Input/Input';
 import Button from '@/components/common/buttons/Button/Button';
 import RatingScale from '@/components/common/RatingScale/RatingScale';
-import { Dog, DogStatus, Gender, DogImage } from '@/types/dog';
+import { Dog, DogStatus, Gender } from '@/types/dog';
 import styles from './page.module.scss';
 
 export default function DogsEditPage() {
@@ -27,9 +27,6 @@ export default function DogsEditPage() {
   const [isVaccinated, setIsVaccinated] = useState(false);
   const [admissionDate, setAdmissionDate] = useState('');
 
-  // 이미지 상태
-  const [dogImages, setDogImages] = useState<DogImage[]>([]);
-  const [mainImage, setMainImage] = useState<File | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
 
@@ -63,15 +60,7 @@ export default function DogsEditPage() {
           isNeutered: true,
           status: DogStatus.PROTECTED,
           admissionDate: '2023-10-15T09:00:00.000+00:00',
-          images: [
-            {
-              imageId: 1,
-              dogId: parseInt(dogId),
-              imageUrl: 'https://via.placeholder.com/300x300',
-              isMain: true,
-              uploadDate: '2023-10-15T09:00:00.000+00:00',
-            },
-          ],
+          imageUrl: '/images/dummy.jpeg',
         };
 
         // 데이터 설정
@@ -86,10 +75,6 @@ export default function DogsEditPage() {
         setIsNeutered(mockData.isNeutered);
         setIsVaccinated(mockData.isVaccination);
         setAdmissionDate(formatDateForInput(mockData.admissionDate));
-
-        if (mockData.images) {
-          setDogImages(mockData.images);
-        }
 
         setIsLoading(false);
       } catch (err) {
@@ -106,16 +91,6 @@ export default function DogsEditPage() {
   const formatDateForInput = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
-  };
-
-  // 메인 이미지 업로드 핸들러
-  const handleMainImageUpload = (file: File | null) => {
-    setMainImage(file);
-    if (errors.mainImage) {
-      const newErrors = { ...errors };
-      delete newErrors.mainImage;
-      setErrors(newErrors);
-    }
   };
 
   // 이미지 업로드 에러 핸들러
@@ -191,7 +166,6 @@ export default function DogsEditPage() {
 
       // TODO: API 호출 또는 상태 관리 로직 추가
       console.log('Updated dog data:', formData);
-      console.log('Main image:', mainImage);
       console.log('Additional images:', additionalImages);
 
       alert('강아지 정보가 수정되었습니다.');
@@ -332,32 +306,18 @@ export default function DogsEditPage() {
             <div className={styles.imageSection}>
               <div className={styles.currentImages}>
                 <h3 className={styles.sectionTitle}>현재 이미지</h3>
-                <div className={styles.imageGrid}>
-                  {dogImages.map((img) => (
-                    <div
-                      key={img.imageId}
-                      className={`${styles.currentImage} ${img.isMain ? styles.mainImage : ''}`}
-                    >
-                      <img
-                        src={img.imageUrl}
-                        alt={`강아지 이미지 ${img.imageId}`}
-                      />
-                      {img.isMain && (
-                        <span className={styles.mainTag}>대표</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
               </div>
 
               <div className={styles.imageUploadSection}>
                 <h3 className={styles.sectionTitle}>새 대표 이미지 업로드</h3>
                 <ImageUpload
-                  value={mainImage}
-                  onChange={handleMainImageUpload}
                   onError={handleImageError}
                   error={errors.mainImage}
                   uploadText='대표 이미지를 업로드해주세요'
+                  value={null}
+                  onChange={function (_file: File | null): void {
+                    throw new Error('Function not implemented.');
+                  }}
                 />
 
                 {/* 추가 이미지 업로드 기능은 필요에 따라 구현 */}
