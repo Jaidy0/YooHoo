@@ -3,9 +3,12 @@
 import styles from './page.module.scss';
 import Image from 'next/image';
 import IconBox from '@/components/common/IconBox/IconBox';
+import { useRouter } from 'next/navigation';
 import { useShelterData } from '@/hooks/useShetlerData';
 
 export default function AdminPage() {
+  const router = useRouter();
+
   // 임시 보호소 ID (향후 사용자 정보에서 가져올 예정)
   const shelterId = 1;
 
@@ -127,7 +130,12 @@ export default function AdminPage() {
         <div className={styles.adminFootPrint}>
           <div className={styles.footPrintHeader}>
             <div className={styles.adminTitle}>우리의 발자취</div>
-            <button className={styles.dogManageBtn}>강아지 관리</button>
+            <button
+              className={styles.dogManageBtn}
+              onClick={() => router.push('/admin/dogs')}
+            >
+              강아지 관리
+            </button>
           </div>
           <div className={styles.footprintBox}>
             <div className={styles.statsContainer}>
