@@ -14,7 +14,7 @@ export interface TabMenuItem {
   /**
    * 메뉴 아이템 클릭 시 이동할 링크
    */
-  link: string;
+  link?: string;
 
   /**
    * 메뉴 아이템 활성화 여부 (선택 사항)
@@ -77,7 +77,7 @@ export default function TabMenu({
     const index = menuItems.findIndex(
       (item) =>
         pathname === item.link ||
-        (item.link !== '/admin' && pathname.startsWith(item.link))
+        (item.link && item.link !== '/admin' && pathname.startsWith(item.link))
     );
 
     if (index !== -1) {

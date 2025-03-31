@@ -185,7 +185,7 @@ export default function Shelters() {
               dogCount={shelter.dogCount}
               likeCount={shelter.likeCount}
               onClick={() => {
-                router.push('/yoohoo/shelters/' + shelter.id);
+                router.push(`/yoohoo/shelters/${shelter.id}`);
               }}
             />
           ))}

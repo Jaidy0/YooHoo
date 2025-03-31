@@ -173,6 +173,7 @@
 .dogsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: $spacing-sm;
   margin-bottom: $spacing-md;
 }
@@ -183,20 +184,26 @@
   justify-content: center;
 }
 
-.moreButton {
-  width: 100%;
-  padding: $spacing-md;
-  background-color: $yh-yellow;
-  color: $text-333;
-  border: none;
-  border-radius: $border-radius-md;
-  font-weight: $font-weight-medium;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.yellowButton {
+  background-color: $yh-yellow !important;
+  color: $text-333 !important;
+  padding: $spacing-md !important;
+  border-radius: $border-radius-md !important;
+  font-weight: $font-weight-medium !important;
 
   &:hover {
-    background-color: darken($yh-yellow, 5%);
+    background-color: darken($yh-yellow, 5%) !important;
   }
+}
+.buttonWrapper {
+  margin-bottom: $spacing-md;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.details {
+  align-items: center;
 }
 
 // 반응형 스타일
@@ -204,9 +211,5 @@
   .container {
     max-width: 768px;
     margin: 0 auto;
-  }
-
-  .dogsGrid {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
