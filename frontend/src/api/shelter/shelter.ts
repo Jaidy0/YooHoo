@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { ShelterDetail } from '@/types/shelter';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-
+const API_BASE_URL: string =
+  process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
 /**
  * 보호소 상세 정보를 가져오는 API
  * @param shelterId 보호소 ID
