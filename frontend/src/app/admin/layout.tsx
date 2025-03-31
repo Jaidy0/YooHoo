@@ -36,7 +36,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   // 탭 클릭 시 상태 업데이트 및 페이지 이동
   const handleTabClick = (item: TabMenuItem, index: number) => {
     setActiveTabIndex(index);
-    router.push(item.link);
+    if (item.link) {
+      // link가 존재할 때만 router.push 실행
+      router.push(item.link);
+    }
   };
 
   return (
