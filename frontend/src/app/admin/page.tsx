@@ -44,7 +44,7 @@ export default function AdminPage() {
         <div className={styles.shelterText}>
           <div className={styles.shelterTitle}>{displayData.name}</div>
           <div className={styles.settingButton}>
-            <IconBox name='gear'></IconBox>
+            <IconBox name='gear' size={24}></IconBox>
           </div>
           <div className={styles.shelterInfoText}>
             {/* 설립연도 */}
@@ -105,7 +105,7 @@ export default function AdminPage() {
             <div className={styles.trustHeader}>
               <div className={styles.adminTitle}>단체 신뢰 지수</div>
               <div className={styles.questionButton}>
-                <IconBox name='zoom'></IconBox>
+                <IconBox name='zoom' size={24}></IconBox>
               </div>
             </div>
             {/* API에서 받아온 신뢰도 표시 */}

@@ -42,12 +42,14 @@
 
 .settingButton {
   display: flex;
-  padding: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  justify-content: center;
   align-items: center;
-  gap: $spacing-sm;
+  flex-shrink: 0;
   position: absolute;
   right: $spacing-xxl;
-
   border-radius: $border-radius-full;
   border: 1px solid $text-121212;
   background: $yh-yellow;
@@ -127,6 +129,7 @@
   width: 100%;
   align-items: center;
   gap: 4px;
+  position: relative; /* 자식 요소 절대 위치 지정을 위한 설정 */
 }
 
 .adminTitle {
@@ -141,16 +144,19 @@
 
 .questionButton {
   display: flex;
-  width: 20px;
-  height: 20px;
-  padding: 10px;
-  flex-direction: column;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
   border-radius: $border-radius-full;
   border: 1px solid $text-121212;
   background: $yh-yellow;
+
+  position: absolute;
+
+  right: 0;
 }
 
 .adminFootPrint {
