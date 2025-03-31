@@ -1,5 +1,3 @@
-@use '../../../assets/styles/abstracts/variables' as *;
-
 .sectionBox {
   width: 100%;
   padding: 0 10px;
@@ -9,7 +7,18 @@
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
   margin-bottom: 10px;
+  gap: 8px;
+}
+
+.titleArea {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .title {
@@ -28,4 +37,10 @@
   background-color: #f7f7f7;
   border-radius: 20px;
   padding: 20px;
+}
+
+.titleRight {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
