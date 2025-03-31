@@ -36,7 +36,8 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         <h2 className={styles.userText}>
           {userInfo.nickname}님, <br />
           <span className={styles.accentText}>유후</span>와 함께한지
-          <span className={styles.accentText}>{userInfo.createdAt}일</span>째예요!
+          <span className={styles.accentText}>{userInfo.createdAt}일</span>
+          째예요!
         </h2>
         <div className={styles.userSettingsButton}>
           <IconBox name='gear' size={20} />
@@ -50,6 +51,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
           rightIcon={<IconBox name='chevron' size={20} />}
           className={styles.moveButton}
           variant='secondary'
+          onClick={handleMoveToReportPage}
         >
           마이 후원 레포트
         </MoveButton>
