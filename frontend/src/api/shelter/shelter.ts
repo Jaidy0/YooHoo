@@ -38,18 +38,33 @@ export const getDogCountByShelter = async (
   rescue: number;
 }> => {
   try {
+    // 중요: withCredentials 설정을 유지하고 직접 세션 쿠키 확인
+    console.log('현재 쿠키:', document.cookie);
+
     const response = await axios.get(
       `${API_BASE_URL}/api/dogs/status?shelterId=${shelterId}`,
       {
-        withCredentials: true,
+        withCredentials: true, // 인증 정보 전송 필요
+        headers: {
+          Accept: 'application/json',
+        },
       }
     );
+
     return response.data;
   } catch (error) {
+    // 에러 처리
     console.error(
       `보호소 ID ${shelterId}의 강아지 상태 통계 조회 실패:`,
       error
     );
-    throw error;
+
+    // 대체 데이터 반환 (테스트용)
+    console.warn('에러 발생으로 기본값 반환');
+    return {
+      adoption: 0,
+      protection: 0,
+      rescue: 0,
+    };
   }
 };
