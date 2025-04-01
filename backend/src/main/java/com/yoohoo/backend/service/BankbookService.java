@@ -4,6 +4,7 @@ import com.yoohoo.backend.dto.BankbookRequestDTO;
 import com.yoohoo.backend.dto.BankbookResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import com.yoohoo.backend.repository.WithdrawalRepository;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +15,16 @@ import org.springframework.http.MediaType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 @Service
 public class BankbookService {
 
     @Autowired
     private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private WithdrawalRepository withdrawalRepository;
 
     public BankbookResponseDTO inquireTransactionHistory(Long shelterId) {
         String apiUrl = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireTransactionHistoryList";
@@ -72,6 +77,15 @@ public class BankbookService {
     private String generateUniqueTransactionNo(LocalDateTime now) {
         String transmissionDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String transmissionTime = now.format(DateTimeFormatter.ofPattern("HHmmss"));
-        return transmissionDate + transmissionTime + "000001"; // 예시로 고정된 일련번호 사용
+        String uniqueTransactionNo;
+
+        do {
+            // 랜덤한 6자리 숫자 생성
+            String randomSixDigits = String.format("%06d", new Random().nextInt(1000000));
+            uniqueTransactionNo = transmissionDate + transmissionTime + randomSixDigits;
+        } while (withdrawalRepository.existsByTransactionUniqueNo(uniqueTransactionNo)); // 중복 확인
+
+        return uniqueTransactionNo; // 고유한 거래 번호 반환
     }
+
 }

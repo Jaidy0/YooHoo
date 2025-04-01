@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Random;
 
 @Service
 public class CardService {
@@ -86,18 +87,25 @@ public class CardService {
 
     public void saveCardTransactions(CardResponseDTO response, Long shelterId) {
         for (CardResponseDTO.Transaction transaction : response.getRec().getTransactionList()) {
-            if (!withdrawalRepository.existsByTransactionUniqueNo(transaction.getTransactionUniqueNo())) {
+            String transactionUniqueNo = transaction.getTransactionUniqueNo();
+            
+            // 이미 존재하는 거래인지 확인
+            if (!withdrawalRepository.existsByTransactionUniqueNo(transactionUniqueNo)) {
                 Withdrawal withdrawal = new Withdrawal();
-                withdrawal.setDogId(null);
+                withdrawal.setDogId(null); // 필요한 경우 적절한 값으로 설정
                 withdrawal.setCategory(transaction.getCategoryName());
                 withdrawal.setTransactionBalance(transaction.getTransactionBalance());
                 withdrawal.setContent(getMerchantCategory(Long.parseLong(transaction.getMerchantId())));
                 withdrawal.setDate(transaction.getTransactionDate());
                 withdrawal.setMerchantId(Long.parseLong(transaction.getMerchantId()));
                 withdrawal.setShelterId(shelterId);
-                withdrawal.setTransactionUniqueNo(transaction.getTransactionUniqueNo());
+                withdrawal.setTransactionUniqueNo(transactionUniqueNo);
 
+                // 새로운 거래 저장
                 withdrawalRepository.save(withdrawal);
+            } else {
+                // 이미 존재하는 거래에 대한 로그 추가 (선택 사항)
+                System.out.println("Transaction already exists: " + transactionUniqueNo);
             }
         }
     }
@@ -110,6 +118,14 @@ public class CardService {
     private String generateUniqueTransactionNo(LocalDateTime now) {
         String transmissionDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         String transmissionTime = now.format(DateTimeFormatter.ofPattern("HHmmss"));
-        return transmissionDate + transmissionTime + "000001"; // 예시로 고정된 일련번호 사용
+        String uniqueTransactionNo;
+
+        do {
+            // 랜덤한 6자리 숫자 생성
+            String randomSixDigits = String.format("%06d", new Random().nextInt(1000000));
+            uniqueTransactionNo = transmissionDate + transmissionTime + randomSixDigits;
+        } while (withdrawalRepository.existsByTransactionUniqueNo(uniqueTransactionNo)); // 중복 확인
+
+        return uniqueTransactionNo; // 고유한 거래 번호 반환
     }
 }
