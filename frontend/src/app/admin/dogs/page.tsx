@@ -9,7 +9,6 @@ import Pagination from '@/components/common/Pagination/Pagination';
 import { DogStatus } from '@/types/dog';
 import { useRouter } from 'next/navigation';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
-import IconBox from '@/components/common/IconBox/IconBox';
 import { useDogData } from '@/hooks/useDogData';
 
 // 탭 메뉴 아이템
@@ -102,11 +101,7 @@ export default function DogsPage() {
               initialValue={searchTerm}
               className={styles.search}
             />
-            <Button
-              onClick={handleAddDog}
-              variant='primary'
-              leftIcon={<IconBox name='dog' size={20} />}
-            >
+            <Button onClick={handleAddDog} variant='primary'>
               신규 등록
             </Button>
           </div>
