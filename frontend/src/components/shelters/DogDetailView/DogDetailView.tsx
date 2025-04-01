@@ -1,11 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import { DogSummary, Dog, Gender, DogStatus } from '@/types/dog';
+import { Dog, Gender, DogStatus } from '@/types/dog';
 import styles from './DogDetailView.module.scss';
 
 interface DogDetailViewProps {
-  selectedDog: DogSummary;
+  selectedDog: Dog;
   dogDetails: Dog;
   onClose: () => void;
 }
@@ -15,6 +15,15 @@ export default function DogDetailView({
   dogDetails,
   onClose,
 }: DogDetailViewProps) {
+  // admissionDate가 존재할 때만 날짜 포맷팅을 처리
+  const formattedAdmissionDate = dogDetails.admissionDate
+    ? new Date(dogDetails.admissionDate).toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : '날짜 정보 없음';
+
   return (
     <div className={styles.dogDetailView}>
       <button className={styles.backButton} onClick={onClose}>
@@ -79,11 +88,7 @@ export default function DogDetailView({
             <p className={styles.sectionContent}>
               {dogDetails.name}는 {dogDetails.breed} 품종으로, {dogDetails.age}
               살 {dogDetails.gender === Gender.MALE ? '남아' : '여아'}입니다.
-              {new Date(dogDetails.admissionDate).toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+              {formattedAdmissionDate}
               부터 저희 보호소에서 보호 중입니다.
             </p>
           </section>
@@ -97,7 +102,7 @@ export default function DogDetailView({
                   {[1, 2, 3, 4, 5].map((level) => (
                     <div
                       key={level}
-                      className={`${styles.personalityLevel} ${level <= dogDetails.energetic ? styles.active : ''}`}
+                      className={`${styles.personalityLevel} ${level <= (dogDetails.energetic ?? 0) ? styles.active : ''}`}
                     />
                   ))}
                 </div>
@@ -108,23 +113,23 @@ export default function DogDetailView({
                   {[1, 2, 3, 4, 5].map((level) => (
                     <div
                       key={level}
-                      className={`${styles.personalityLevel} ${level <= dogDetails.familiarity ? styles.active : ''}`}
+                      className={`${styles.personalityLevel} ${level <= (dogDetails.familiarity ?? 0) ? styles.active : ''}`}
                     />
                   ))}
                 </div>
               </div>
             </div>
             <ul className={styles.tagList}>
-              {dogDetails.energetic >= 4 && (
+              {(dogDetails.energetic ?? 0) >= 4 && (
                 <li className={styles.tag}>활발함</li>
               )}
-              {dogDetails.energetic <= 2 && (
+              {(dogDetails.energetic ?? 0) <= 2 && (
                 <li className={styles.tag}>조용함</li>
               )}
-              {dogDetails.familiarity >= 4 && (
+              {(dogDetails.familiarity ?? 0) >= 4 && (
                 <li className={styles.tag}>사교적</li>
               )}
-              {dogDetails.familiarity <= 2 && (
+              {(dogDetails.familiarity ?? 0) <= 2 && (
                 <li className={styles.tag}>독립적</li>
               )}
               <li className={styles.tag}>

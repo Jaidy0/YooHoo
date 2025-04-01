@@ -4,7 +4,7 @@ import { useState } from 'react';
 import TabMenu from '@/components/common/TabMenu/TabMenu';
 import DogCard from '@/components/common/Card/DogCard/DogCard';
 import DogDetailView from '@/components/shelters/DogDetailView/DogDetailView';
-import { DogSummary, Dog, Gender, DogStatus } from '@/types/dog';
+import { Dog, Gender, DogStatus } from '@/types/dog';
 import styles from './page.module.scss';
 import Button from '@/components/common/buttons/Button/Button';
 import { useRouter } from 'next/navigation';
@@ -18,7 +18,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   const groupDesc = `계절이 지나가는 하늘에는 가을로 가득 차 있습니다. 나는 아무 걱정도 없이 가을 속의 별들을 다 헤일 듯합니다. 가을 속에 하나 둘 새겨지는 별을 이제 다 못 헤는 것은 쉬이 아닙니다.`;
 
   // 더미 강아지 데이터
-  const dogsList: DogSummary[] = [
+  const dogsList: Dog[] = [
     {
       dogId: 1,
       name: '봄이',
@@ -128,7 +128,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
 
   // 상태 관리
   const [activeTab, setActiveTab] = useState(1); // 기본값을 두 번째 탭(보호 중인 강아지)으로 설정
-  const [selectedDog, setSelectedDog] = useState<DogSummary | null>(null);
+  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
   const [dogDetails, setDogDetails] = useState<Dog | null>(null);
 
   // TabMenuItem 인터페이스 정의
