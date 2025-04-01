@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import StepTitle from '../../StepTitle/StepTitle';
 import ShelterCard from '../ShelterCard/ShelterCard';
@@ -18,7 +18,10 @@ export default function ShelterSection({
 }: ShelterSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sort, setSort] = useState<'dogcount' | 'reliability'>('dogcount');
-  
+
+  // 선택된 요소에 대한 ref
+  const selectedShelterRef = useRef<HTMLDivElement>(null);
+
   // useShelterList 훅 사용
   const { shelters, isLoading, error } = useShelterList(sort);
 
@@ -33,6 +36,16 @@ export default function ShelterSection({
         shelter.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : shelters;
+
+  // 선택된 요소로 스크롤 처리
+  useEffect(() => {
+    if (selectedShelterId && selectedShelterRef.current) {
+      selectedShelterRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+    }
+  }, [selectedShelterId, filteredShelters]);
 
   // 로딩 상태 표시
   if (isLoading) {
@@ -62,21 +75,29 @@ export default function ShelterSection({
         onSearch={handleSearch}
         placeholder='단체명을 입력해주세요'
         fullWidth
+        initialValue={searchTerm}
       />
 
       {filteredShelters.length > 0 ? (
         <div className={styles.shelterList}>
-          {filteredShelters.map((shelter) => (
-            <ShelterCard
-              key={shelter.shelterId}
-              id={shelter.shelterId}
-              name={shelter.name}
-              imageUrl={shelter.imageUrl || ''}
-              isSelected={selectedShelterId === shelter.shelterId}
-              isRecent={false} // 새 훅에서는 isRecent 정보가 없으므로 false로 설정
-              onClick={onSelectShelter}
-            />
-          ))}
+          {filteredShelters.map((shelter) => {
+            const isSelected = selectedShelterId === shelter.shelterId;
+            return (
+              <div
+                key={shelter.shelterId}
+                ref={isSelected ? selectedShelterRef : null}
+              >
+                <ShelterCard
+                  id={shelter.shelterId}
+                  name={shelter.name}
+                  imageUrl={shelter.imageUrl || ''}
+                  isSelected={isSelected}
+                  isRecent={false}
+                  onClick={onSelectShelter}
+                />
+              </div>
+            );
+          })}
         </div>
       ) : (
         <div className={styles.noResults}>검색 결과가 없습니다.</div>
