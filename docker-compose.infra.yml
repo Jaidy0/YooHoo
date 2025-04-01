@@ -5,8 +5,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      TZ: ${TZ}
     ports:
       - "${MYSQL_PORT}:3306"
+    restart: always
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -23,6 +25,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    restart: always
     volumes:
       - ./nginx:/etc/nginx
       - /etc/letsencrypt:/etc/letsencrypt:ro

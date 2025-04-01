@@ -6,12 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="ec70ab62-bbb7-422b-a307-791072c1d4d3" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/nginx.canary.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx.canary.conf.template" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/nginx.canary.develop.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx.canary.develop.conf.template" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/nginx.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx.conf.template" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/nginx.develop.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx.develop.conf.template" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/nginx.stable.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx.stable.conf.template" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/nginx/nginx.stable.develop.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx.stable.develop.conf.template" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.develop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.develop.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.infra.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.infra.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,7 +40,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/workspace/dev/S12P21B209/backend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/workspace/study/jpa-using/jpashop&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -84,7 +80,8 @@
       <workItem from="1741329059957" duration="121000" />
       <workItem from="1742429842017" duration="2000" />
       <workItem from="1743147759989" duration="5386000" />
-      <workItem from="1743468477036" duration="3454000" />
+      <workItem from="1743468477036" duration="6840000" />
+      <workItem from="1743496820001" duration="2166000" />
     </task>
     <servers />
   </component>

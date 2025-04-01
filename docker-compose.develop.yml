@@ -5,8 +5,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      TZ: ${TZ}
     ports:
       - "${MYSQL_PORT}:3306"
+    restart: always
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -14,6 +16,7 @@ services:
     image: redis:latest
     ports:
       - "${REDIS_PORT}:6379"
+    restart: always
     volumes:
       - redis_data:/data
 
