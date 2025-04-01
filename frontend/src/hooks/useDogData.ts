@@ -28,15 +28,18 @@ interface UseDogDataResult {
 }
 
 /**
- * 강아지 목록 데이터를 관리하는 훅
+ * 강아지 목록 데이터를 관리하는 훅 - 클라이언트 측 페이지네이션
  */
 export function useDogData({
   shelterId,
   initialPage = 0,
-  pageSize = 20, // 한 페이지당 20마리로 변경
+  pageSize = 20,
   initialStatus = 'all',
   initialSearch = '',
 }: UseDogDataParams): UseDogDataResult {
+  // 전체 데이터 목록 (페이지네이션 이전)
+  const [allDogs, setAllDogs] = useState<Dog[]>([]);
+  // 현재 페이지에 표시할 데이터
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
@@ -46,134 +49,116 @@ export function useDogData({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // API 요청 파라미터 생성
-  const getQueryParams = useCallback((): DogQueryParams => {
-    const params: DogQueryParams = {
-      page: currentPage,
-      size: pageSize,
-    };
+  // 필터링된 데이터 계산
+  const getFilteredData = useCallback(() => {
+    let filteredData = [...allDogs];
 
     // 상태 필터링
     if (status !== 'all' && Array.isArray(status) && status.length > 0) {
-      params.status = status;
-      console.log('[디버깅] status 파라미터:', status);
-    } else {
-      console.log('[디버깅] status 파라미터 없음 (전체):', status);
+      filteredData = filteredData.filter((dog) => status.includes(dog.status));
     }
 
-    // 검색어
+    // 검색어 필터링
     if (searchTerm.trim()) {
-      params.search = searchTerm.trim();
+      const searchLower = searchTerm.trim().toLowerCase();
+      filteredData = filteredData.filter((dog) =>
+        dog.name.toLowerCase().includes(searchLower)
+      );
     }
 
-    console.log('[디버깅] 최종 쿼리 파라미터:', params);
-    return params;
-  }, [currentPage, pageSize, status, searchTerm]);
+    return filteredData;
+  }, [allDogs, status, searchTerm]);
 
-  // 데이터 불러오기 함수
-  const fetchDogs = useCallback(async () => {
+  // 전체 데이터 불러오기 (API 호출)
+  const fetchAllDogs = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const params = getQueryParams();
-      console.log('[API 요청] 파라미터:', params);
-      console.log('[API 요청] 현재 페이지:', currentPage);
+      // API에 페이지네이션 없이 전체 데이터 요청
+      const params: DogQueryParams = {};
 
+      console.log('[API 요청] 전체 데이터 요청');
       const response = await getDogList(shelterId, params);
       console.log('[API 응답] 전체:', response);
 
+      let dogsData: Dog[] = [];
+
       // API 응답이 배열인 경우
       if (Array.isArray(response)) {
-        console.log('[API 응답] 배열 형태의 응답, 길이:', response.length);
-        setDogs(response);
-        setTotalPages(Math.ceil(response.length / pageSize));
-        setTotalElements(response.length);
+        dogsData = response;
       }
-      // API 응답이 { data: [...] } 형태인 경우
-      else if (response && Array.isArray(response.data)) {
-        console.log('[API 응답] data 속성 배열, 길이:', response.data.length);
-        setDogs(response.data);
-
-        // 페이지네이션 정보 설정
-        if (typeof response.totalPages === 'number') {
-          setTotalPages(response.totalPages);
-        } else if (typeof response.total === 'number') {
-          setTotalPages(Math.ceil(response.total / pageSize));
-        } else {
-          setTotalPages(Math.ceil(response.data.length / pageSize));
-        }
-
-        // 총 항목 수 설정
-        if (typeof response.total === 'number') {
-          setTotalElements(response.total);
-        } else if (typeof response.totalElements === 'number') {
-          setTotalElements(response.totalElements);
-        } else {
-          setTotalElements(response.data.length);
-        }
-      }
-      // API 응답이 { content: [...] } 형태인 경우 (Spring Data)
+      // Spring Data 형식 (content 배열)
       else if (response && Array.isArray(response.content)) {
-        console.log(
-          '[API 응답] content 속성 배열, 길이:',
-          response.content.length
-        );
-        setDogs(response.content);
-
-        if (typeof response.totalPages === 'number') {
-          setTotalPages(response.totalPages);
-        } else if (typeof response.totalElements === 'number') {
-          setTotalPages(Math.ceil(response.totalElements / pageSize));
-        } else {
-          setTotalPages(Math.ceil(response.content.length / pageSize));
-        }
-
-        if (typeof response.totalElements === 'number') {
-          setTotalElements(response.totalElements);
-        } else {
-          setTotalElements(response.content.length);
-        }
+        dogsData = response.content;
+      }
+      // 커스텀 API 형식 (data 배열)
+      else if (response && Array.isArray(response.data)) {
+        dogsData = response.data;
       }
       // 예상치 못한 응답 구조
       else {
         console.error('[API 응답] 예상치 못한 응답 구조:', response);
-        setDogs([]);
-        setTotalPages(0);
-        setTotalElements(0);
         setError('응답 데이터 형식이 올바르지 않습니다.');
+        return;
       }
+
+      console.log(`[데이터 로드] 전체 ${dogsData.length}개 데이터 로드됨`);
+      setAllDogs(dogsData);
+      setTotalElements(dogsData.length);
     } catch (err) {
       console.error('[API 호출 에러]', err);
       setError('데이터를 불러오는데 실패했습니다. 다시 시도해주세요.');
-      setDogs([]);
-      setTotalPages(0);
+      setAllDogs([]);
       setTotalElements(0);
     } finally {
       setIsLoading(false);
     }
-  }, [shelterId, getQueryParams, pageSize, currentPage]); // currentPage를 직접 의존성에 추가
+  }, [shelterId]);
 
-  // 디버깅: 상태 변경 시 로그
-  useEffect(() => {
-    console.log('[상태 변경] status:', status);
-  }, [status]);
+  // 페이지네이션 및 필터링 적용
+  const updateDisplayedDogs = useCallback(() => {
+    const filteredData = getFilteredData();
 
-  // 디버깅: 페이지 변경 시 로그
-  useEffect(() => {
-    console.log('[페이지 변경] currentPage:', currentPage);
-  }, [currentPage]);
+    // 총 페이지 수 계산
+    const calculatedTotalPages = Math.ceil(filteredData.length / pageSize);
+    setTotalPages(calculatedTotalPages);
+    setTotalElements(filteredData.length);
 
-  // 디버깅: dogs 배열 변경 시 로그
-  useEffect(() => {
-    console.log('[dogs 변경] 길이:', dogs.length);
-  }, [dogs]);
+    // 현재 페이지가 유효한지 확인
+    const validCurrentPage = Math.min(
+      Math.max(0, currentPage),
+      Math.max(0, calculatedTotalPages - 1)
+    );
 
-  // 의존성 배열 수정: currentPage, status, searchTerm이 변경될 때마다 데이터 다시 불러오기
+    // 현재 페이지에 표시할 데이터 계산
+    const start = validCurrentPage * pageSize;
+    const end = start + pageSize;
+    const paginatedData = filteredData.slice(start, end);
+
+    console.log(
+      `[페이지네이션] 페이지 ${validCurrentPage + 1}/${calculatedTotalPages}, 전체 ${filteredData.length}개 중 ${paginatedData.length}개 표시`
+    );
+
+    setDogs(paginatedData);
+  }, [getFilteredData, currentPage, pageSize]);
+
+  // 전체 데이터 로드 (최초 1회)
   useEffect(() => {
-    console.log('[fetchDogs 호출] - 페이지, 상태, 검색어 변경됨');
-    fetchDogs();
-  }, [currentPage, status, searchTerm, fetchDogs]);
+    fetchAllDogs();
+  }, [fetchAllDogs]);
+
+  // 필터 또는 페이지 변경 시 화면 업데이트
+  useEffect(() => {
+    if (allDogs.length > 0) {
+      updateDisplayedDogs();
+    }
+  }, [allDogs, currentPage, status, searchTerm, updateDisplayedDogs]);
+
+  // 전체 데이터 다시 불러오기 함수
+  const refetch = async () => {
+    await fetchAllDogs();
+  };
 
   return {
     dogs,
@@ -187,6 +172,6 @@ export function useDogData({
     setSearchTerm,
     isLoading,
     error,
-    refetch: fetchDogs,
+    refetch,
   };
 }

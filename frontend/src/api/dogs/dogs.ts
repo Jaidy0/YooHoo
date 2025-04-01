@@ -28,18 +28,6 @@ export const getDogList = async (
       queryParams.append('search', params.search);
     }
 
-    // 페이지 파라미터 전달 (중요: API가 0-based 페이지네이션 사용)
-    if (params.page !== undefined) {
-      queryParams.append('page', params.page.toString());
-      console.log('[dogApi] 페이지 파라미터:', params.page);
-    }
-
-    // 페이지 크기 파라미터 전달
-    if (params.size !== undefined) {
-      queryParams.append('size', params.size.toString());
-      console.log('[dogApi] 페이지 크기 파라미터:', params.size);
-    }
-
     // 상태 필터링 파라미터
     if (
       params.status &&
@@ -49,7 +37,6 @@ export const getDogList = async (
       params.status.forEach((status) => {
         queryParams.append('status', status.toString());
       });
-      console.log('[dogApi] 상태 파라미터:', params.status);
     }
 
     // 정렬 파라미터
@@ -58,46 +45,22 @@ export const getDogList = async (
     }
 
     const queryString = queryParams.toString();
-    const url = `${API_BASE_URL}/api/shelter/${shelterId}/dogs${queryString ? `?${queryString}` : ''}`;
-
-    console.log('[dogApi] 요청 URL:', url);
+    const url = `${API_BASE_URL}/api/shelter/${shelterId}/dogs${
+      queryString ? `?${queryString}` : ''
+    }`;
 
     const response = await axios.get(url, {
       withCredentials: true,
     });
 
-    console.log('[dogApi] 응답 데이터:', response.data);
+    // 응답이 항상 배열인 경우, DogResponse 인터페이스에 맞게 변환
+    const wrappedResponse: DogResponse = {
+      data: response.data, // DogResponse 인터페이스의 요구사항에 맞게 'data' 속성 사용
+      total: response.data.length,
+      totalPages: Math.ceil(response.data.length / (params.size || 20)),
+    };
 
-    // 응답 데이터에 페이지 정보가 없는 경우 추가해줌
-    if (response.data) {
-      // 응답이 배열인 경우
-      if (Array.isArray(response.data)) {
-        // 임시 래핑하여 페이지 정보 추가
-        const wrappedResponse = {
-          data: response.data,
-          page: params.page || 0,
-          size: params.size || 20,
-          total: response.data.length,
-          totalPages: Math.ceil(response.data.length / (params.size || 20)),
-        };
-        return wrappedResponse;
-      }
-      // 이미 객체이지만 페이지 정보가 없는 경우
-      else if (typeof response.data === 'object' && !response.data.page) {
-        response.data.page = params.page || 0;
-        response.data.size = params.size || 20;
-
-        // data 속성이 있고 배열인 경우
-        if (Array.isArray(response.data.data) && !response.data.total) {
-          response.data.total = response.data.data.length;
-          response.data.totalPages = Math.ceil(
-            response.data.data.length / (params.size || 20)
-          );
-        }
-      }
-    }
-
-    return response.data;
+    return wrappedResponse;
   } catch (error) {
     console.error(`보호소 ID ${shelterId}의 강아지 리스트 조회 실패:`, error);
     throw error;

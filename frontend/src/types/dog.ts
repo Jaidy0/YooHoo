@@ -31,15 +31,11 @@ export interface Dog {
   description?: string;
 }
 
-// API 응답 인터페이스 (확장)
+// API 응답 인터페이스 (클라이언트 페이지네이션에 필요한 부분만 유지)
 export interface DogResponse {
   data: Dog[];
-  total?: number;
-  page?: number;
-  size?: number;
-  totalPages?: number;
-  totalElements?: number;
-  content?: Dog[];
+  total: number;
+  totalPages: number;
 }
 
 // 단일 강아지 응답 인터페이스
