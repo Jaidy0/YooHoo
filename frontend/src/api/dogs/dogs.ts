@@ -1,6 +1,6 @@
 // api/dogs/dogs.ts
 import axios from 'axios';
-import { Dog, DogResponse } from '@/types/dog';
+import { Dog, DogResponse, DogUpdateDto } from '@/types/dog';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
@@ -139,6 +139,25 @@ export const registerDog = async (
     return response.data;
   } catch (error) {
     console.error('강아지 등록 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 강아지 정보 수정 API (백엔드 준비 시 활성화)
+ */
+export const updateDog = async (dogId: number, dogData: DogUpdateDto) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/api/dogs/${dogId}`,
+      dogData,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`강아지 ID ${dogId} 수정 실패:`, error);
     throw error;
   }
 };

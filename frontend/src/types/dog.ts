@@ -63,3 +63,7 @@ export const getStatusText = (status: number): string => {
 export const getGenderText = (gender: number): string => {
   return gender === Gender.MALE ? '남' : '여';
 };
+
+// 강아지 정보 수정 DTO 인터페이스
+// Dog 인터페이스에서 dogId와 imageUrl을 제외한 타입 정의
+export type DogUpdateDto = Omit<Dog, 'dogId' | 'imageUrl'>;
