@@ -5,6 +5,7 @@ import SearchBar from '@/components/common/SearchBar/SearchBar';
 import StepTitle from '../../StepTitle/StepTitle';
 import ShelterCard from '../ShelterCard/ShelterCard';
 import styles from './ShelterSection.module.scss';
+import { useShelterList } from '@/hooks/useShelterList';
 
 type ShelterSectionProps = {
   selectedShelterId: number;
@@ -16,35 +17,42 @@ export default function ShelterSection({
   onSelectShelter,
 }: ShelterSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  //   const { data: allShelters = [], isLoading: isLoadingShelters } = useShelters(searchTerm);
-  //   const { data: recentDonations = [], isLoading: isLoadingRecent } = useRecentDonations();
-
-  // 더미 데이터: 단체 목록
-  const dummyShelters = [
-    { shelterId: 1, name: '단체명', isRecent: true, imageUrl: '' },
-    { shelterId: 2, name: '단체명', isRecent: false, imageUrl: '' },
-    { shelterId: 3, name: '단체명', isRecent: false, imageUrl: '' },
-    { shelterId: 4, name: '단체명', isRecent: true, imageUrl: '' },
-  ];
+  const [sort, setSort] = useState<'dogcount' | 'reliability'>('dogcount');
+  
+  // useShelterList 훅 사용
+  const { shelters, isLoading, error } = useShelterList(sort);
 
   // 검색 처리
   const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
 
-  // 검색 결과 필터링
+  // 검색어를 기준으로 단체 필터링
   const filteredShelters = searchTerm
-    ? dummyShelters.filter((shelter) =>
+    ? shelters.filter((shelter) =>
         shelter.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : dummyShelters;
+    : shelters;
 
-  // 정렬: 최근 후원 단체가 상단에 오도록
-  const sortedShelters = [...filteredShelters].sort((a, b) => {
-    if (a.isRecent && !b.isRecent) return -1;
-    if (!a.isRecent && b.isRecent) return 1;
-    return 0;
-  });
+  // 로딩 상태 표시
+  if (isLoading) {
+    return (
+      <div>
+        <StepTitle number={1} title='후원할 단체 선택' />
+        <div className={styles.loading}>단체 목록을 불러오는 중입니다...</div>
+      </div>
+    );
+  }
+
+  // 에러 상태 표시
+  if (error) {
+    return (
+      <div>
+        <StepTitle number={1} title='후원할 단체 선택' />
+        <div className={styles.error}>{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -56,22 +64,22 @@ export default function ShelterSection({
         fullWidth
       />
 
-      {sortedShelters.length > 0 ? (
+      {filteredShelters.length > 0 ? (
         <div className={styles.shelterList}>
-          {sortedShelters.map((shelter) => (
+          {filteredShelters.map((shelter) => (
             <ShelterCard
               key={shelter.shelterId}
               id={shelter.shelterId}
               name={shelter.name}
-              imageUrl={shelter.imageUrl}
+              imageUrl={shelter.imageUrl || ''}
               isSelected={selectedShelterId === shelter.shelterId}
-              isRecent={shelter.isRecent}
+              isRecent={false} // 새 훅에서는 isRecent 정보가 없으므로 false로 설정
               onClick={onSelectShelter}
             />
           ))}
         </div>
       ) : (
-        <div>검색 결과가 없습니다.</div>
+        <div className={styles.noResults}>검색 결과가 없습니다.</div>
       )}
     </div>
   );
