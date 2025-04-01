@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { User } from '@/types/user';
 import { Shelter } from '@/types/shelter';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // axios 인스턴스 생성
 const axiosInstance = axios.create({
@@ -30,8 +30,26 @@ async function fetchWithAxios(url: string, options: AxiosRequestConfig = {}) {
 }
 
 export async function fetchCurrentUser(): Promise<User | null> {
+  // 개발 환경에서는 API 호출 없이 모의 데이터 직접 반환
+  if (process.env.NODE_ENV === 'development') {
+    console.log('개발 환경: 모의 사용자 데이터 반환 (API 호출 없음)');
+
+    // 약간의 지연 추가
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    return {
+      user_id: 1,
+      nickname: '테스트 유저',
+      kakao_email: 'test@example.com',
+      is_admin: true,
+      shelter_id: 1,
+      created_at: new Date().toISOString(),
+    };
+  }
+
+  // 프로덕션 환경에서는 실제 API 호출
   try {
-    const response = await fetchWithAxios('/api/auth/user-info');
+    const response = await axiosInstance.get('/api/auth/user-info');
     return response.data;
   } catch (error) {
     console.error('사용자 정보 조회 실패:', error);

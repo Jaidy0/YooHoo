@@ -9,7 +9,9 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useShelterList } from '@/hooks/useShelterList';
-// import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
+import { useRouter } from 'next/navigation';
+import { Shelter } from '@/types/shelter';
 
 // const MOCK_SHELTERS = [
 //   {
@@ -55,7 +57,7 @@ import { useShelterList } from '@/hooks/useShelterList';
 // ];
 
 export default function MainPage() {
-  // const router = useRouter();
+  const router = useRouter();
   const { user, isAuthenticated, checkAuthStatus } = useAuthStore();
   const { shelters, isLoading, error } = useShelterList();
 
@@ -69,11 +71,15 @@ export default function MainPage() {
   }, [checkAuthStatus]);
 
   if (isLoading) {
-    return null;
+    return (
+      <div className={styles.loadingContainer}>
+        <LoadingSpinner></LoadingSpinner>
+      </div>
+    );
   }
 
   if (error) {
-    return null;
+    return <div>단체 조회 오류</div>;
   }
 
   return (
@@ -98,10 +104,9 @@ export default function MainPage() {
                   <br />
                   <b>따뜻한 후원</b>을 이어가볼까요?
                 </p>
-                <Link href='/donation' className={styles.donateButton}>
+                <Link href='/yoohoo/donate' className={styles.donateButton}>
                   후원하러가기
                   <IconBox name='arrow' size={20} rotate={180}></IconBox>
-                  {/* <span className={styles.arrow}>→</span> */}
                 </Link>
               </>
             ) : (
@@ -161,7 +166,7 @@ export default function MainPage() {
         </div>
 
         <div className={styles.shelterCards}>
-          {shelters.slice(0, 5).map((shelter) => (
+          {shelters.slice(0, 5).map((shelter: Shelter) => (
             <ShelterCard
               key={shelter.shelterId}
               imageUrl={shelter.imageUrl}
@@ -169,7 +174,9 @@ export default function MainPage() {
               description={shelter.content}
               dogCount={shelter.dogCount}
               reliability={shelter.reliability}
-              onClick={() => console.log(`Clicked shelter: ${shelter.name}`)}
+              onClick={() => {
+                router.push(`/yoohoo/shelters/${shelter.shelterId}`);
+              }}
             />
           ))}
         </div>

@@ -1,7 +1,9 @@
+// layout.tsx
 import { ReactNode } from 'react';
 import styles from './layout.module.scss';
 import '@/assets/styles/globals.scss';
 import { Metadata } from 'next';
+import ClientMswInitializer from '@/components/ClientMswInitializer/ClientMswInitializer';
 
 export const metadata: Metadata = {
   title: '유후',
@@ -30,12 +32,6 @@ export const metadata: Metadata = {
   },
   // PWA 매니페스트
   manifest: '/manifest.json',
-  // 뷰포트 설정
-  // viewport: {
-  //   width: 'device-width',
-  //   initialScale: 1,
-  //   maximumScale: 1,
-  // },
   // 모바일 웹앱 설정
   appleWebApp: {
     capable: true,
@@ -49,6 +45,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     <html lang='ko'>
       <head></head>
       <body className={styles.body} suppressHydrationWarning>
+        {process.env.NODE_ENV === 'development' && <ClientMswInitializer />}
         <main className={styles.main}>{children}</main>
       </body>
     </html>

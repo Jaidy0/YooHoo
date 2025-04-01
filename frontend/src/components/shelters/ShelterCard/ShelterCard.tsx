@@ -17,6 +17,8 @@ interface ShelterCardProps {
   reliability: number;
   /** 클릭 이벤트 핸들러 */
   onClick?: () => void;
+  /** 카드 클래스 이름 */
+  className?: string;
 }
 
 export default function ShelterCard({
@@ -26,12 +28,18 @@ export default function ShelterCard({
   dogCount = 0,
   reliability = 0,
   onClick,
+  className,
 }: ShelterCardProps) {
   return (
-    <div className={styles.card} onClick={onClick} role='button' tabIndex={0}>
+    <div
+      className={`${styles.card} ${className}`}
+      onClick={onClick}
+      role='button'
+      tabIndex={0}
+    >
       <div className={styles.imageWrapper}>
         <Image
-          src={imageUrl}
+          src={imageUrl || '/images/dummy.jpeg'}
           width={100}
           height={100}
           alt={title}
