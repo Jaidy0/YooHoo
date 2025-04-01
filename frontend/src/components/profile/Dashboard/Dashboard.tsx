@@ -4,6 +4,7 @@ import styles from './Dashboard.module.scss';
 import MySummaryCard from '@/components/profile/MySummaryCard/MySummaryCard';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import IconBox from '@/components/common/IconBox/IconBox';
+import NicknameModal from '../NicknameModal/NicknameModal';
 
 interface DashboardProps {
   className?: string;
@@ -11,6 +12,7 @@ interface DashboardProps {
 
 export default function Dashboard({ className = '' }: DashboardProps) {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   // 더미 데이터
   const [userInfo, setUserInfo] = useState({
@@ -29,6 +31,11 @@ export default function Dashboard({ className = '' }: DashboardProps) {
     router.push('/yoohoo/profile/donation-report');
   };
 
+  const handleSaveNickname = (newNickname: string) => {
+    setUserInfo((prev) => ({ ...prev, nickname: newNickname }));
+    setIsModalOpen(false);
+  };
+
   return (
     <div className={`${styles.dashboard} ${className}`}>
       {/* 사용자 정보 헤더 */}
@@ -39,8 +46,8 @@ export default function Dashboard({ className = '' }: DashboardProps) {
           <span className={styles.accentText}>{userInfo.createdAt}일</span>
           째예요!
         </h2>
-        <div className={styles.userSettingsButton}>
-          <IconBox name='gear' size={20} />
+        <div className={styles.userSettingsButton} onClick={() => setIsModalOpen(true)}>
+          <IconBox name="gear" size={20} />
         </div>
       </div>
 
@@ -70,6 +77,14 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         />
         <MySummaryCard title='후원 강아지 수' value={donationStats.dogCount} />
       </div>
+
+      {isModalOpen && (
+        <NicknameModal
+          initialValue={userInfo.nickname}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveNickname}
+        />
+      )}
     </div>
   );
 }
