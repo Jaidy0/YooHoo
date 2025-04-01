@@ -26,7 +26,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.addAllowedOriginPattern("*"); // 모든 도메인 허용
+        configuration.addAllowedOrigin("https://j12b209.p.ssafy.io/"); // 특정 도메인 허용
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
 

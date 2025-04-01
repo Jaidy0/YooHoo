@@ -58,22 +58,27 @@ public class WithdrawalService {
     public void saveCardTransactions(CardResponseDTO response, Long shelterId) {
         for (CardResponseDTO.Transaction transaction : response.getRec().getTransactionList()) {
             String merchantName = getMerchantNameByCategoryId(transaction.getCategoryId());
-            // String content = "Transaction with " + merchantName + " on " + transaction.getTransactionDate();
             String content = merchantName;
-            
-            // Create or update the withdrawal object
-            Withdrawal withdrawal = new Withdrawal();
-            withdrawal.setContent(content);
-            withdrawal.setShelterId(shelterId);
-            withdrawal.setDogId(null);
-            withdrawal.setCategory(transaction.getCategoryName());
-            withdrawal.setTransactionBalance(transaction.getTransactionBalance());
-            withdrawal.setDate(transaction.getTransactionDate());
-            withdrawal.setMerchantId(Long.parseLong(transaction.getMerchantId()));
-            withdrawal.setTransactionUniqueNo(transaction.getTransactionUniqueNo());
 
-            // Save the withdrawal
-            withdrawalRepository.save(withdrawal);
+            // Check if the transaction already exists
+            if (!withdrawalRepository.existsByTransactionUniqueNo(transaction.getTransactionUniqueNo())) {
+                // Create or update the withdrawal object
+                Withdrawal withdrawal = new Withdrawal();
+                withdrawal.setContent(content);
+                withdrawal.setShelterId(shelterId);
+                withdrawal.setDogId(null);
+                withdrawal.setCategory(transaction.getCategoryName());
+                withdrawal.setTransactionBalance(transaction.getTransactionBalance());
+                withdrawal.setDate(transaction.getTransactionDate());
+                withdrawal.setMerchantId(Long.parseLong(transaction.getMerchantId()));
+                withdrawal.setTransactionUniqueNo(transaction.getTransactionUniqueNo());
+
+                // Save the withdrawal
+                withdrawalRepository.save(withdrawal);
+            } else {
+                // Optionally log that the transaction already exists
+                System.out.println("Transaction with unique number " + transaction.getTransactionUniqueNo() + " already exists.");
+            }
         }
     }
 
