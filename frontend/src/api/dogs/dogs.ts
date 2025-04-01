@@ -103,7 +103,6 @@ export interface DogRegisterData {
  * 강아지 등록 API
  */
 export const registerDog = async (
-  shelterId: number,
   dogData: DogRegisterData,
   dogImage: File | null
 ): Promise<Dog | null> => {

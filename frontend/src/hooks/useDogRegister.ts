@@ -30,7 +30,7 @@ interface UseRegisterResult {
     field: keyof DogRegisterFormState,
     value: string | number | File | null
   ) => void;
-  handleSubmit: (shelterId: number) => Promise<boolean>;
+  handleSubmit: () => Promise<boolean>;
   handleReset: () => void;
   validateForm: () => boolean;
 }
@@ -156,57 +156,54 @@ export const useDogRegister = (): UseRegisterResult => {
   }, [formState]);
 
   // 폼 제출 핸들러
-  const handleSubmit = useCallback(
-    async (shelterId: number): Promise<boolean> => {
-      if (!validateForm()) {
-        return false;
-      }
+  const handleSubmit = useCallback(async (): Promise<boolean> => {
+    if (!validateForm()) {
+      return false;
+    }
 
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      try {
-        const {
-          dogImage,
-          name,
-          status,
-          gender,
-          age,
-          weight,
-          breed,
-          health,
-          energetic,
-          familiarity,
-          isNeutered,
-          isVaccinated,
-        } = formState;
+    try {
+      const {
+        dogImage,
+        name,
+        status,
+        gender,
+        age,
+        weight,
+        breed,
+        health,
+        energetic,
+        familiarity,
+        isNeutered,
+        isVaccinated,
+      } = formState;
 
-        // API 요청에 필요한 데이터 구성
-        const dogData: DogRegisterData = {
-          name,
-          age: Number(age),
-          weight: Number(weight),
-          gender: getGenderCode(gender),
-          breed,
-          energetic,
-          familiarity,
-          isVaccination: getCompletionStatus(isVaccinated),
-          isNeutered: getCompletionStatus(isNeutered),
-          status: getStatusCode(status),
-          health: health || undefined,
-        };
+      // API 요청에 필요한 데이터 구성
+      const dogData: DogRegisterData = {
+        name,
+        age: Number(age),
+        weight: Number(weight),
+        gender: getGenderCode(gender),
+        breed,
+        energetic,
+        familiarity,
+        isVaccination: getCompletionStatus(isVaccinated),
+        isNeutered: getCompletionStatus(isNeutered),
+        status: getStatusCode(status),
+        health: health || undefined,
+      };
 
-        // API 호출
-        await registerDog(shelterId, dogData, dogImage);
-        return true;
-      } catch (error) {
-        console.error('강아지 등록 중 오류 발생:', error);
-        return false;
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [formState, validateForm]
-  );
+      // API 호출
+      await registerDog(dogData, dogImage);
+      return true;
+    } catch (error) {
+      console.error('강아지 등록 중 오류 발생:', error);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formState, validateForm]);
 
   // 초기화 핸들러
   const handleReset = useCallback(() => {

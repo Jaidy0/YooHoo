@@ -9,14 +9,9 @@ import styles from './page.module.scss';
 import { useDogRegister } from '@/hooks/useDogRegister';
 import { FormEvent } from 'react';
 
-interface DogsRegisterPageProps {
-  shelterId?: number;
-}
-export default function DogsRegisterPage({
-  shelterId: propShelterId,
-}: DogsRegisterPageProps) {
+export default function DogsRegisterPage() {
   const router = useRouter();
-  const shelterId = propShelterId || 1;
+
   const {
     formState,
     errors,
@@ -38,11 +33,12 @@ export default function DogsRegisterPage({
       return;
     }
 
-    const success = await handleSubmit(shelterId);
+    // shelterId 없이 호출
+    const success = await handleSubmit();
 
     if (success) {
       alert('강아지 정보가 성공적으로 등록되었습니다.');
-      // router.push('/admin/dogs/success');
+      router.push('/admin/dogs/success');
     } else {
       alert('강아지 정보 등록에 실패했습니다. 다시 시도해주세요.');
     }
