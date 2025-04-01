@@ -1,48 +1,66 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
-import styles from './layout.module.scss';
-import TabMenu from '@/components/common/TabMenu/TabMenu';
+import { ReactNode, useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 import Dashboard from '@/components/profile/Dashboard/Dashboard';
+import styles from './layout.module.scss';
 
-interface ProfileLayoutProps {
-  children: ReactNode;
-}
+// 프로필 네비게이션 항목 정의
+const profileTabs: TabMenuItem[] = [
+  { name: '후원 내역', link: '/yoohoo/profile' },
+  { name: '후원한 강아지', link: '/yoohoo/profile/donate-dogs' },
+  { name: '후원증서', link: '/yoohoo/profile/certificates' },
+  { name: '후원금 영수증', link: '/yoohoo/profile/receipts' },
+];
 
-export default function ProfileLayout({ children }: ProfileLayoutProps) {
-  // 현재 경로 가져오기
+export default function Layout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
 
-  // 메뉴 아이템 정의
-  const menuItems = [
-    { name: '후원 내역', link: '/yoohoo/profile' },
-    { name: '후원한 강아지', link: '/yoohoo/profile/donate-dogs' },
-    { name: '후원증서', link: '/yoohoo/profile/certificates' },
-    { name: '후원금 영수증', link: '/yoohoo/profile/receipts' },
-  ];
+  // 경로가 변경될 때마다 활성 탭 인덱스 업데이트
+  useEffect(() => {
+    // 경로에 따라 활성 탭 인덱스 결정
+    if (pathname === '/yoohoo/profile' || pathname === '/yoohoo/profile/') {
+      setActiveTabIndex(0);
+    } else if (pathname.startsWith('/yoohoo/profile/donate-dogs')) {
+      setActiveTabIndex(1);
+    } else if (pathname.startsWith('/yoohoo/profile/certificates')) {
+      setActiveTabIndex(2);
+    } else if (pathname.startsWith('/yoohoo/profile/receipts')) {
+      setActiveTabIndex(3);
+    }
+  }, [pathname]);
 
-  // 메인 프로필 페이지인지 확인 (/profile 또는 /profile/)
-  const isMainProfilePage =
+  // 탭 클릭 시 상태 업데이트 및 페이지 이동
+  const handleTabClick = (item: TabMenuItem, index: number) => {
+    setActiveTabIndex(index);
+    if (item.link) {
+      // link가 존재할 때만 router.push 실행
+      router.push(item.link);
+    }
+  };
+
+  const isMainPage =
     pathname === '/yoohoo/profile' || pathname === '/yoohoo/profile/';
 
   return (
     <div className={styles.profileLayout}>
-      {/* 대시보드는 메인 프로필 페이지에서만 표시 */}
       <div className={styles.dashboardContainer}>
-        {isMainProfilePage && <Dashboard />}
+        {isMainPage && <Dashboard />}
       </div>
 
-      {/* 탭 메뉴 */}
-      <div className={styles.tabMenu}>
+      <div className={styles.tabMenuWrapper}>
         <TabMenu
-          menuItems={menuItems}
-          fullWidth={true}
-          className={styles.tabMenu}
+          menuItems={profileTabs}
+          defaultActiveIndex={activeTabIndex}
+          onMenuItemClick={handleTabClick}
+          fullWidth
         />
       </div>
-      {/* 페이지 컨텐츠 */}
-      <main className={styles.content}>{children}</main>
+
+      <main className={styles.pageContent}>{children}</main>
     </div>
   );
 }
