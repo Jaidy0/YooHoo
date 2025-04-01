@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useEffect, useCallback } from 'react';
 import { Dog } from '@/types/dog';
 import { getDogList, DogQueryParams } from '@/api/dogs/dogs';
@@ -27,17 +29,14 @@ interface UseDogDataResult {
 
 /**
  * 강아지 목록 데이터를 관리하는 훅
- * @param params 초기 파라미터 (보호소ID, 페이지, 페이지 크기, 상태, 검색어)
- * @returns 강아지 목록 데이터 및 상태 제어 함수들
  */
 export function useDogData({
   shelterId,
   initialPage = 0,
-  pageSize = 10,
+  pageSize = 20, // 한 페이지당 20마리로 변경
   initialStatus = 'all',
   initialSearch = '',
 }: UseDogDataParams): UseDogDataResult {
-  // 상태 관리
   const [dogs, setDogs] = useState<Dog[]>([]);
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
@@ -55,8 +54,11 @@ export function useDogData({
     };
 
     // 상태 필터링
-    if (status !== 'all' && status.length > 0) {
+    if (status !== 'all' && Array.isArray(status) && status.length > 0) {
       params.status = status;
+      console.log('[디버깅] status 파라미터:', status);
+    } else {
+      console.log('[디버깅] status 파라미터 없음 (전체):', status);
     }
 
     // 검색어
@@ -64,6 +66,7 @@ export function useDogData({
       params.search = searchTerm.trim();
     }
 
+    console.log('[디버깅] 최종 쿼리 파라미터:', params);
     return params;
   }, [currentPage, pageSize, status, searchTerm]);
 
@@ -74,13 +77,74 @@ export function useDogData({
 
     try {
       const params = getQueryParams();
-      const response = await getDogList(shelterId, params);
+      console.log('[API 요청] 파라미터:', params);
+      console.log('[API 요청] 현재 페이지:', currentPage);
 
-      setDogs(response.data || []);
-      setTotalPages(Math.ceil((response.total || 0) / pageSize));
-      setTotalElements(response.total || 0);
+      const response = await getDogList(shelterId, params);
+      console.log('[API 응답] 전체:', response);
+
+      // API 응답이 배열인 경우
+      if (Array.isArray(response)) {
+        console.log('[API 응답] 배열 형태의 응답, 길이:', response.length);
+        setDogs(response);
+        setTotalPages(Math.ceil(response.length / pageSize));
+        setTotalElements(response.length);
+      }
+      // API 응답이 { data: [...] } 형태인 경우
+      else if (response && Array.isArray(response.data)) {
+        console.log('[API 응답] data 속성 배열, 길이:', response.data.length);
+        setDogs(response.data);
+
+        // 페이지네이션 정보 설정
+        if (typeof response.totalPages === 'number') {
+          setTotalPages(response.totalPages);
+        } else if (typeof response.total === 'number') {
+          setTotalPages(Math.ceil(response.total / pageSize));
+        } else {
+          setTotalPages(Math.ceil(response.data.length / pageSize));
+        }
+
+        // 총 항목 수 설정
+        if (typeof response.total === 'number') {
+          setTotalElements(response.total);
+        } else if (typeof response.totalElements === 'number') {
+          setTotalElements(response.totalElements);
+        } else {
+          setTotalElements(response.data.length);
+        }
+      }
+      // API 응답이 { content: [...] } 형태인 경우 (Spring Data)
+      else if (response && Array.isArray(response.content)) {
+        console.log(
+          '[API 응답] content 속성 배열, 길이:',
+          response.content.length
+        );
+        setDogs(response.content);
+
+        if (typeof response.totalPages === 'number') {
+          setTotalPages(response.totalPages);
+        } else if (typeof response.totalElements === 'number') {
+          setTotalPages(Math.ceil(response.totalElements / pageSize));
+        } else {
+          setTotalPages(Math.ceil(response.content.length / pageSize));
+        }
+
+        if (typeof response.totalElements === 'number') {
+          setTotalElements(response.totalElements);
+        } else {
+          setTotalElements(response.content.length);
+        }
+      }
+      // 예상치 못한 응답 구조
+      else {
+        console.error('[API 응답] 예상치 못한 응답 구조:', response);
+        setDogs([]);
+        setTotalPages(0);
+        setTotalElements(0);
+        setError('응답 데이터 형식이 올바르지 않습니다.');
+      }
     } catch (err) {
-      console.error('강아지 목록을 불러오는 중 오류가 발생했습니다:', err);
+      console.error('[API 호출 에러]', err);
       setError('데이터를 불러오는데 실패했습니다. 다시 시도해주세요.');
       setDogs([]);
       setTotalPages(0);
@@ -88,12 +152,28 @@ export function useDogData({
     } finally {
       setIsLoading(false);
     }
-  }, [shelterId, getQueryParams, pageSize]);
+  }, [shelterId, getQueryParams, pageSize, currentPage]); // currentPage를 직접 의존성에 추가
 
-  // 의존성이 변경될 때마다 데이터 다시 불러오기
+  // 디버깅: 상태 변경 시 로그
   useEffect(() => {
+    console.log('[상태 변경] status:', status);
+  }, [status]);
+
+  // 디버깅: 페이지 변경 시 로그
+  useEffect(() => {
+    console.log('[페이지 변경] currentPage:', currentPage);
+  }, [currentPage]);
+
+  // 디버깅: dogs 배열 변경 시 로그
+  useEffect(() => {
+    console.log('[dogs 변경] 길이:', dogs.length);
+  }, [dogs]);
+
+  // 의존성 배열 수정: currentPage, status, searchTerm이 변경될 때마다 데이터 다시 불러오기
+  useEffect(() => {
+    console.log('[fetchDogs 호출] - 페이지, 상태, 검색어 변경됨');
     fetchDogs();
-  }, [fetchDogs]);
+  }, [currentPage, status, searchTerm, fetchDogs]);
 
   return {
     dogs,
