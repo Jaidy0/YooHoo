@@ -80,32 +80,13 @@ export function useDogData({
 
       console.log('[API 요청] 전체 데이터 요청');
       const response = await getDogList(shelterId, params);
-      console.log('[API 응답] 전체:', response);
+      console.log('[API 응답]:', response);
 
-      let dogsData: Dog[] = [];
-
-      // API 응답이 배열인 경우
-      if (Array.isArray(response)) {
-        dogsData = response;
-      }
-      // Spring Data 형식 (content 배열)
-      else if (response && Array.isArray(response.content)) {
-        dogsData = response.content;
-      }
-      // 커스텀 API 형식 (data 배열)
-      else if (response && Array.isArray(response.data)) {
-        dogsData = response.data;
-      }
-      // 예상치 못한 응답 구조
-      else {
-        console.error('[API 응답] 예상치 못한 응답 구조:', response);
-        setError('응답 데이터 형식이 올바르지 않습니다.');
-        return;
-      }
-
-      console.log(`[데이터 로드] 전체 ${dogsData.length}개 데이터 로드됨`);
-      setAllDogs(dogsData);
-      setTotalElements(dogsData.length);
+      // API 응답은 항상 DogResponse 형태로 래핑됨
+      const dogsArray = response.data || [];
+      setAllDogs(dogsArray);
+      setTotalElements(response.total || dogsArray.length);
+      console.log(`[데이터 로드] 전체 ${dogsArray.length}개 데이터 로드됨`);
     } catch (err) {
       console.error('[API 호출 에러]', err);
       setError('데이터를 불러오는데 실패했습니다. 다시 시도해주세요.');

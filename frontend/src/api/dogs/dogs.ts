@@ -82,8 +82,6 @@ export const getDogById = async (dogId: number) => {
   }
 };
 
-// api/dogs/dogs.ts에 추가
-
 /**
  * 강아지 등록 데이터 인터페이스
  */
