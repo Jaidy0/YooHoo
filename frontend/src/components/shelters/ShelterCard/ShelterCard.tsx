@@ -14,7 +14,7 @@ interface ShelterCardProps {
   /** 강아지 수 */
   dogCount: number;
   /** 좋아요 수 */
-  likeCount: number;
+  reliability: number;
   /** 클릭 이벤트 핸들러 */
   onClick?: () => void;
 }
@@ -23,8 +23,8 @@ export default function ShelterCard({
   imageUrl,
   title,
   description,
-  dogCount,
-  likeCount,
+  dogCount = 0,
+  reliability = 0,
   onClick,
 }: ShelterCardProps) {
   return (
@@ -46,11 +46,11 @@ export default function ShelterCard({
         <div className={styles.stats}>
           <RoundButton className={styles.iconBtn} variant='primary'>
             <IconBox name='dog' size={20} color='var(--yh-brown)' />
-            <span>{dogCount}</span>
+            <span>{dogCount ?? 0}</span>
           </RoundButton>
           <RoundButton className={styles.iconBtn} variant='primary'>
-            <IconBox name='heart' size={20} color='var(--yh-orange)' />
-            <span>{likeCount}</span>
+            <IconBox name='smile' size={20} color='var(--chart-yellow)' />
+            <span>{reliability ?? 0}</span>
           </RoundButton>
         </div>
       </div>

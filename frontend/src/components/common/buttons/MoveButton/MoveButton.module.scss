@@ -33,7 +33,7 @@
     border-color: $yh-orange;
 
     &:hover {
-      background-color: color.adjust($yh-orange, $lightness: -10%);
+      background-color: color.adjust($yh-orange, $lightness: 10%);
     }
   }
 
@@ -41,6 +41,10 @@
     background-color: $yh-yellow;
     color: black;
     border-color: $yh-yellow;
+
+    &:hover {
+      background-color: color.adjust($yh-yellow, $lightness: 10%);
+    }
   }
 
   // 로딩 상태

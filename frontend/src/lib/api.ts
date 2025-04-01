@@ -1,6 +1,7 @@
 // lib/api.ts
 import axios, { AxiosRequestConfig } from 'axios';
 import { User } from '@/types/user';
+import { Shelter } from '@/types/shelter';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
@@ -47,5 +48,17 @@ export async function logoutUser(): Promise<boolean> {
   } catch (error) {
     console.error('로그아웃 실패:', error);
     return false;
+  }
+}
+
+export async function fetchShelters(
+  sort: 'dogcount' | 'reliability' = 'reliability'
+): Promise<Shelter[]> {
+  try {
+    const response = await fetchWithAxios(`/api/shelter?sort=${sort}`);
+    return response.data;
+  } catch (error) {
+    console.error('보호소 정보 조회 실패:', error);
+    throw error;
   }
 }
