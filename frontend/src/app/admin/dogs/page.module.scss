@@ -1,7 +1,5 @@
-// page.module.scss
 @use '@/assets/styles/abstracts/variables' as *;
 
-// 기본 페이지 레이아웃
 .dogsPage {
   display: flex;
   flex-direction: column;
@@ -29,79 +27,85 @@
   margin: 0;
 }
 
+.actions {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+
+  @media (max-width: $breakpoint-md) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+.search {
+  min-width: 240px;
+}
+
 // 공통 관리자 페이지 카드 스타일
 .adminCard {
   background-color: $color-background;
   border-radius: $border-radius-lg;
-  box-shadow: $shadow-md;
+  box-shadow: $shadow-yoohoo;
   padding: $spacing-lg;
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
 }
 
-// 폼 레이아웃 스타일
-.formContent {
+// 섹션 헤더 스타일
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+.tabContainer {
+  margin-bottom: $spacing-lg;
+  border-bottom: 1px solid $color-border;
+}
+
+.dogGrid {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: $spacing-xl;
+  grid-template-columns: repeat(5, 1fr);
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
+
+  @media (max-width: $breakpoint-xl) {
+    grid-template-columns: repeat(4, 1fr);
+  }
 
   @media (max-width: $breakpoint-lg) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: $breakpoint-sm) {
     grid-template-columns: 1fr;
   }
 }
 
-.imageSection {
-  width: 100%;
-}
-
-.formFields {
+.paginationContainer {
   display: flex;
-  flex-direction: column;
-  gap: $spacing-lg;
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-sm;
-}
-
-.groupLabel {
-  font-weight: $font-weight-medium;
-  font-size: $font-size-md;
-  color: $text-555;
-}
-
-.buttonGroup {
-  display: flex;
-  flex-wrap: wrap;
-  gap: $spacing-sm;
-}
-
-.optionButton {
-  min-width: 80px;
-}
-
-.formActions {
-  display: flex;
-  justify-content: flex-end;
-  gap: $spacing-md;
-  margin-top: $spacing-xl;
+  justify-content: center;
+  margin: $spacing-lg 0;
 }
 
 // 반응형 스타일
 @media (max-width: $breakpoint-md) {
   .adminCard {
     padding: $spacing-md;
-  }
-
-  .formActions {
-    flex-direction: column-reverse;
-    width: 100%;
-
-    button {
-      width: 100%;
-    }
   }
 }
