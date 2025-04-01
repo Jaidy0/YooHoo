@@ -52,7 +52,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const pageTitle = pageKey ? PAGE_TITLES[pageKey] : PAGE_TITLES.main;
 
   // 제외할 페이지
-  const hideHeaderForPaths = ['/yoohoo/login/callback', '/yoohoo/login/kakao'];
+  const hideHeaderForPaths = [
+    '/yoohoo/login/callback',
+    '/yoohoo/login/kakao',
+    '/yoohoo/shelters',
+  ];
   const shouldHideHeader = hideHeaderForPaths.includes(pathname);
   const hideBottomNavForPaths = [
     '/yoohoo/donate/complete',

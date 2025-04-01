@@ -17,7 +17,7 @@ function KakaoLoginCallbackPage() {
       const isAuthenticated = await checkAuthStatus();
 
       if (!isAuthenticated) {
-        alert('비로그인 상태입니다.다시 로그인 해주세요.');
+        alert('비로그인 상태입니다. 다시 로그인 해주세요.');
         router.push('/yoohoo/login/kakao');
         return;
       }

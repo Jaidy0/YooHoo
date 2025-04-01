@@ -42,6 +42,13 @@ export const Secondary: Story = {
   },
 };
 
+// 노란색 버튼
+export const Yellow: Story = {
+  args: {
+    variant: 'yellow',
+    children: '이동하기',
+  },
+};
 // 아이콘이 있는 버튼들
 export const WithIcons: Story = {
   render: () => {

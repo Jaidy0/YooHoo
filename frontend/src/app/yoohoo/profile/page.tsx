@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import styles from './page.module.scss';
 import SectionBox from '@/components/common/SectionBox/SectionBox';
 import MyHistoryCard from '@/components/common/Card/MyHistoryCard/MyHistoryCard';
 import IconBox from '@/components/common/IconBox/IconBox';
 import 'react-datepicker/dist/react-datepicker.css';
 import DateRangePicker from '@/components/profile/DateRangePicker/DateRangePicker';
+import { useAuthGuard } from '@/components/auth/AuthGuard/AuthGuard';
 
 interface DonationHistory {
   id: number;
@@ -18,6 +19,12 @@ interface DonationHistory {
 }
 
 export default function DonationHistoryPage() {
+  const isAuthenticated = useAuthGuard();
+
+  if (!isAuthenticated) {
+    return null; // 또는 로딩 컴포넌트
+  }
+
   const [donationHistory, setDonationHistory] = useState<DonationHistory[]>([
     {
       id: 1,

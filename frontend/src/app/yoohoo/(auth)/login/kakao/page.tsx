@@ -1,3 +1,5 @@
+'use client';
+
 import KakaoLoginBtn from '@/components/auth/KakaoLoginBtn';
 import Image from 'next/image';
 import styles from './page.module.scss';
@@ -14,7 +16,6 @@ export default function Login() {
         className={styles.logo}
       />
       <KakaoLoginBtn />
-      {/* <OAuthRedirectHandler />; */}
     </div>
   );
 }

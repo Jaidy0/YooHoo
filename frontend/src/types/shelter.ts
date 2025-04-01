@@ -11,3 +11,12 @@ export interface ShelterDetail {
   reliability: number;
   imageUrl: string;
 }
+
+export interface Shelter {
+  shelterId: number;
+  name: string;
+  content: string;
+  dogCount: number;
+  reliability: number;
+  imageUrl: string;
+}

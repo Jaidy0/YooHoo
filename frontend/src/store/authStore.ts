@@ -14,7 +14,7 @@ interface AuthState {
 
 function createAuthStore() {
   return create<AuthState>((set, get) => ({
-    user: null,
+    user: null, // 유저정보 (createAt, nickname, kakaoEmail, isAdmin, shelterId, userId)
     isAuthenticated: false,
     isLoading: true,
     error: null,
