@@ -1,12 +1,6 @@
 // hooks/useDogRegister.ts
 import { useState, useCallback } from 'react';
-import {
-  registerDog,
-  getStatusCode,
-  getGenderCode,
-  getCompletionStatus,
-  DogRegisterData,
-} from '@/api/dogs/dogs';
+import { registerDog, DogRegisterData } from '@/api/dogs/dogs';
 
 interface DogRegisterFormState {
   dogImage: File | null;
@@ -40,6 +34,25 @@ interface UseRegisterResult {
   handleReset: () => void;
   validateForm: () => boolean;
 }
+
+const getGenderCode = (gender: string): string => {
+  const maleTerms = ['남', '남아', '수컷', 'male', 'm'];
+  return maleTerms.includes(gender.toLowerCase()) ? 'M' : 'F';
+};
+
+const getStatusCode = (status: string): number => {
+  const statusMap: Record<string, number> = {
+    '보호 중': 0,
+    '입양 예정': 1,
+    '입양 완료': 2,
+  };
+  return statusMap[status] ?? 0;
+};
+
+const getCompletionStatus = (status: string): boolean => {
+  const completedTerms = ['완료', '완료됨', '예', 'yes', 'y', 'true'];
+  return completedTerms.includes(status.toLowerCase());
+};
 
 export const useDogRegister = (): UseRegisterResult => {
   // 폼 상태 관리

@@ -1,6 +1,6 @@
 // api/dogs/dogs.ts
 import axios from 'axios';
-import { DogResponse } from '@/types/dog';
+import { Dog, DogResponse } from '@/types/dog';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
@@ -82,4 +82,65 @@ export const getDogById = async (dogId: number) => {
   }
 };
 
-// 기타 강아지 관련 API 함수들...
+// api/dogs/dogs.ts에 추가
+
+/**
+ * 강아지 등록 데이터 인터페이스
+ */
+export interface DogRegisterData {
+  name: string;
+  age: number;
+  weight: number;
+  gender: string;
+  breed: string;
+  energetic: number;
+  familiarity: number;
+  isVaccination: boolean;
+  isNeutered: boolean;
+  status: number;
+  health?: string;
+}
+
+/**
+ * 강아지 등록 API
+ */
+export const registerDog = async (
+  shelterId: number,
+  dogData: DogRegisterData,
+  dogImage: File | null
+): Promise<Dog | null> => {
+  try {
+    const formData = new FormData();
+
+    formData.append(
+      'dogRequestDTO',
+      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
+    );
+
+    if (dogImage) {
+      formData.append('dogImage', dogImage);
+    }
+
+    const response = await axios.post(
+      `${API_BASE_URL}/api/dogs/register`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        withCredentials: true,
+      }
+    );
+
+    // 응답이 없는 경우 체크
+    if (!response || !response.data) {
+      console.warn('서버에서 응답이 없거나 비어있습니다.');
+      return null;
+    }
+
+    return response.data;
+  } catch (error) {
+    console.error('강아지 등록 실패:', error);
+    throw error;
+  }
+};
