@@ -8,7 +8,7 @@ import Button from '@/components/common/buttons/Button/Button';
 import styles from './page.module.scss';
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 
-import { Dog, DogStatus, Gender, DogImage } from '@/types/dog';
+import { Dog, DogStatus, Gender } from '@/types/dog';
 
 export default function DogDetailPage() {
   const router = useRouter();
@@ -41,7 +41,6 @@ export default function DogDetailPage() {
 
   // 상태 관리
   const [dogData, setDogData] = useState<Dog | null>(null);
-  const [mainImage, setMainImage] = useState<DogImage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,27 +70,12 @@ export default function DogDetailPage() {
           isNeutered: true,
           status: DogStatus.PROTECTED,
           admissionDate: '2023-10-15T09:00:00.000+00:00',
-          images: [
-            {
-              imageId: 1,
-              dogId: parseInt(dogId),
-              imageUrl: '/images/dummy.jpeg',
-              isMain: true,
-              uploadDate: '2023-10-15T09:00:00.000+00:00',
-            },
-          ],
+          imageUrl: '/image/dummy.jpeg',
         };
-
-        // 메인 이미지 설정
-        const mainImg =
-          mockData.images?.find((img) => img.isMain) ||
-          mockData.images?.[0] ||
-          null;
 
         // API 호출 시뮬레이션을 위한 지연
         setTimeout(() => {
           setDogData(mockData);
-          setMainImage(mainImg);
           setIsLoading(false);
         }, 500);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -185,37 +169,15 @@ export default function DogDetailPage() {
 
         <div className={styles.formContent}>
           <div className={styles.imageSection}>
-            {mainImage && (
-              <div className={styles.imageContainer}>
-                <Image
-                  src={mainImage.imageUrl}
-                  alt={dogData?.name || '강아지 이미지'}
-                  width={300}
-                  height={300}
-                  className={styles.dogImage}
-                />
-              </div>
-            )}
-
-            {/* 이미지가 여러 개일 경우 썸네일 목록 표시 */}
-            {dogData?.images && dogData.images.length > 1 && (
-              <div className={styles.thumbnailList}>
-                {dogData.images.map((img) => (
-                  <div
-                    key={img.imageId}
-                    className={`${styles.thumbnail} ${img.isMain ? styles.activeThumb : ''}`}
-                    onClick={() => setMainImage(img)}
-                  >
-                    <Image
-                      src={img.thumbnailUrl || img.imageUrl}
-                      alt={`${dogData.name} 썸네일`}
-                      width={60}
-                      height={60}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className={styles.imageContainer}>
+              <Image
+                src={dogData?.imageUrl || '/images/dummy.jpeg'}
+                alt={dogData?.name || '강아지 이미지'}
+                width={300}
+                height={300}
+                className={styles.dogImage}
+              />
+            </div>
           </div>
 
           <div className={styles.formFields}>

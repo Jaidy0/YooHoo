@@ -7,6 +7,8 @@ export interface MyHistoryCardProps {
   mainText: string;
   date: string;
   variant?: 'history' | 'alarm';
+  className?: string;
+  style?: React.CSSProperties;
 }
 
 export default function MyHistoryCard({
@@ -15,9 +17,14 @@ export default function MyHistoryCard({
   mainText,
   date,
   variant = 'history',
+  className = '',
+  style,
 }: MyHistoryCardProps) {
   return (
-    <div className={`${styles.cardWrapper} ${styles[variant]}`}>
+    <div
+      className={`${className} ${styles.cardWrapper} ${styles[variant]}`}
+      style={style}
+    >
       <div className={styles.header}>
         <Badge>{badgeText}</Badge>
         <span className={styles.date}>{date}</span>
