@@ -1,22 +1,20 @@
-'use client';
-
-import { useAuthStore } from '@/store/authStore';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react';
+import { useAuthStore } from '@/store/authStore';
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
+export function useAuthGuard(redirectPath: string = '/yoohoo/login/kakao') {
   const router = useRouter();
+  const { isAuthenticated, checkAuthStatus } = useAuthStore();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push('/login');
+    async function verifyAuth() {
+      const isAuth = await checkAuthStatus();
+      if (!isAuth) {
+        router.push(redirectPath);
+      }
     }
-  }, [isAuthenticated, router]);
+    verifyAuth();
+  }, [checkAuthStatus, router, redirectPath]);
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  return <>{children}</>;
+  return isAuthenticated;
 }

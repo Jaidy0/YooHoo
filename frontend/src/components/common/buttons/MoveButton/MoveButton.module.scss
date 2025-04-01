@@ -1,4 +1,4 @@
-@use '../../../../assets/styles/abstracts/variables' as *;
+// @use '../../../../assets/styles/abstracts/variables' as *;
 @use 'sass:color';
 
 .moveButton {
@@ -35,6 +35,12 @@
     &:hover {
       background-color: color.adjust($yh-orange, $lightness: -10%);
     }
+  }
+
+  &--yellow {
+    background-color: $yh-yellow;
+    color: black;
+    border-color: $yh-yellow;
   }
 
   // 로딩 상태

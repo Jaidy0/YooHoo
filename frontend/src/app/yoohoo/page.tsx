@@ -7,6 +7,7 @@ import ShelterCard from '@/components/shelters/ShelterCard/ShelterCard';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
+import IconBox from '@/components/common/IconBox/IconBox';
 // import { useRouter } from 'next/navigation';
 
 const MOCK_SHELTERS = [
@@ -89,7 +90,8 @@ export default function MainPage() {
                 </p>
                 <Link href='/donation' className={styles.donateButton}>
                   후원하러가기
-                  <span className={styles.arrow}>→</span>
+                  <IconBox name='arrow' size={20} rotate={180}></IconBox>
+                  {/* <span className={styles.arrow}>→</span> */}
                 </Link>
               </>
             ) : (
@@ -104,7 +106,7 @@ export default function MainPage() {
                   className={styles.donateButton}
                 >
                   로그인하기
-                  <span className={styles.arrow}>→</span>
+                  <IconBox name='arrow' size={20} rotate={180}></IconBox>
                 </Link>
               </>
             )}

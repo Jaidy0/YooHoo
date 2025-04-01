@@ -59,15 +59,16 @@
 }
 
 .cardContent {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  // display: flex;
+  // flex-direction: column;
+  // gap: 1rem;
 }
 
 .cardText {
   font-size: 1.125rem;
   line-height: 1.5;
   color: #333333;
+  margin-bottom: 0.5rem;
 }
 
 .donateButton {
