@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShelterService {
@@ -23,17 +25,24 @@ public class ShelterService {
     }
 
     // 강아지 수 + 이미지 포함된 DTO 반환
+
     public List<ShelterListDTO> getAllShelters() {
         List<ShelterListDTO> list = shelterRepository.findAllWithDogCount();
 
-        list.forEach(shelter -> {
-            String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(0, shelter.getShelterId());
-            shelter.setImageUrl(imageUrl);
-        });
+        // N+1 방지: shelterId 목록 추출 후 한 번에 이미지 URL 조회
+        List<Long> shelterIds = list.stream()
+                .map(ShelterListDTO::getShelterId)
+                .collect(Collectors.toList());
+
+        Map<Long, String> imageUrlMap = s3Service.getFileUrlsByEntityTypeAndEntityIds(0, shelterIds);
+
+        list.forEach(shelter ->
+                shelter.setImageUrl(imageUrlMap.getOrDefault(shelter.getShelterId(), null)));
 
         return list;
     }
 
+    
     // 특정 단체 상세 조회 (강아지 목록 제외)
     public ShelterDetailDTO getShelterById(Long shelterId) {
         Shelter shelter = shelterRepository.findByShelterId(shelterId)
