@@ -127,7 +127,6 @@ public class ShelterController {
 
         String fileUrl = null;
         try {
-            // S3Controller의 /s3/upload API 호출
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -137,7 +136,7 @@ public class ShelterController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
             ResponseEntity<String> response = restTemplate.exchange(
-                domain + "/s3/upload",
+                domain + "/api/s3/upload",
                     HttpMethod.POST,
                     requestEntity,
                     String.class

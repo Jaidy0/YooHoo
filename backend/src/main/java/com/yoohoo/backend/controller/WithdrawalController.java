@@ -128,7 +128,7 @@ public class WithdrawalController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
             ResponseEntity<String> response = RestTemplate.exchange(
-                domain + "/s3/upload",
+                domain + "/api/s3/upload",
                 HttpMethod.POST,
                 requestEntity,
                 String.class
