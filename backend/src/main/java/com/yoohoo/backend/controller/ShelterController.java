@@ -1,6 +1,7 @@
 package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.dto.DogDTO;
+import com.yoohoo.backend.dto.DogListDTO;
 import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
@@ -76,12 +77,12 @@ public class ShelterController {
 
     // 특정 shelterId에 속한 강아지 목록 조회 + 이름 검색 + status 필터링 추가
     @GetMapping("/{shelterId}/dogs")
-    public List<DogDTO> getDogsByShelterId(
+    public List<DogListDTO> getDogsByShelterId(
             @PathVariable Long shelterId,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) List<Integer> status) {  // ✅ 다중 status를 List로 받음
 
-        List<DogDTO> dogs = dogService.getDogsByShelterId(shelterId);
+        List<DogListDTO> dogs = dogService.getDogsByShelterId(shelterId);
 
         // 🔹 status 필터링 적용
         if (status != null && !status.isEmpty()) {

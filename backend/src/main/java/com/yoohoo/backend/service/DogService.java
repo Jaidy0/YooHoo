@@ -2,6 +2,7 @@ package com.yoohoo.backend.service;
 
 import com.yoohoo.backend.dto.DogDTO;
 import com.yoohoo.backend.dto.DogIdNameDTO;
+import com.yoohoo.backend.dto.DogListDTO;
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.repository.DogRepository;
@@ -31,13 +32,13 @@ public class DogService {
     }
 
     // 특정 shelterId에 속한 강아지 목록 조회
-    public List<DogDTO> getDogsByShelterId(Long shelterId) {
+    public List<DogListDTO> getDogsByShelterId(Long shelterId) {
         List<Dog> dogs = dogRepository.findByShelter_ShelterId(shelterId);
     
         return dogs.stream()
         .map(dog -> {
             String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(1, dog.getDogId());
-            return DogDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
+            return DogListDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
         })
         .collect(Collectors.toList());
     }

@@ -150,4 +150,16 @@ public class DogController {
     return ResponseEntity.ok(statuses);
     }
 
+    @GetMapping("/{dogId}")
+    public ResponseEntity<DogDTO> getDogById(@PathVariable Long dogId) {
+        Dog dog = dogService.findById(dogId);
+        if (dog != null) {
+            // 파일 URL을 가져오기 위해 s3Service를 사용
+            String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(1, dogId);
+            DogDTO dogDTO = DogDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
+            return ResponseEntity.ok(dogDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
