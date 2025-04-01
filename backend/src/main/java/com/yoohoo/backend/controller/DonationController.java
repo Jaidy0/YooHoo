@@ -167,11 +167,7 @@ public class DonationController {
         // 추가 필드 설정
         transferRequest.setDepositTransactionSummary("입금");
         transferRequest.setWithdrawalTransactionSummary("출금");
-        transferRequest.setCheeringMessage("후원합니다!");
-        transferRequest.setDepositorName("유");
-        transferRequest.setDonationType(1);
-        transferRequest.setDogId(1L);
-        transferRequest.setShelterId(1L);
+
 
         // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();

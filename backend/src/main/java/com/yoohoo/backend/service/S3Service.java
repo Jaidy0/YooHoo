@@ -19,7 +19,10 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -102,6 +105,19 @@ public class S3Service {
             throw new RuntimeException("파일 삭제 실패", e);
         }
     }
+
+    // id리스트로 한번에 호출
+    public Map<Long, String> getFileUrlsByEntityTypeAndEntityIds(int entityType, List<Long> entityIds) {
+        List<File> files = fileRepository.findByEntityTypeAndEntityIdIn(entityType, entityIds);
+    
+        return files.stream()
+                .collect(Collectors.toMap(
+                    File::getEntityId,
+                    File::getFileUrl, // 👉 이미 저장된 URL을 사용
+                    (existing, replacement) -> existing // 중복 방지
+                ));
+    }
+    
 
     // File 엔티티 저장
     public File saveFileEntity(MultipartFile file, int entityType, Long entityId, String fileUrl) throws IOException {

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface FileRepository extends JpaRepository<File, Long> {
@@ -15,4 +16,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
     // entityType과 entityId로 fileUrl을 찾는 메서드
     @Query("SELECT f.fileUrl FROM File f WHERE f.entityType = :entityType AND f.entityId = :entityId")
     String findFileUrlByEntityTypeAndEntityId(@Param("entityType") Integer entityType, @Param("entityId") Long entityId);
+
+    List<File> findByEntityTypeAndEntityIdIn(int entityType, List<Long> entityIds);
 }

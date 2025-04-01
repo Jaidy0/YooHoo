@@ -35,12 +35,19 @@ public class DogService {
     public List<DogListDTO> getDogsByShelterId(Long shelterId) {
         List<Dog> dogs = dogRepository.findByShelter_ShelterId(shelterId);
     
+        List<Long> dogIds = dogs.stream()
+                .map(Dog::getDogId)
+                .collect(Collectors.toList());
+    
+        // 🔹 image URL을 file 테이블에서 한 번에 조회 (entityType=1)
+        Map<Long, String> imageUrlMap = s3Service.getFileUrlsByEntityTypeAndEntityIds(1, dogIds);
+    
         return dogs.stream()
-        .map(dog -> {
-            String imageUrl = s3Service.getFileUrlByEntityTypeAndEntityId(1, dog.getDogId());
-            return DogListDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
-        })
-        .collect(Collectors.toList());
+                .map(dog -> {
+                    String imageUrl = imageUrlMap.get(dog.getDogId());
+                    return DogListDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
+                })
+                .collect(Collectors.toList());
     }
 
     // 강아지 ID로 강아지 조회
