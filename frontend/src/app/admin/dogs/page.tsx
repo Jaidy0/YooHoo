@@ -1,159 +1,233 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import styles from './page.module.scss';
-import Button from '@/components/common/buttons/Button/Button';
-import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
-import DogCard from '@/components/common/Card/DogCard/DogCard';
-import Pagination from '@/components/common/Pagination/Pagination';
-import { DogStatus } from '@/types/dog';
 import { useRouter } from 'next/navigation';
-import SearchBar from '@/components/common/SearchBar/SearchBar';
-import { useDogData } from '@/hooks/useDogData';
+import ImageUpload from '@/components/common/ImageUpload/ImageUpload';
+import Input from '@/components/common/Input/Input';
+import Button from '@/components/common/buttons/Button/Button';
+import RatingScale from '@/components/common/RatingScale/RatingScale';
+import styles from './page.module.scss';
+import { useDogRegister } from '@/hooks/useDogRegister';
+import { FormEvent } from 'react';
 
-// 탭 메뉴 아이템
-const dogStatusTabs = [
-  { name: '전체', link: '/admin/dogs?status=all', status: 'all' },
-  {
-    name: '보호중',
-    link: '/admin/dogs?status=protected',
-    status: DogStatus.PROTECTED,
-  },
-  {
-    name: '임시보호',
-    link: '/admin/dogs?status=temporary',
-    status: DogStatus.TEMPORARY,
-  },
-  {
-    name: '입양완료',
-    link: '/admin/dogs?status=adopted',
-    status: DogStatus.ADOPTED,
-  },
-];
-
-export default function DogsPage() {
+interface DogsRegisterPageProps {
+  shelterId?: number;
+}
+export default function DogsRegisterPage({
+  shelterId: propShelterId,
+}: DogsRegisterPageProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState(0);
-  const shelterId = 1; // 실제로는 사용자 컨텍스트에서 가져오거나 URL에서 추출해야 합니다
-
-  // 커스텀 훅 사용
+  const shelterId = propShelterId || 1;
   const {
-    dogs,
-    totalPages,
-    currentPage,
-    setCurrentPage,
-    setStatus,
-    searchTerm,
-    setSearchTerm,
-    isLoading,
-    error,
-  } = useDogData({
-    shelterId,
-    initialStatus: 'all',
-  });
+    formState,
+    errors,
+    isSubmitting,
+    handleImageUpload,
+    handleImageError,
+    createRadioHandler,
+    handleInputChange,
+    handleSubmit,
+    handleReset,
+    validateForm,
+  } = useDogRegister();
 
-  // 탭 변경 시 상태 필터 업데이트
-  useEffect(() => {
-    const selectedStatus = dogStatusTabs[activeTab].status;
+  // 폼 제출 핸들러
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
 
-    // 타입 검사 및 변환
-    if (selectedStatus === 'all') {
-      setStatus('all');
-    } else {
-      // 숫자 상태를 배열로 변환
-      setStatus([selectedStatus as number]);
+    if (!validateForm()) {
+      return;
     }
-  }, [activeTab, setStatus]);
 
-  const handleTabClick = (item: TabMenuItem, index: number) => {
-    setActiveTab(index);
-    setCurrentPage(0); // 탭 변경 시 첫 페이지로 이동 (0-based)
+    const success = await handleSubmit(shelterId);
+
+    if (success) {
+      alert('강아지 정보가 성공적으로 등록되었습니다.');
+      router.push('/admin/dogs/success');
+    } else {
+      alert('강아지 정보 등록에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
-  const handleDogClick = (dogId: number) => {
-    router.push(`/admin/dogs/${dogId}`);
-  };
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page - 1); // UI는 1-based, API는 0-based
-    // 상단으로 스크롤
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(0); // 검색 시 첫 페이지로 이동
-  };
-
-  const handleAddDog = () => {
-    router.push(`/admin/dogs/register`);
+  // Button을 라디오 버튼처럼 사용하기 위한 렌더링 함수
+  const renderOptionButtons = (
+    options: string[],
+    currentValue: string,
+    fieldName: keyof typeof formState,
+    onChange: (value: string) => void
+  ) => {
+    return options.map((option) => (
+      <Button
+        key={option}
+        variant={currentValue === option ? 'primary' : 'outline'}
+        size='sm'
+        onClick={() => {
+          onChange(option);
+          handleInputChange(fieldName, option);
+        }}
+        className={styles.optionButton}
+        type='button'
+      >
+        {option}
+      </Button>
+    ));
   };
 
   return (
     <div className={styles.dogsPage}>
-      <section className={styles.adminCard}>
+      <div className={styles.adminCard}>
         <div className={styles.headerActions}>
           <h1 className={styles.pageTitle}>강아지 정보 관리</h1>
-          <div className={styles.actions}>
-            <SearchBar
-              placeholder='강아지 이름 검색'
-              onSearch={handleSearch}
-              initialValue={searchTerm}
-              className={styles.search}
-            />
-            <Button onClick={handleAddDog} variant='primary'>
-              신규 등록
-            </Button>
-          </div>
         </div>
 
-        <div className={styles.tabContainer}>
-          <TabMenu
-            menuItems={dogStatusTabs}
-            defaultActiveIndex={activeTab}
-            onMenuItemClick={handleTabClick}
-            size='md'
-          />
-        </div>
-
-        {isLoading ? (
-          <div className={styles.loading}>데이터를 불러오는 중입니다...</div>
-        ) : error ? (
-          <div className={styles.error}>{error}</div>
-        ) : (
-          <>
-            <div className={styles.dogGrid}>
-              {dogs.length > 0 ? (
-                dogs.map((dog) => (
-                  <DogCard
-                    key={dog.dogId}
-                    dog={dog}
-                    onClick={handleDogClick}
-                    disableRouting={true} // 관리자 페이지에서는 직접 라우팅 방지
-                  />
-                ))
-              ) : (
-                <p className={styles.noDogs}>
-                  {searchTerm
-                    ? `'${searchTerm}' 검색 결과가 없습니다.`
-                    : '해당 상태의 강아지가 없습니다.'}
-                </p>
-              )}
+        <form onSubmit={onSubmit}>
+          <div className={styles.formContent}>
+            <div className={styles.imageSection}>
+              <ImageUpload
+                value={formState.dogImage}
+                onChange={handleImageUpload}
+                onError={handleImageError}
+                error={errors.dogImage}
+                uploadText='강아지 사진을 업로드해주세요'
+              />
             </div>
 
-            {dogs.length > 0 && (
-              <div className={styles.paginationContainer}>
-                <Pagination
-                  currentPage={currentPage + 1} // UI는 1-based로 표시
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  pageRangeDisplayed={5}
+            <div className={styles.formFields}>
+              <Input
+                title='이름'
+                placeHolder='이름을 입력해주세요.'
+                value={formState.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                hasError={!!errors.name}
+                errorMessage={errors.name}
+              />
+
+              <Input
+                title='견종'
+                placeHolder='견종을 입력해주세요.'
+                value={formState.breed}
+                onChange={(e) => handleInputChange('breed', e.target.value)}
+                hasError={!!errors.breed}
+                errorMessage={errors.breed}
+              />
+
+              <div className={styles.formGroup}>
+                <label className={styles.groupLabel}>상태</label>
+                <div className={styles.buttonGroup}>
+                  {renderOptionButtons(
+                    ['보호 중', '입양 완료', '사망', '임시 보호 중'],
+                    formState.status,
+                    'status',
+                    createRadioHandler((value) =>
+                      handleInputChange('status', value)
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.groupLabel}>성별</label>
+                <div className={styles.buttonGroup}>
+                  {renderOptionButtons(
+                    ['남', '여'],
+                    formState.gender,
+                    'gender',
+                    createRadioHandler((value) =>
+                      handleInputChange('gender', value)
+                    )
+                  )}
+                </div>
+              </div>
+
+              <Input
+                title='나이(연령)'
+                placeHolder='나이를 입력해주세요.'
+                type='number'
+                value={formState.age}
+                onChange={(e) => handleInputChange('age', e.target.value)}
+                hasError={!!errors.age}
+                errorMessage={errors.age}
+              />
+
+              <Input
+                title='체중(kg)'
+                placeHolder='체중을 입력해주세요.'
+                type='number'
+                value={formState.weight}
+                onChange={(e) => handleInputChange('weight', e.target.value)}
+                hasError={!!errors.weight}
+                errorMessage={errors.weight}
+              />
+
+              <Input
+                title='건강'
+                placeHolder='해당되는 건강을 입력해주세요.'
+                value={formState.health}
+                onChange={(e) => handleInputChange('health', e.target.value)}
+              />
+
+              <div className={styles.formGroup}>
+                <label className={styles.groupLabel}>활발함</label>
+                <RatingScale
+                  value={formState.energetic}
+                  onChange={(value) => handleInputChange('energetic', value)}
+                  maxRating={5}
                 />
               </div>
-            )}
-          </>
-        )}
-      </section>
+
+              <div className={styles.formGroup}>
+                <label className={styles.groupLabel}>친화력</label>
+                <RatingScale
+                  value={formState.familiarity}
+                  onChange={(value) => handleInputChange('familiarity', value)}
+                  maxRating={5}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.groupLabel}>중성화 여부</label>
+                <div className={styles.buttonGroup}>
+                  {renderOptionButtons(
+                    ['미완', '완료'],
+                    formState.isNeutered,
+                    'isNeutered',
+                    createRadioHandler((value) =>
+                      handleInputChange('isNeutered', value)
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.groupLabel}>접종 여부</label>
+                <div className={styles.buttonGroup}>
+                  {renderOptionButtons(
+                    ['미완', '완료'],
+                    formState.isVaccinated,
+                    'isVaccinated',
+                    createRadioHandler((value) =>
+                      handleInputChange('isVaccinated', value)
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.formActions}>
+            <Button
+              variant='outline'
+              onClick={handleReset}
+              type='button'
+              disabled={isSubmitting}
+            >
+              취소하기
+            </Button>
+            <Button variant='primary' type='submit' disabled={isSubmitting}>
+              {isSubmitting ? '처리 중...' : '등록하기'}
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
