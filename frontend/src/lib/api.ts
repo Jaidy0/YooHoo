@@ -46,18 +46,19 @@ export async function fetchCurrentUser(): Promise<User | null> {
 
     // 로그인 상태일 때만 모의 데이터 반환
     return {
-      user_id: 1,
+      userId: 1,
       nickname: '테스트 유저',
-      kakao_email: 'test@example.com',
-      is_admin: true,
-      shelter_id: 1,
-      created_at: '2024-03-15T10:30:00Z', // ISO 8601 형식의 날짜 추가
+      kakaoEmail: 'test@example.com',
+      isAdmin: true,
+      shelterId: 1,
+      createdAt: '2024-03-15T10:30:00Z', // ISO 8601 형식의 날짜 추가
     };
   }
 
   // 프로덕션 환경에서는 실제 API 호출
   try {
     const response = await axiosInstance.get('/api/auth/user-info');
+    console.log('fetchCurrentUser response', response.data);
     return response.data;
   } catch (error) {
     console.error('사용자 정보 조회 실패:', error);

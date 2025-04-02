@@ -1,12 +1,12 @@
 // types/user.types.ts
 export interface User {
-  user_id: number;
-  kakao_email: string;
+  userId: number;
+  kakaoEmail: string;
   nickname: string;
-  is_admin: boolean;
-  shelter_id?: number; // 옵셔널 필드로 설정 (관리자나 보호소 연결된 사용자만 가질 수 있음)
-  created_at: string;
-  updated_at?: string; // 데이터베이스에 있을 수 있는 필드지만 언급되지 않았으므로 옵셔널로 설정
+  isAdmin: boolean;
+  shelterId?: number; // 옵셔널 필드로 설정 (관리자나 보호소 연결된 사용자만 가질 수 있음)
+  createdAt: string;
+  updatedAt?: string; // 데이터베이스에 있을 수 있는 필드지만 언급되지 않았으므로 옵셔널로 설정
 }
 
 // // 타입 가드: 사용자가 관리자인지 확인하는 함수
