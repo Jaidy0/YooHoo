@@ -14,6 +14,7 @@ interface GroupDetailClientProps {
 }
 
 export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
+  console.log(groupId);
   // 더미 데이터
   const groupDesc = `계절이 지나가는 하늘에는 가을로 가득 차 있습니다. 나는 아무 걱정도 없이 가을 속의 별들을 다 헤일 듯합니다. 가을 속에 하나 둘 새겨지는 별을 이제 다 못 헤는 것은 쉬이 아닙니다.`;
 
