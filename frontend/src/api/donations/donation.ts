@@ -1,26 +1,16 @@
 // src/api/donation/donation.ts
 import axios from 'axios';
+import {
+  DonationItem,
+  WithdrawalItem,
+  TotalAmountResponse,
+  WeeklySumsResponse,
+  WithdrawalRequest,
+  WithdrawalResponse,
+} from '@/types/adminDonation';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
-
-interface TotalAmountRequest {
-  shelterId: number;
-}
-
-interface TotalAmountResponse {
-  totalAmount: number;
-}
-
-interface WeeklySumsResponse {
-  '5WeeksAgo': number;
-  '4WeeksAgo': number;
-  '3WeeksAgo': number;
-  '2WeeksAgo': number;
-  '1WeeksAgo': number;
-  ThisWeek: number;
-  Prediction: number;
-}
 
 /**
  * 특정 보호소의 총 기부금액을 조회하는 API
@@ -96,33 +86,6 @@ export const fetchWithdrawalWeeklySums =
     }
   };
 
-// src/api/donations/donation.ts에 추가할 코드
-
-// 입금 내역 인터페이스
-export interface DonationItem {
-  donationId: number;
-  donationAmount: number;
-  transactionUniqueNo: string;
-  donationDate: string;
-  depositorName: string;
-  cheeringMessage: string | null;
-  userNickname: string | null;
-  dogName: string | null;
-  shelterName: string;
-}
-
-// 출금 내역 인터페이스
-export interface WithdrawalItem {
-  date: string;
-  withdrawalId: number;
-  transactionUniqueNo: string;
-  merchantId: number | null;
-  name: string;
-  transactionBalance: string;
-  shelterId: number;
-  category: string;
-}
-
 /**
  * 단체 입금 내역 전체 조회 API
  * @param shelterId 보호소 ID
@@ -158,22 +121,6 @@ export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
     throw error;
   }
 };
-
-/**
- * 출금 요청 인터페이스
- */
-export interface WithdrawalRequest {
-  shelterId: number;
-}
-
-/**
- * 출금 응답 인터페이스
- */
-export interface WithdrawalResponse {
-  success: boolean;
-  message?: string;
-  data?: unknown;
-}
 
 /**
  * 카드와 통장 출금 정보를 동시에 저장하는 함수

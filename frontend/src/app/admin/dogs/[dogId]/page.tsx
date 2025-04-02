@@ -8,7 +8,8 @@ import styles from './page.module.scss';
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 
 import { getStatusText, getGenderText } from '@/types/dog';
-import { useDog } from '@/hooks/useDog'; // 커스텀 훅 임포트
+import { useDog } from '@/hooks/useDog'; // 강아지 정보 커스텀 훅
+import { useDogFinance } from '@/hooks/useDogFinance'; // 강아지 재정 데이터 커스텀 훅
 
 export default function DogDetailPage() {
   const router = useRouter();
@@ -16,31 +17,19 @@ export default function DogDetailPage() {
   const dogId = params.dogId as string;
 
   // 커스텀 훅 사용
-  const { dog: dogData, isLoading, error } = useDog(dogId);
+  const {
+    dog: dogData,
+    isLoading: isDogLoading,
+    error: dogError,
+  } = useDog(dogId);
 
-  // 임시 입금 내역 데이터 (유지)
-  const mockDepositData = Array(10)
-    .fill(null)
-    .map((_, index) => ({
-      type: index % 2 === 0 ? '단체' : '지정(강아지)',
-      name: '서울보호소',
-      amount: 99999,
-      date: '2025.03.04',
-      message: '보호소 후원금',
-    }));
-
-  // 임시 출금 내역 데이터 (유지)
-  const mockWithdrawData = Array(10)
-    .fill(null)
-    .map((_, index) => ({
-      type: index % 2 === 0 ? '단체' : '지정(강아지)',
-      category: '의료비',
-      content: '중장형 수술',
-      amount: 99999,
-      date: '2025.03.04',
-      isEvidence: true,
-      isReceipt: true,
-    }));
+  // 강아지 후원금 데이터 커스텀 훅 사용
+  const {
+    depositData,
+    withdrawData,
+    isLoading: isFinanceLoading,
+    error: financeError,
+  } = useDogFinance(dogId);
 
   // 편집 페이지로 이동
   const handleEdit = () => {
@@ -59,6 +48,7 @@ export default function DogDetailPage() {
   };
 
   // 로딩 상태 표시
+  const isLoading = isDogLoading || isFinanceLoading;
   if (isLoading) {
     return (
       <div className={styles.dogsDetailPage}>
@@ -70,6 +60,7 @@ export default function DogDetailPage() {
   }
 
   // 에러 상태 표시
+  const error = dogError || financeError;
   if (error || !dogData) {
     return (
       <div className={styles.dogsDetailPage}>
@@ -201,12 +192,17 @@ export default function DogDetailPage() {
           <h2 className={styles.sectionTitle}>후원금 입출금 내역</h2>
         </div>
 
-        {/* FinanceTable 컴포넌트 사용 */}
+        {/* 실제 API에서 가져온 데이터로 FinanceTable 컴포넌트 사용 */}
         <FinanceTable
-          depositData={mockDepositData}
-          withdrawData={mockWithdrawData}
+          depositData={depositData}
+          withdrawData={withdrawData}
           className={styles.financeTable}
         />
+
+        {/* 데이터가 없을 경우 메시지 표시 */}
+        {depositData.length === 0 && withdrawData.length === 0 && (
+          <div className={styles.noDataMessage}>입출금 내역이 없습니다.</div>
+        )}
       </section>
     </div>
   );
