@@ -37,7 +37,11 @@ const BottomNav: React.FC<BottomNavProps> = ({ items }) => {
                     color={isActive ? '#FF5722' : '#9E9E9E'}
                   />
                 </div>
-                <span className={styles.label}>{item.label}</span>
+                <span
+                  className={`${styles.label} ${isActive && styles.active}`}
+                >
+                  {item.label}
+                </span>
               </Link>
             </li>
           );

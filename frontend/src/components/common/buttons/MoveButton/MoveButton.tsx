@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './MoveButton.module.scss';
 
-export type MoveButtonVariant = 'primary' | 'secondary';
+export type MoveButtonVariant = 'primary' | 'secondary' | 'yellow';
 
 export interface MoveButtonProps
   extends ButtonHTMLAttributes<HTMLButtonElement> {

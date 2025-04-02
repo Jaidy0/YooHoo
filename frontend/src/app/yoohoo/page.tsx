@@ -7,54 +7,59 @@ import ShelterCard from '@/components/shelters/ShelterCard/ShelterCard';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import { useEffect } from 'react';
 import { useAuthStore } from '@/store/authStore';
-// import { useRouter } from 'next/navigation';
+import IconBox from '@/components/common/IconBox/IconBox';
+import { useShelterList } from '@/hooks/useShelterList';
+import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
+import { useRouter } from 'next/navigation';
+import { Shelter } from '@/types/shelter';
 
-const MOCK_SHELTERS = [
-  {
-    id: 1,
-    imageUrl: '/images/dummy.jpeg',
-    title: '행복한 멍멍이네',
-    description: '서울시 마포구에 위치한 유기견 보호소입니다.',
-    dogCount: 25,
-    likeCount: 128,
-  },
-  {
-    id: 2,
-    imageUrl: '/images/dummy.jpeg',
-    title: '사랑이 가득한 집',
-    description: '10년째 유기견들과 함께하고 있는 보호소입니다.',
-    dogCount: 18,
-    likeCount: 95,
-  },
-  {
-    id: 3,
-    imageUrl: '/images/dummy.jpeg',
-    title: '희망의 발자국',
-    description: '경기도 파주의 유기견 보호 센터입니다.',
-    dogCount: 32,
-    likeCount: 156,
-  },
-  {
-    id: 4,
-    imageUrl: '/images/dummy.jpeg',
-    title: '따뜻한 보금자리',
-    description: '유기견 재활과 입양을 전문으로 하는 보호소입니다.',
-    dogCount: 15,
-    likeCount: 89,
-  },
-  {
-    id: 5,
-    imageUrl: '/images/dummy.jpeg',
-    title: '천사의 집',
-    description: '부산 지역 최대 규모의 유기견 보호소입니다.',
-    dogCount: 40,
-    likeCount: 210,
-  },
-];
+// const MOCK_SHELTERS = [
+//   {
+//     id: 1,
+//     imageUrl: '/images/dummy.jpeg',
+//     title: '행복한 멍멍이네',
+//     description: '서울시 마포구에 위치한 유기견 보호소입니다.',
+//     dogCount: 25,
+//     likeCount: 128,
+//   },
+//   {
+//     id: 2,
+//     imageUrl: '/images/dummy.jpeg',
+//     title: '사랑이 가득한 집',
+//     description: '10년째 유기견들과 함께하고 있는 보호소입니다.',
+//     dogCount: 18,
+//     likeCount: 95,
+//   },
+//   {
+//     id: 3,
+//     imageUrl: '/images/dummy.jpeg',
+//     title: '희망의 발자국',
+//     description: '경기도 파주의 유기견 보호 센터입니다.',
+//     dogCount: 32,
+//     likeCount: 156,
+//   },
+//   {
+//     id: 4,
+//     imageUrl: '/images/dummy.jpeg',
+//     title: '따뜻한 보금자리',
+//     description: '유기견 재활과 입양을 전문으로 하는 보호소입니다.',
+//     dogCount: 15,
+//     likeCount: 89,
+//   },
+//   {
+//     id: 5,
+//     imageUrl: '/images/dummy.jpeg',
+//     title: '천사의 집',
+//     description: '부산 지역 최대 규모의 유기견 보호소입니다.',
+//     dogCount: 40,
+//     likeCount: 210,
+//   },
+// ];
 
 export default function MainPage() {
-  // const router = useRouter();
+  const router = useRouter();
   const { user, isAuthenticated, checkAuthStatus } = useAuthStore();
+  const { shelters, isLoading, error } = useShelterList();
 
   // 컴포넌트 마운트 시 인증 상태 확인
   useEffect(() => {
@@ -64,6 +69,18 @@ export default function MainPage() {
 
     checkAuth();
   }, [checkAuthStatus]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <LoadingSpinner></LoadingSpinner>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <div>단체 조회 오류</div>;
+  }
 
   return (
     <div className={styles.container}>
@@ -87,9 +104,9 @@ export default function MainPage() {
                   <br />
                   <b>따뜻한 후원</b>을 이어가볼까요?
                 </p>
-                <Link href='/donation' className={styles.donateButton}>
+                <Link href='/yoohoo/donate' className={styles.donateButton}>
                   후원하러가기
-                  <span className={styles.arrow}>→</span>
+                  <IconBox name='arrow' size={20} rotate={180}></IconBox>
                 </Link>
               </>
             ) : (
@@ -104,7 +121,7 @@ export default function MainPage() {
                   className={styles.donateButton}
                 >
                   로그인하기
-                  <span className={styles.arrow}>→</span>
+                  <IconBox name='arrow' size={20} rotate={180}></IconBox>
                 </Link>
               </>
             )}
@@ -114,8 +131,8 @@ export default function MainPage() {
             <Image
               src='/images/piggy.png'
               alt='돼지 저금통'
-              width={110}
-              height={78}
+              width={120}
+              height={120}
             />
           </div>
         </div>
@@ -128,7 +145,7 @@ export default function MainPage() {
             height={0}
             sizes='100vw'
             style={{
-              width: '300px',
+              width: '350px',
               height: 'auto',
             }}
           />
@@ -141,21 +158,25 @@ export default function MainPage() {
             <span className={styles.subtitle}>YooHoo와 함께하는</span>
             <div className={styles.mainTitle}>유기견 후원단체</div>
           </h2>
-          <MoveButton variant='secondary' className={styles.moreButton}>
-            더보기
-          </MoveButton>
+          <Link href='/yoohoo/shelters'>
+            <MoveButton variant='yellow' className={styles.moreButton}>
+              더보기
+            </MoveButton>
+          </Link>
         </div>
 
         <div className={styles.shelterCards}>
-          {MOCK_SHELTERS.map((shelter) => (
+          {shelters.slice(0, 5).map((shelter: Shelter) => (
             <ShelterCard
-              key={shelter.id}
+              key={shelter.shelterId}
               imageUrl={shelter.imageUrl}
-              title={shelter.title}
-              description={shelter.description}
+              title={shelter.name}
+              description={shelter.content}
               dogCount={shelter.dogCount}
-              likeCount={shelter.likeCount}
-              onClick={() => console.log(`Clicked shelter: ${shelter.title}`)}
+              reliability={shelter.reliability}
+              onClick={() => {
+                router.push(`/yoohoo/shelters/${shelter.shelterId}`);
+              }}
             />
           ))}
         </div>

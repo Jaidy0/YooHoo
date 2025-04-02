@@ -24,7 +24,8 @@ import iconHandshake from '@/assets/imgs/icons/iconHandshake.svg';
 import iconCutiDog from '@/assets/imgs/icons/iconCutiDog.svg';
 import iconKakao from '@/assets/imgs/icons/iconKakao.svg';
 import AccountIcon from '@/assets/imgs/icons/iconAccount.svg';
-
+import iconSmile from '@/assets/imgs/icons/iconSmile.svg';
+import iconLogout from '@/assets/imgs/icons/iconLogout.svg';
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -49,6 +50,8 @@ const ICON_COMPONENTS = {
   cutiDog: iconCutiDog,
   kakao: iconKakao,
   account: AccountIcon,
+  smile: iconSmile,
+  logout: iconLogout,
 } as const;
 
 // 아이콘 이름 타입
@@ -65,6 +68,8 @@ export interface IconProps {
   className?: string;
   /** 클릭 이벤트 핸들러 */
   onClick?: () => void;
+  /** 회전 각도 (도) */
+  rotate?: number;
 }
 
 export const IconBox: React.FC<IconProps> = ({
@@ -73,6 +78,7 @@ export const IconBox: React.FC<IconProps> = ({
   color,
   className = '',
   onClick,
+  rotate,
 }) => {
   // 아이콘 컴포넌트 가져오기
   const IconComponent = ICON_COMPONENTS[name];
@@ -85,7 +91,11 @@ export const IconBox: React.FC<IconProps> = ({
   return (
     <div
       className={`${styles.icon} ${className}`}
-      style={{ width: size, height: size }}
+      style={{
+        width: size,
+        height: size,
+        transform: rotate ? `rotate(${rotate}deg)` : undefined,
+      }}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}

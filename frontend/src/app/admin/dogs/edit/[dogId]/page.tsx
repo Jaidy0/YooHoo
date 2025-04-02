@@ -1,18 +1,24 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
+import Image from 'next/image';
 import ImageUpload from '@/components/common/ImageUpload/ImageUpload';
 import Input from '@/components/common/Input/Input';
 import Button from '@/components/common/buttons/Button/Button';
 import RatingScale from '@/components/common/RatingScale/RatingScale';
-import { Dog, DogStatus, Gender, DogImage } from '@/types/dog';
+import { DogStatus, Gender } from '@/types/dog';
 import styles from './page.module.scss';
+import { useDog } from '@/hooks/useDog';
+// import { updateDog } from '@/api/dogs/dogs'; // 백엔드 API 완성 시 주석 해제
 
 export default function DogsEditPage() {
   const router = useRouter();
   const params = useParams();
   const dogId = params.dogId as string;
+
+  // useDog 훅을 사용하여 강아지 데이터 조회
+  const { dog, isLoading: isLoadingDog, error: dogError } = useDog(dogId);
 
   // 강아지 정보 상태
   const [name, setName] = useState('');
@@ -26,81 +32,34 @@ export default function DogsEditPage() {
   const [isNeutered, setIsNeutered] = useState(false);
   const [isVaccinated, setIsVaccinated] = useState(false);
   const [admissionDate, setAdmissionDate] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
-  // 이미지 상태
-  const [dogImages, setDogImages] = useState<DogImage[]>([]);
-  const [mainImage, setMainImage] = useState<File | null>(null);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
 
-  // 로딩 및 에러 상태
-  const [isLoading, setIsLoading] = useState(true);
+  // 에러 및 제출 상태
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 강아지 데이터 불러오기
+  // 강아지 데이터를 상태에 반영
   useEffect(() => {
-    const fetchDogData = async () => {
-      setIsLoading(true);
+    if (dog) {
+      setName(dog.name || '');
+      setStatus(dog.status);
+      setGender(dog.gender);
+      setAge(dog.age?.toString() || '');
+      setWeight(dog.weight?.toString() || '');
+      setBreed(dog.breed || '');
+      setEnergetic(dog.energetic || 1);
+      setFamiliarity(dog.familiarity || 1);
+      setIsNeutered(dog.isNeutered || false);
+      setIsVaccinated(dog.isVaccination || false);
 
-      try {
-        // TODO: 실제 API 호출로 대체
-        // const response = await fetch(`/api/dogs/${dogId}`);
-        // if (!response.ok) throw new Error('강아지 정보를 불러오는데 실패했습니다.');
-        // const dogResponse = await response.json();
-        // const dog = dogResponse.data;
-
-        // 목업 데이터
-        const mockData: Dog = {
-          dogId: parseInt(dogId),
-          name: '멍멍이',
-          age: 3,
-          weight: 5.5,
-          gender: Gender.MALE,
-          breed: '믹스견',
-          energetic: 3,
-          familiarity: 4,
-          isVaccination: true,
-          isNeutered: true,
-          status: DogStatus.PROTECTED,
-          admissionDate: '2023-10-15T09:00:00.000+00:00',
-          images: [
-            {
-              imageId: 1,
-              dogId: parseInt(dogId),
-              imageUrl: 'https://via.placeholder.com/300x300',
-              isMain: true,
-              uploadDate: '2023-10-15T09:00:00.000+00:00',
-            },
-          ],
-        };
-
-        // 데이터 설정
-        setName(mockData.name);
-        setStatus(mockData.status);
-        setGender(mockData.gender);
-        setAge(mockData.age.toString());
-        setWeight(mockData.weight.toString());
-        setBreed(mockData.breed);
-        setEnergetic(mockData.energetic);
-        setFamiliarity(mockData.familiarity);
-        setIsNeutered(mockData.isNeutered);
-        setIsVaccinated(mockData.isVaccination);
-        setAdmissionDate(formatDateForInput(mockData.admissionDate));
-
-        if (mockData.images) {
-          setDogImages(mockData.images);
-        }
-
-        setIsLoading(false);
-      } catch (err) {
-        console.error('Error fetching dog data:', err);
-        setErrors({ general: '강아지 정보를 불러오는데 실패했습니다.' });
-        setIsLoading(false);
+      if (dog.admissionDate) {
+        setAdmissionDate(formatDateForInput(dog.admissionDate));
       }
-    };
-
-    fetchDogData();
-  }, [dogId]);
+    }
+  }, [dog]);
 
   // ISO 날짜 문자열을 input date 형식으로 변환
   const formatDateForInput = (dateString: string): string => {
@@ -108,13 +67,16 @@ export default function DogsEditPage() {
     return date.toISOString().split('T')[0];
   };
 
-  // 메인 이미지 업로드 핸들러
-  const handleMainImageUpload = (file: File | null) => {
-    setMainImage(file);
+  // 이미지 업로드 핸들러
+  const handleImageChange = (file: File | null) => {
+    setImageFile(file);
+    // 이미지가 바뀌면 이전 에러 제거
     if (errors.mainImage) {
-      const newErrors = { ...errors };
-      delete newErrors.mainImage;
-      setErrors(newErrors);
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.mainImage;
+        return newErrors;
+      });
     }
   };
 
@@ -147,10 +109,14 @@ export default function DogsEditPage() {
 
     if (!age.trim()) {
       newErrors.age = '나이를 입력해주세요';
+    } else if (isNaN(Number(age)) || Number(age) < 0) {
+      newErrors.age = '유효한 나이를 입력해주세요';
     }
 
     if (!weight.trim()) {
       newErrors.weight = '체중을 입력해주세요';
+    } else if (isNaN(Number(weight)) || Number(weight) < 0) {
+      newErrors.weight = '유효한 체중을 입력해주세요';
     }
 
     if (!breed.trim()) {
@@ -173,6 +139,8 @@ export default function DogsEditPage() {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       // 폼 데이터 준비
       const formData = {
@@ -189,16 +157,29 @@ export default function DogsEditPage() {
         admissionDate: new Date(admissionDate).toISOString(),
       };
 
-      // TODO: API 호출 또는 상태 관리 로직 추가
-      console.log('Updated dog data:', formData);
-      console.log('Main image:', mainImage);
-      console.log('Additional images:', additionalImages);
+      // TODO: 백엔드 API 완성 시 아래 코드 주석 해제
+      // await updateDog(parseInt(dogId), formData);
 
-      alert('강아지 정보가 수정되었습니다.');
-      router.push(`/admin/dogs/${dogId}`);
+      // 백엔드 API 미완성 상태에서 임시 처리
+      console.log('수정할 강아지 데이터:', formData);
+
+      // 이미지 업로드 출력
+      if (imageFile) {
+        console.log('업로드할 이미지:', imageFile);
+      }
+
+      // 목업 성공 처리
+      setTimeout(() => {
+        alert('강아지 정보가 수정되었습니다. (API 연동 예정)');
+        router.push(`/admin/dogs/${dogId}`);
+        setIsSubmitting(false);
+      }, 1000);
     } catch (error) {
-      console.error('Error updating dog data:', error);
-      setErrors({ general: '강아지 정보 수정에 실패했습니다.' });
+      console.error('강아지 정보 수정 실패:', error);
+      setErrors({
+        general: '강아지 정보 수정에 실패했습니다. 다시 시도해주세요.',
+      });
+      setIsSubmitting(false);
     }
   };
 
@@ -306,11 +287,30 @@ export default function DogsEditPage() {
   };
 
   // 로딩 상태 표시
-  if (isLoading) {
+  if (isLoadingDog) {
     return (
       <div className={styles.dogsEditPage}>
         <div className={styles.adminCard}>
           <div className={styles.loading}>정보를 불러오는 중...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // 강아지 조회 에러 표시
+  if (dogError) {
+    return (
+      <div className={styles.dogsEditPage}>
+        <div className={styles.adminCard}>
+          <div className={styles.error}>
+            {dogError}
+            <Button
+              variant='primary'
+              onClick={() => router.push('/admin/dogs')}
+            >
+              목록으로 돌아가기
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -330,34 +330,29 @@ export default function DogsEditPage() {
         <form onSubmit={handleSubmit}>
           <div className={styles.formContent}>
             <div className={styles.imageSection}>
-              <div className={styles.currentImages}>
-                <h3 className={styles.sectionTitle}>현재 이미지</h3>
-                <div className={styles.imageGrid}>
-                  {dogImages.map((img) => (
-                    <div
-                      key={img.imageId}
-                      className={`${styles.currentImage} ${img.isMain ? styles.mainImage : ''}`}
-                    >
-                      <img
-                        src={img.imageUrl}
-                        alt={`강아지 이미지 ${img.imageId}`}
-                      />
-                      {img.isMain && (
-                        <span className={styles.mainTag}>대표</span>
-                      )}
-                    </div>
-                  ))}
+              {dog?.imageUrl && (
+                <div className={styles.currentImages}>
+                  <h3 className={styles.sectionTitle}>현재 이미지</h3>
+                  <div className={styles.currentImagePreview}>
+                    <Image
+                      src={dog.imageUrl || '/images/dummy.jpeg'}
+                      alt={dog.name || '강아지 이미지'}
+                      width={300}
+                      height={300}
+                      className={styles.previewImage}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className={styles.imageUploadSection}>
                 <h3 className={styles.sectionTitle}>새 대표 이미지 업로드</h3>
                 <ImageUpload
-                  value={mainImage}
-                  onChange={handleMainImageUpload}
                   onError={handleImageError}
                   error={errors.mainImage}
                   uploadText='대표 이미지를 업로드해주세요'
+                  value={imageFile}
+                  onChange={handleImageChange}
                 />
 
                 {/* 추가 이미지 업로드 기능은 필요에 따라 구현 */}
@@ -460,11 +455,16 @@ export default function DogsEditPage() {
           </div>
 
           <div className={styles.formActions}>
-            <Button variant='outline' onClick={handleCancel} type='button'>
+            <Button
+              variant='outline'
+              onClick={handleCancel}
+              type='button'
+              disabled={isSubmitting}
+            >
               취소하기
             </Button>
-            <Button variant='primary' type='submit'>
-              수정완료
+            <Button variant='primary' type='submit' disabled={isSubmitting}>
+              {isSubmitting ? '처리 중...' : '수정완료'}
             </Button>
           </div>
         </form>

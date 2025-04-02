@@ -14,7 +14,7 @@ interface AuthState {
 
 function createAuthStore() {
   return create<AuthState>((set, get) => ({
-    user: null,
+    user: null, // 유저정보 (createAt, nickname, kakaoEmail, isAdmin, shelterId, userId)
     isAuthenticated: false,
     isLoading: true,
     error: null,
@@ -22,7 +22,6 @@ function createAuthStore() {
     checkAuthStatus: async () => {
       try {
         set({ isLoading: true, error: null });
-        console.log('로딩 상태 변경 후:', get());
 
         const userData = await fetchCurrentUser();
 

@@ -66,4 +66,7 @@
 .label {
   font-size: 12px;
   font-weight: 500;
+  &.active {
+    color: $yh-orange;
+  }
 }

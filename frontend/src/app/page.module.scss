@@ -8,12 +8,12 @@
     font-family: 'NanumSquareNeo', sans-serif;
   }
 
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: #f7f7f7;
 
   main {
     overflow-y: scroll;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     justify-content: center;
 
@@ -36,7 +36,7 @@
         padding: 0 16px;
       }
       .bottomNav {
-        height: 100vh;
+        height: 100dvh;
       }
     }
   }

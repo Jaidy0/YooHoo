@@ -9,6 +9,10 @@
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 10px;
+
+    h3 {
+      margin-bottom: 10px;
+    }
   }
 
   .accountNameContainer,
@@ -19,6 +23,102 @@
     h3 {
       font-size: $font-size-md;
       font-weight: $font-weight-bold;
+    }
+  }
+
+  // 드롭다운 스타일
+  .dropdownContainer {
+    position: relative;
+    width: 100%;
+  }
+
+  .dropdownHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    border-radius: 8px;
+    padding-right: 12px;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+
+  .placeholderContainer {
+    flex: 1;
+    border: 1px solid $chart-yellow;
+    border-radius: 8px;
+    padding: 1rem;
+
+    .placeholder {
+      color: #999;
+    }
+  }
+
+  .chevronIcon {
+    display: flex;
+    align-items: center;
+    transform: rotate(90deg);
+    transition: transform 0.2s ease;
+
+    &.rotated {
+      transform: rotate(270deg);
+    }
+  }
+
+  .dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 4px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .dropdownItem {
+    padding: 12px 16px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f5f5f5;
+    }
+
+    &.selected {
+      background-color: #f0f8ff;
+    }
+
+    .dropdownItemContent {
+      display: flex;
+      align-items: center;
+
+      .iconWrapper {
+        margin-right: 12px;
+      }
+
+      .accountDetails {
+        flex: 1;
+
+        .bankName {
+          font-weight: bold;
+          margin-bottom: 4px;
+        }
+
+        .accountNumber {
+          color: #666;
+          font-size: 14px;
+        }
+      }
+
+      .checkIcon {
+        margin-left: 12px;
+      }
     }
   }
 }

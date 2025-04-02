@@ -1,6 +1,4 @@
 // types/dog.ts
-
-// 강아지 상태 enum
 export enum DogStatus {
   PROTECTED = 0, // 보호
   TEMPORARY = 1, // 임시보호
@@ -10,55 +8,34 @@ export enum DogStatus {
 
 // 성별 enum
 export enum Gender {
-  MALE = 0,
-  FEMALE = 1,
+  FEMALE = 0, // 여성
+  MALE = 1, // 남성
 }
 
-// 강아지 기본 정보 인터페이스 (실제 API 응답 기반)
+// API 응답에 맞춘 강아지 기본 정보 인터페이스
 export interface Dog {
   dogId: number;
-  shelterId?: number; // API 응답에 없을 수 있으므로 선택적 필드로 설정
   name: string;
   age: number;
-  weight: number;
+  weight?: number;
   gender: Gender;
-  breed: string;
-  energetic: number; // 활발함 정도 (1-5 스케일)
-  familiarity: number; // 친화력 정도 (1-5 스케일)
-  isVaccination: boolean;
-  isNeutered: boolean;
+  breed?: string;
+  energetic?: number;
+  familiarity?: number;
+  isVaccination?: boolean;
+  isNeutered?: boolean;
   status: DogStatus;
-  admissionDate: string; // ISO 형식의 날짜 문자열 (예: "2024-02-16T15:00:00.000+00:00")
-  images?: DogImage[]; // 이미지 정보 배열
-}
-
-// 목록에서 사용하는 축약된 정보
-export interface DogSummary {
-  dogId: number;
-  name: string;
-  age: number;
-  gender: Gender;
-  status: DogStatus;
-  mainImage?: DogImage; // 대표 이미지 (isMain이 true인 이미지)
+  admissionDate?: string;
+  imageUrl: string | null;
   shelterId?: number;
+  description?: string;
 }
 
-// 강아지 이미지 인터페이스
-export interface DogImage {
-  imageId: number;
-  dogId: number;
-  imageUrl: string;
-  thumbnailUrl?: string;
-  isMain: boolean;
-  uploadDate: string;
-}
-
-// API 응답 인터페이스
+// API 응답 인터페이스 (클라이언트 페이지네이션에 필요한 부분만 유지)
 export interface DogResponse {
   data: Dog[];
   total: number;
-  page: number;
-  size: number;
+  totalPages: number;
 }
 
 // 단일 강아지 응답 인터페이스
@@ -66,38 +43,27 @@ export interface SingleDogResponse {
   data: Dog;
 }
 
-// 이미지 응답 인터페이스
-export interface DogImagesResponse {
-  data: DogImage[];
-  dogId: number;
-}
+// 상태값을 텍스트로 변환하는 유틸리티 함수
+export const getStatusText = (status: number): string => {
+  switch (status) {
+    case DogStatus.PROTECTED:
+      return '보호중';
+    case DogStatus.TEMPORARY:
+      return '임시보호';
+    case DogStatus.ADOPTED:
+      return '입양완료';
+    case DogStatus.DECEASED:
+      return '사망';
+    default:
+      return '알 수 없음';
+  }
+};
 
-// 강아지 생성/수정 요청 인터페이스
-export interface DogRequest {
-  name: string;
-  age: number;
-  weight: number;
-  gender: Gender;
-  breed: string;
-  energetic: number;
-  familiarity: number;
-  isVaccination: boolean;
-  isNeutered: boolean;
-  status: DogStatus;
-  admissionDate: string;
-  shelterId: number;
-  description?: string;
-}
+// 성별값을 텍스트로 변환하는 유틸리티 함수
+export const getGenderText = (gender: number): string => {
+  return gender === Gender.MALE ? '남' : '여';
+};
 
-// 강아지 이미지 업로드 요청 인터페이스
-export interface DogImageUploadRequest {
-  dogId: number;
-  isMain: boolean;
-  file: File;
-}
-
-// 강아지 이미지 수정 요청 인터페이스
-export interface DogImageUpdateRequest {
-  imageId: number;
-  isMain?: boolean;
-}
+// 강아지 정보 수정 DTO 인터페이스
+// Dog 인터페이스에서 dogId와 imageUrl을 제외한 타입 정의
+export type DogUpdateDto = Omit<Dog, 'dogId' | 'imageUrl'>;

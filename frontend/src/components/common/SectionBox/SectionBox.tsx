@@ -6,6 +6,7 @@ interface SectionBoxProps {
   subtitle?: string;
   children: ReactNode;
   className?: string;
+  titleRight?: ReactNode;
 }
 
 export default function SectionBox({
@@ -13,13 +14,17 @@ export default function SectionBox({
   subtitle,
   children,
   className = '',
+  titleRight,
 }: SectionBoxProps) {
   return (
     <section className={`${styles.sectionBox} ${className}`}>
       {(title || subtitle) && (
         <div className={styles.header}>
-          {title && <h2 className={styles.title}>{title}</h2>}
-          {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          <div className={styles.titleArea}>
+            {title && <h2 className={styles.title}>{title}</h2>}
+            {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+          </div>
+          {titleRight && <div className={styles.titleRight}>{titleRight}</div>}
         </div>
       )}
       <div className={styles.content}>{children}</div>

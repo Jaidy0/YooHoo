@@ -42,12 +42,14 @@
 
 .settingButton {
   display: flex;
-  padding: 8px;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  justify-content: center;
   align-items: center;
-  gap: $spacing-sm;
+  flex-shrink: 0;
   position: absolute;
   right: $spacing-xxl;
-
   border-radius: $border-radius-full;
   border: 1px solid $text-121212;
   background: $yh-yellow;
@@ -94,11 +96,12 @@
 
 .adminShelterDetail {
   display: flex;
-  flex-direction: row; // 명시적으로 row 추가
-  flex-wrap: nowrap; // 줄바꿈 방지
-  align-items: flex-end;
+  flex-direction: row;
+  justify-content: space-between; // 두 컨테이너 사이 공간 균등 분배
+  align-items: stretch; // 두 컨테이너 높이 맞춤
   gap: 28px;
   align-self: stretch;
+  width: 100%;
 }
 
 .adminTrust {
@@ -106,28 +109,27 @@
   border-radius: $border-radius-lg;
   box-shadow: $shadow-yoohoo;
   display: flex;
-  width: 24.5rem;
+  width: 33%; // 1:2 비율을 위해 1/3로
   padding: $spacing-lg;
-  align-items: center;
-  gap: $spacing-xl;
-  align-self: stretch;
+  align-items: flex-start; // 왼쪽 정렬
   flex-direction: column;
 }
 
 .trustContent {
   display: flex;
-  height: 276px;
+  width: 100%;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start; // 위에서부터 시작
+  align-items: flex-start; // 왼쪽 정렬
   gap: 30px;
 }
 
 .trustHeader {
   display: flex;
-  width: 334px;
+  width: 100%;
   align-items: center;
   gap: 4px;
+  position: relative; /* 자식 요소 절대 위치 지정을 위한 설정 */
 }
 
 .adminTitle {
@@ -136,32 +138,244 @@
   font-size: 24px;
   font-style: normal;
   font-weight: 800;
-  line-height: 20px; /* 83.333% */
+  line-height: 20px;
   letter-spacing: 0.1px;
 }
 
 .questionButton {
   display: flex;
-  width: 20px;
-  height: 20px;
-  padding: 10px;
-  flex-direction: column;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
   border-radius: $border-radius-full;
   border: 1px solid $text-121212;
   background: $yh-yellow;
+
+  position: absolute;
+
+  right: 0;
 }
 
 .adminFootPrint {
-  background-color: $color-background;
+  background-color: $yh-beige;
   border-radius: $border-radius-lg;
   box-shadow: $shadow-yoohoo;
   display: flex;
-  flex-direction: column;
+  width: 67%; // 1:2 비율을 위해 2/3로
   padding: $spacing-lg;
+  flex-direction: column;
+}
+
+.footPrintHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
   align-items: center;
-  gap: $spacing-xl;
-  align-self: stretch;
+  margin-bottom: $spacing-lg;
+}
+
+.dogManageBtn {
+  background-color: $yh-yellow;
+  color: $text-333;
+  font-weight: $font-weight-bold;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $border-radius-full;
+  border: none;
+  cursor: pointer;
+  font-size: $font-size-md;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    // background-color: darken($yh-yellow, 5%);
+  }
+}
+
+.footprintBox {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+// 발자국 배경
+.pawprintBackground {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-image: url('/images/paw-prints.png');
+  background-repeat: repeat-x;
+  background-size: 60px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.statsContainer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: $spacing-lg;
+  flex: 1;
+}
+
+.pawContainer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin-bottom: $spacing-sm;
+}
+
+.pawImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.count {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $text-333;
+}
+
+.label {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $text-333;
+  margin: 0;
+  text-align: center;
+}
+
+.dogImageContainer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dogImage {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+
+// 신뢰도 표시 관련 스타일
+.trustIndicator {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: $spacing-sm;
+}
+
+.trustBar {
+  width: 100%;
+  height: 10px;
+  background-color: $color-background-light;
+  border-radius: $border-radius-full;
+  overflow: hidden;
+}
+
+.trustFill {
+  height: 100%;
+  background-color: $yh-yellow;
+  border-radius: $border-radius-full;
+}
+
+.trustPercentage {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  text-align: center;
+}
+
+// 로딩 및 에러 메시지 관련 스타일
+.errorMessage {
+  margin-top: $spacing-md;
+  color: $yh-orange;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  // background-color: lighten($yh-orange, 35%);
+
+  button {
+    margin-top: $spacing-sm;
+    padding: $spacing-xs $spacing-md;
+    background-color: $yh-orange;
+    color: white;
+    border: none;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+
+    &:hover {
+      // background-color: darken($yh-orange, 10%);
+    }
+  }
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  p {
+    padding: $spacing-md $spacing-lg;
+    background-color: white;
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-md;
+  }
+}
+
+// 반응형 스타일
+@media (max-width: $breakpoint-md) {
+  .statsContainer {
+    flex-wrap: wrap;
+  }
+
+  .statItem {
+    flex: 0 0 33%;
+    margin-bottom: $spacing-lg;
+  }
+
+  .dogImageContainer {
+    width: 100%;
+    justify-content: center;
+    margin-top: $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .statItem {
+    flex: 0 0 50%;
+  }
+
+  .footPrintHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+
+  .dogManageBtn {
+    align-self: flex-end;
+  }
 }

@@ -1,32 +1,40 @@
 @use '@/assets/styles/abstracts/variables' as *;
 
 .shelterPage {
-  display: flex;
-  padding: 37px 10px;
+  // display: flex;
+  padding: $spacing-xl 0 0 0;
   flex-direction: column;
   align-items: center;
-  flex: 1 0 0;
   align-self: stretch;
   background-color: $yh-admin-bg;
-  min-height: 100vh;
+  height: calc(100dvh - 66px);
 }
 
 .header {
+  align-items: center;
+  text-align: center;
   display: flex;
   flex-direction: column;
   gap: $spacing-md;
-  margin-bottom: $spacing-md;
   width: 100%;
+  flex: 1;
+  padding: 0 $spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 .title {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center; // flex-start에서 center로 변경
+  width: 100%; // 너비 100%로 설정
   gap: 8px;
+  text-align: center; // 텍스트도 가운데 정렬 유지
+  margin-bottom: $spacing-sm;
+  margin-top: $spacing-lg;
 }
-
 .subTitle {
+  align-items: center;
+  text-align: center;
   font-size: $font-size-sm;
   color: $yh-orange;
   font-weight: $font-weight-medium;
@@ -40,20 +48,35 @@
 
 .searchBar {
   width: 100%;
-  max-width: 400px;
 }
 
 .shelterList {
-  display: flex;
+  // display: flex;
   flex-direction: column;
   gap: $spacing-sm;
   width: 100%;
+  height: calc(100% - 162px);
 }
 
 .dropdownContainer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   width: 100%;
+  height: 30px;
+  > span {
+    font-size: $font-size-lg;
+    color: $text-333;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.shelterCards {
+  height: 100%;
+  overflow-y: auto;
+  .shelterCard {
+    margin-bottom: 10px;
+  }
 }
 
 .shelters {
@@ -61,26 +84,9 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
-}
-
-// 반응형 스타일
-@media (max-width: $breakpoint-md) {
-  .header {
-    align-items: center;
-    text-align: center;
-  }
-
-  .title {
-    align-items: center;
-  }
-}
-
-@media (max-width: $breakpoint-sm) {
-  .shelterPage {
-    padding: 24px 8px;
-  }
-
-  .mainTitle {
-    font-size: $font-size-2xl;
-  }
+  height: 100%;
+  padding: 14px 14px 0 14px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
 }
