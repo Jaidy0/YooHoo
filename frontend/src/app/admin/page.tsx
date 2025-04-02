@@ -10,7 +10,7 @@ export default function AdminPage() {
   const router = useRouter();
 
   // 임시 보호소 ID (향후 사용자 정보에서 가져올 예정)
-  const shelterId = 1;
+  const shelterId = 5;
 
   // 커스텀 훅을 사용하여 보호소 데이터 가져오기
   const { shelter, isLoading, error, refreshData, dogCount } =

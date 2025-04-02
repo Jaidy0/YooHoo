@@ -40,7 +40,7 @@ const dogStatusTabs = [
 export default function DogsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
-  const shelterId = 1; // 실제로는 사용자 컨텍스트에서 가져오거나 URL에서 추출
+  const shelterId = 5; // 실제로는 사용자 컨텍스트에서 가져오거나 URL에서 추출
 
   // 커스텀 훅 사용 - 20개씩 표시
   const {
