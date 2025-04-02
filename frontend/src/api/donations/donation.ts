@@ -95,3 +95,66 @@ export const fetchWithdrawalWeeklySums =
       throw error;
     }
   };
+
+// src/api/donations/donation.ts에 추가할 코드
+
+// 입금 내역 인터페이스
+export interface DonationItem {
+  donationId: number;
+  donationAmount: number;
+  transactionUniqueNo: string;
+  donationDate: string;
+  depositorName: string;
+  cheeringMessage: string | null;
+  userNickname: string | null;
+  dogName: string | null;
+  shelterName: string;
+}
+
+// 출금 내역 인터페이스
+export interface WithdrawalItem {
+  date: string;
+  withdrawalId: number;
+  transactionUniqueNo: string;
+  merchantId: number | null;
+  name: string;
+  transactionBalance: string;
+  shelterId: number;
+  category: string;
+}
+
+/**
+ * 단체 입금 내역 전체 조회 API
+ * @param shelterId 보호소 ID
+ * @returns 입금 내역 목록
+ */
+export const fetchShelterDonations = async (
+  shelterId: number
+): Promise<DonationItem[]> => {
+  try {
+    const response = await axios.post<DonationItem[]>(
+      `${API_BASE_URL}/api/donations/shelter-total`,
+      { shelterId }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('보호소 입금 내역 조회 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 후원금 출금 전체 조회 API
+ * @returns 출금 내역 목록
+ */
+export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
+  try {
+    const response = await axios.get<WithdrawalItem[]>(
+      `${API_BASE_URL}/api/withdrawal/all`
+    );
+    return response.data;
+  } catch (error) {
+    console.error('출금 내역 조회 실패:', error);
+    throw error;
+  }
+};

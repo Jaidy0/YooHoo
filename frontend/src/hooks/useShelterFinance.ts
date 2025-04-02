@@ -5,6 +5,10 @@ import {
   fetchShelterTotalWithdrawal,
   fetchDonationWeeklySums,
   fetchWithdrawalWeeklySums,
+  fetchShelterDonations,
+  fetchAllWithdrawals,
+  type DonationItem,
+  type WithdrawalItem,
 } from '@/api/donations/donation';
 
 interface WeeklySumsResponse {
@@ -26,6 +30,10 @@ interface UseShelterFinanceResult {
   // 원본 주간 데이터
   weeklyDonationData: WeeklySumsResponse | null;
   weeklyWithdrawalData: WeeklySumsResponse | null;
+
+  // 입출금 내역 데이터
+  donationItems: DonationItem[];
+  withdrawalItems: WithdrawalItem[];
 
   // 상태 관리
   isLoading: boolean;
@@ -52,6 +60,10 @@ export const useShelterFinance = (
   const [weeklyWithdrawalData, setWeeklyWithdrawalData] =
     useState<WeeklySumsResponse | null>(null);
 
+  // 입출금 내역 데이터
+  const [donationItems, setDonationItems] = useState<DonationItem[]>([]);
+  const [withdrawalItems, setWithdrawalItems] = useState<WithdrawalItem[]>([]);
+
   // 상태 관리
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
@@ -72,11 +84,15 @@ export const useShelterFinance = (
         withdrawalTotalResponse,
         donationWeeklyResponse,
         withdrawalWeeklyResponse,
+        shelterDonationsResponse,
+        allWithdrawalsResponse,
       ] = await Promise.all([
         fetchShelterTotalAmount(shelterId),
         fetchShelterTotalWithdrawal(shelterId),
         fetchDonationWeeklySums(),
         fetchWithdrawalWeeklySums(),
+        fetchShelterDonations(shelterId),
+        fetchAllWithdrawals(),
       ]);
 
       // 1. 총액 데이터 처리
@@ -90,6 +106,10 @@ export const useShelterFinance = (
       // 2. 원본 주간 데이터 저장
       setWeeklyDonationData(donationWeeklyResponse);
       setWeeklyWithdrawalData(withdrawalWeeklyResponse);
+
+      // 3. 입출금 내역 데이터 저장
+      setDonationItems(shelterDonationsResponse);
+      setWithdrawalItems(allWithdrawalsResponse);
     } catch (err) {
       setError(
         err instanceof Error
@@ -121,6 +141,10 @@ export const useShelterFinance = (
     // 원본 주간 데이터
     weeklyDonationData,
     weeklyWithdrawalData,
+
+    // 입출금 내역 데이터
+    donationItems,
+    withdrawalItems,
 
     // 상태 관리
     isLoading,

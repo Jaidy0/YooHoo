@@ -5,8 +5,10 @@ import DonationTracker from '@/components/admin/DonationTracker/DonationTracker'
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useShelterFinance } from '@/hooks/useShelterFinance';
-
-// TODO: API에서 입출금 내역을 불러오는 로직 추가 필요
+import {
+  adaptDonationsToDepositTable,
+  adaptWithdrawalsToWithdrawTable,
+} from '@/lib/util/financeAdapter';
 
 interface StatItem {
   month: string;
@@ -21,8 +23,10 @@ export default function DonationsPage() {
   const {
     totalDonation,
     totalWithdrawal,
-    weeklyDonationData, // API에서 받은 원본 주간 데이터
-    weeklyWithdrawalData, // API에서 받은 원본 주간 데이터
+    weeklyDonationData,
+    weeklyWithdrawalData,
+    donationItems,
+    withdrawalItems,
     isLoading,
     error,
     refetch,
@@ -191,10 +195,10 @@ export default function DonationsPage() {
           </div>
         </div>
 
-        {/* FinanceTable 컴포넌트 사용 - 실제 API 데이터로 교체 필요 */}
+        {/* FinanceTable 컴포넌트에 실제 API 데이터 전달 */}
         <FinanceTable
-          depositData={[]}
-          withdrawData={[]}
+          depositData={adaptDonationsToDepositTable(donationItems)}
+          withdrawData={adaptWithdrawalsToWithdrawTable(withdrawalItems)}
           className={styles.financeTable}
         />
       </section>
