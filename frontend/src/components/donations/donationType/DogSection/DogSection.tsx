@@ -4,13 +4,7 @@ import { useState } from 'react';
 import styles from './DogSection.module.scss';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import DogCard from '../DogCard/DogCard';
-
-// 예시 강아지 데이터 인터페이스
-interface Dog {
-  id: number;
-  name: string;
-  imageUrl?: string;
-}
+import { useDogList } from '@/hooks/donations/useDogList';
 
 type DogSectionProps = {
   shelterId: number;
@@ -27,23 +21,8 @@ export default function DogSection({
 }: DogSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 더미 데이터
-  const dummyDogs: Dog[] = [
-    { id: 1, name: '반디', imageUrl: '' },
-    { id: 2, name: '보미', imageUrl: '' },
-    { id: 3, name: '파이', imageUrl: '' },
-    { id: 4, name: '파이', imageUrl: '' },
-    { id: 5, name: '파이', imageUrl: '' },
-    { id: 6, name: '파이', imageUrl: '' },
-    { id: 7, name: '파이', imageUrl: '' },
-  ];
-
-  // 검색어 기반 필터링
-  const filteredDogs = searchTerm
-    ? dummyDogs.filter((dog) =>
-        dog.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : dummyDogs;
+  // 강아지 목록 가져오기
+  const { dogs, isLoading, error } = useDogList(shelterId, searchTerm);
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -60,22 +39,32 @@ export default function DogSection({
         />
       </div>
 
-      <div className={styles.dogList}>
-        {filteredDogs.length > 0 ? (
-          filteredDogs.map((dog) => (
-            <DogCard
-              key={dog.id}
-              id={dog.id}
-              name={dog.name}
-              imageUrl={dog.imageUrl}
-              isSelected={selectedDogId === dog.id}
-              onClick={onSelectDog}
-            />
-          ))
-        ) : (
-          <div className={styles.noResults}>검색 결과가 없습니다</div>
-        )}
-      </div>
+      {isLoading ? (
+        <div className={styles.loading}>강아지 목록을 불러오는 중입니다...</div>
+      ) : error ? (
+        <div className={styles.error}>{error}</div>
+      ) : (
+        <div className={styles.dogList}>
+          {dogs.length > 0 ? (
+            dogs.map((dog) => (
+              <DogCard
+                key={dog.dogId}
+                id={dog.dogId}
+                name={dog.name}
+                imageUrl={dog.imageUrl || ''}
+                isSelected={selectedDogId === dog.dogId}
+                onClick={onSelectDog}
+              />
+            ))
+          ) : (
+            <div className={styles.noResults}>
+              {searchTerm
+                ? '검색 결과가 없습니다'
+                : '보호 중인 강아지가 없습니다'}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
