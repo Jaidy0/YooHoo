@@ -11,9 +11,13 @@ const API_BASE_URL: string =
  */
 export const getUserAccounts = async (): Promise<AccountInfo[]> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/donations/accounts`, {
-      withCredentials: true,
-    });
+    const response = await axios.post(
+      `${API_BASE_URL}/api/donations/accounts`,
+      {}, // 빈 객체 전송
+      {
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('계좌 정보 조회 실패:', error);
@@ -32,8 +36,9 @@ export const getShelterAccountInfo = async (
   if (!shelterId) return null;
 
   try {
-    const response = await axios.get(
+    const response = await axios.post(
       `${API_BASE_URL}/api/shelter/${shelterId}/accountinfo`,
+      {}, // 빈 객체 전송
       {
         withCredentials: true,
       }
