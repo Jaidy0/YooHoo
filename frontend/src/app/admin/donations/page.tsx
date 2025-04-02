@@ -16,8 +16,8 @@ interface StatItem {
 }
 
 export default function DonationsPage() {
-  // 1번 보호소 기준으로 데이터 로드 (필요시 동적으로 변경할 수 있습니다)
-  const shelterId = 1;
+  // 5번 보호소 기준으로 데이터 로드 (필요시 동적으로 변경할 수 있습니다)
+  const shelterId = 5;
 
   // useShelterFinance 훅 사용
   const {
