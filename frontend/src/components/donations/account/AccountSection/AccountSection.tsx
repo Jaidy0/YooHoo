@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import styles from './AccountSection.module.scss';
 import StepTitle from '@/components/donations/StepTitle/StepTitle';
 import AccountInfoCard from '../AccountInfoCard/AccountInfoCard';
@@ -9,6 +9,7 @@ import MessageInput from '../MessageInput/MessageInput';
 import { DonationFormData } from '@/types/donation';
 import { useAccounts } from '@/hooks/donations/useAccount';
 import { useShelterAccount } from '@/hooks/donations/useShelterAccount';
+import { IconBox } from '@/components/common/IconBox/IconBox';
 
 type AccountSectionProps = {
   stepNumber: number;
@@ -29,6 +30,9 @@ export default function AccountSection({
   const [selectedAccountIdx, setSelectedAccountIdx] = useState<number | null>(
     null
   );
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // 내 계좌 정보 가져오기
   const {
@@ -44,9 +48,20 @@ export default function AccountSection({
     error: shelterAccountError,
   } = useShelterAccount(formData.shelterId);
 
+  // 계좌번호 포맷팅 함수
+  const formatAccountNumber = (accountNo: string) => {
+    if (!accountNo) return '';
+
+    if (accountNo.length > 8) {
+      return `${accountNo.slice(0, 4)}-${accountNo.slice(4, 8)}-${accountNo.slice(8)}`;
+    }
+    return accountNo;
+  };
+
   // 계좌 선택 핸들러
   const handleAccountSelect = (index: number) => {
     setSelectedAccountIdx(index);
+    setIsDropdownOpen(false);
     if (accounts[index]) {
       updateFormData({
         accountNumber: accounts[index].accountNo,
@@ -68,12 +83,29 @@ export default function AccountSection({
     completeStep('accountInfo', isValid);
   };
 
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className={styles.accountSection}>
       <StepTitle number={stepNumber} title='입출금 계좌 및 정보 입력' />
 
       <div className={styles.accountInfoContainer}>
-        {/* 출금 계좌 선택 */}
+        {/* 출금 계좌 선택 (드롭다운) */}
         <div className={styles.accountSelection}>
           <h3>출금 계좌 선택</h3>
           {isLoadingMyAccounts ? (
@@ -85,20 +117,59 @@ export default function AccountSection({
           ) : accounts.length === 0 ? (
             <div className={styles.noAccounts}>등록된 계좌가 없습니다.</div>
           ) : (
-            <div className={styles.accountsList}>
-              {accounts.map((account, index) => (
-                <div
-                  key={account.accountNo}
-                  className={`${styles.accountCard} ${selectedAccountIdx === index ? styles.selected : ''}`}
-                  onClick={() => handleAccountSelect(index)}
-                >
+            <div className={styles.dropdownContainer} ref={dropdownRef}>
+              <div
+                className={styles.dropdownHeader}
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {selectedAccountIdx !== null ? (
                   <AccountInfoCard
-                    bankName={account.bankName}
-                    accountNumber={account.accountNo}
-                    isSelected={selectedAccountIdx === index}
+                    bankName={accounts[selectedAccountIdx].bankName}
+                    accountNumber={accounts[selectedAccountIdx].accountNo}
+                    isSelected={true}
                   />
+                ) : (
+                  <div className={styles.placeholderContainer}>
+                    <span className={styles.placeholder}>
+                      계좌를 선택해주세요
+                    </span>
+                  </div>
+                )}
+                <div
+                  className={`${styles.chevronIcon} ${isDropdownOpen ? styles.rotated : ''}`}
+                >
+                  <IconBox name='chevron' size={16} />
                 </div>
-              ))}
+              </div>
+
+              {isDropdownOpen && (
+                <div className={styles.dropdownMenu}>
+                  {accounts.map((account, index) => (
+                    <div
+                      key={account.accountNo}
+                      className={`${styles.dropdownItem} ${selectedAccountIdx === index ? styles.selected : ''}`}
+                      onClick={() => handleAccountSelect(index)}
+                    >
+                      <div className={styles.dropdownItemContent}>
+                        <div className={styles.iconWrapper}>
+                          <IconBox name='account' size={20} />
+                        </div>
+                        <div className={styles.accountDetails}>
+                          <p className={styles.bankName}>{account.bankName}</p>
+                          <p className={styles.accountNumber}>
+                            {formatAccountNumber(account.accountNo)}
+                          </p>
+                        </div>
+                        {selectedAccountIdx === index && (
+                          <div className={styles.checkIcon}>
+                            {/* <IconBox name='check' size={16} color="#4CAF50" /> */}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
