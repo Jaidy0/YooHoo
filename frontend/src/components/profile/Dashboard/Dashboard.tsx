@@ -18,7 +18,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 더미 데이터
-  const [userInfo] = useState({
+  const [userInfo, setUserInfo] = useState({
     nickname: '닉네임',
     createdAt: 24,
   });

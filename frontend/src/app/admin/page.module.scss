@@ -189,7 +189,7 @@
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    background-color: darken($yh-yellow, 5%);
+    // background-color: darken($yh-yellow, 5%);
   }
 }
 
@@ -309,7 +309,7 @@
   color: $yh-orange;
   padding: $spacing-md;
   border-radius: $border-radius-md;
-  background-color: lighten($yh-orange, 35%);
+  // background-color: lighten($yh-orange, 35%);
 
   button {
     margin-top: $spacing-sm;
@@ -321,7 +321,7 @@
     cursor: pointer;
 
     &:hover {
-      background-color: darken($yh-orange, 10%);
+      // background-color: darken($yh-orange, 10%);
     }
   }
 }
