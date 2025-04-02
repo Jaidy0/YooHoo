@@ -68,7 +68,7 @@ export default function MainPage() {
     }
 
     checkAuth();
-  }, [checkAuthStatus]);
+  }, []);
 
   if (isLoading) {
     return (
