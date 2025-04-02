@@ -9,7 +9,7 @@ import styles from './page.module.scss';
 function KakaoLoginCallbackPage() {
   const router = useRouter();
   // const searchParams = useSearchParams();
-  const { checkAuthStatus, user, isLoading, error } = useAuthStore();
+  const { checkAuthStatus, isLoading, error } = useAuthStore();
 
   useEffect(() => {
     async function verifyAuth() {
@@ -46,7 +46,9 @@ function KakaoLoginCallbackPage() {
         // }
 
         // 인증 상태 확인
-        const isAuthenticated = await checkAuthStatus();
+        const { isAuthenticated, isAdmin } = await checkAuthStatus();
+        console.log('인증 상태:', isAuthenticated);
+        console.log('관리자 여부:', isAdmin);
 
         if (!isAuthenticated) {
           console.error('인증 실패');
@@ -55,7 +57,7 @@ function KakaoLoginCallbackPage() {
         }
 
         // 사용자 타입에 따른 처리
-        if (user?.is_admin) {
+        if (isAdmin) {
           console.log('관리자로 판단됨');
           router.push('/yoohoo/login/choice');
         } else {

@@ -8,7 +8,10 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  checkAuthStatus: () => Promise<boolean>;
+  checkAuthStatus: () => Promise<{
+    isAuthenticated: boolean;
+    isAdmin: boolean;
+  }>;
   logout: () => Promise<void>;
 }
 
@@ -32,9 +35,10 @@ function createAuthStore() {
             isLoading: false,
           });
 
-          // 상태 업데이트 후 현재 상태 로깅
-          console.log('인증 성공 후 상태:', get());
-          return true;
+          return {
+            isAuthenticated: true,
+            isAdmin: userData.is_admin,
+          };
         } else {
           set({
             user: null,
@@ -42,9 +46,10 @@ function createAuthStore() {
             isLoading: false,
           });
 
-          // 상태 업데이트 후 현재 상태 로깅
-          console.log('인증 실패 후 상태:', get());
-          return false;
+          return {
+            isAuthenticated: false,
+            isAdmin: false,
+          };
         }
       } catch (error) {
         console.error('인증 상태 확인 실패:', error);
@@ -55,9 +60,10 @@ function createAuthStore() {
           error: '인증 확인 중 오류가 발생했습니다.',
         });
 
-        // 에러 상태 업데이트 후 현재 상태 로깅
-        console.log('인증 에러 후 상태:', get());
-        return false;
+        return {
+          isAuthenticated: false,
+          isAdmin: false,
+        };
       }
     },
 
