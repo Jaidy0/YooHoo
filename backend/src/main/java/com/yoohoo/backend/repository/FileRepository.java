@@ -19,9 +19,5 @@ public interface FileRepository extends JpaRepository<File, Long> {
     @Query("SELECT f.fileUrl FROM File f WHERE f.entityType = :entityType AND f.entityId = :entityId")
     String findFileUrlByEntityTypeAndEntityId(@Param("entityType") Integer entityType, @Param("entityId") Long entityId);
 
-<<<<<<< HEAD
     List<File> findByEntityTypeAndEntityIdIn(int entityType, List<Long> entityIds);
-=======
-    List<File> findByEntityTypeAndEntityIdIn(Integer entityType, List<Long> entityIds);
->>>>>>> feat/#193-be-History7,9수정
 }
