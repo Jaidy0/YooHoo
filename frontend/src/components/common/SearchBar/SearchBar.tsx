@@ -38,6 +38,9 @@ export default function SearchBar({
 
   const handleClear = () => {
     setSearchTerm('');
+    if (onSearch) {
+      onSearch(''); // 빈 검색어로 onSearch 호출
+    }
     inputRef.current?.focus();
   };
 

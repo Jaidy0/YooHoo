@@ -20,3 +20,8 @@ export interface Shelter {
   reliability: number;
   imageUrl: string;
 }
+
+export interface ShelterAccountInfo {
+  accountNo: string;
+  bankName: string;
+}
