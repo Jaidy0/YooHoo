@@ -1,0 +1,27 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.stepTitle {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 30px;
+  position: relative;
+  padding-bottom: 10px;
+
+  // 하단 라인 직접 적용
+  border-bottom: 1px solid #ddd;
+
+  .stepNumber {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin-right: 0.5rem;
+  }
+
+  .title {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    color: #333;
+    margin: 0;
+  }
+}

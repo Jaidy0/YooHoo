@@ -1,0 +1,77 @@
+@use 'abstracts/variables' as *;
+
+// 공통 버튼 스타일 믹스인
+@mixin button-base {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent !important;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin: $spacing-lg 0;
+}
+
+.pageButton {
+  @include button-base;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 $spacing-sm;
+  border: none;
+  color: $color-text;
+  font-size: $font-size-sm;
+
+  &:hover,
+  &.active {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+  }
+
+  &.active {
+    color: $yh-orange;
+  }
+}
+
+.navButton {
+  @include button-base;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: $border-radius-full;
+  border: 1px solid $color-border;
+  color: $text-333;
+  font-size: $font-size-md;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    border-color: $yh-brown;
+    color: $yh-brown;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($yh-brown, 0.2);
+  }
+}
+
+.ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  font-size: $font-size-sm;
+  color: $color-text-light;
+  padding: 0 $spacing-xs;
+}

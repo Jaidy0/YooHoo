@@ -1,0 +1,43 @@
+@use '@/assets/styles/base/typography';
+@use '@/assets/styles/font';
+
+.container {
+  * {
+    margin: 0;
+    padding: 0;
+    font-family: 'NanumSquareNeo', sans-serif;
+  }
+
+  min-height: 100dvh;
+  background-color: #f7f7f7;
+
+  main {
+    overflow-y: scroll;
+    height: 100dvh;
+    display: flex;
+    justify-content: center;
+
+    .admin {
+      width: 1280px;
+      margin: 0 auto;
+      background-color: #fff;
+    }
+
+    .user {
+      display: flex;
+      flex-direction: column;
+      min-width: 360px;
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: #fff;
+      position: relative;
+
+      .content {
+        padding: 0 16px;
+      }
+      .bottomNav {
+        height: 100dvh;
+      }
+    }
+  }
+}

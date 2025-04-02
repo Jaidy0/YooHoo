@@ -1,0 +1,115 @@
+@use '@/assets/styles/abstracts/variables' as *;
+@use 'sass:color';
+
+.adminLayout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $yh-admin-bg;
+  padding: $spacing-md 0;
+}
+
+.adminHeader {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 0 $spacing-lg;
+}
+
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+
+  a {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-decoration: none;
+  }
+
+  .logoImage {
+    height: 72px;
+    width: auto;
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .logoText {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-normal;
+    color: $text-555;
+    margin: $spacing-sm;
+    strong {
+      font-size: $font-size-4xl;
+      font-weight: $font-weight-bold;
+      color: $text-121212;
+    }
+  }
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.mainNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  padding: $spacing-lg 0;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 0 $spacing-xl;
+  width: 100%;
+}
+
+.adminFooter {
+  background-color: $yh-admin-bg;
+  padding: $spacing-sm 0;
+  text-align: center;
+  border-top: 1px solid $color-border;
+}
+
+.footerContent {
+  font-size: $font-size-sm;
+  color: $text-777;
+  padding: $spacing-sm 0;
+}
+
+// 반응형 미디어 쿼리
+@media (max-width: $breakpoint-lg) {
+  .mainContent {
+    padding: $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .headerContainer {
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .mainNav {
+    padding: 0 $spacing-md;
+    overflow-x: auto;
+  }
+
+  .logoText {
+    display: none;
+  }
+}

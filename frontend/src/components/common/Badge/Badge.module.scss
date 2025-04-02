@@ -1,0 +1,39 @@
+@use '../../../assets/styles/abstracts/variables' as *;
+
+.badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $border-radius-lg;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-weight: 500;
+  font-size: $font-size-sm;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  gap: 10px;
+  padding: 5px 15px;
+  white-space: nowrap; // 텍스트가 줄바꿈되지 않도록 설정
+  box-sizing: border-box; // 패딩을 포함한 전체 크기 계산
+
+  &--positive {
+    background-color: #eafbf1;
+    color: #22a559;
+
+    &:hover {
+    }
+  }
+
+  &--negative {
+    background-color: #fbeaea;
+    color: #ce0808;
+
+    &:hover {
+    }
+  }
+}
+
+.content {
+  position: relative;
+}

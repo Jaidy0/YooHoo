@@ -1,0 +1,27 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.donationsLayout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.subNavContainer {
+  display: flex;
+  background-color: $yh-beige;
+  border-bottom: 1px solid $color-border;
+  padding: $spacing-md 0;
+  margin-bottom: $spacing-lg;
+}
+
+.contentContainer {
+  flex: 1;
+}
+
+// 반응형 스타일
+@media (max-width: $breakpoint-md) {
+  .subNavContainer {
+    padding: $spacing-sm 0;
+    overflow-x: auto;
+  }
+}
