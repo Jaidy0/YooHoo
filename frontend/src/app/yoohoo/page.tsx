@@ -66,7 +66,7 @@ export default function MainPage() {
     function checkAuth() {
       checkAuthStatus();
     }
-
+    console.log('메인페이지 체크합니다.');
     checkAuth();
   }, []);
 
