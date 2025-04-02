@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const { user, isAuthenticated, isLoading, checkAuthStatus } = useAuthStore();
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
-  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [timeoutId, setTimeoutId] = useState<number | null>(null);
 
   // 인증 상태 확인 - 타임아웃 방식으로 변경
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
         // 인증 상태가 변경되지 않았고 로딩 중인 경우 타임아웃 설정
         if (!isAuthenticated && isLoading) {
-          const id = setTimeout(() => {
+          const id = window.setTimeout(() => {
             setRetryCount((prev) => prev + 1);
             // 로딩 중이 지속되면 강제로 로딩 상태 해제 (Store 수정 필요)
             if (retryCount >= maxRetries - 1) {
@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
           setTimeoutId(id);
           return () => {
-            if (id) clearTimeout(id);
+            if (id) window.clearTimeout(id);
           };
         }
       } catch (error) {
@@ -73,7 +73,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     // 클린업 함수
     return () => {
       if (timeoutId) {
-        clearTimeout(timeoutId);
+        window.clearTimeout(timeoutId);
       }
     };
   }, [
