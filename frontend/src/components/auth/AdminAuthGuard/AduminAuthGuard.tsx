@@ -8,6 +8,7 @@ interface AdminAuthGuardProps {
   children: React.ReactNode;
   shelterId: number;
 }
+console.log('AdminAuthGuard 파일 로드됨');
 
 export default function AdminAuthGuard({
   children,
@@ -15,6 +16,7 @@ export default function AdminAuthGuard({
 }: AdminAuthGuardProps) {
   // 인증 확인
   const isAuthenticated = useAuthGuard('/yoohoo/login/kakao');
+  console.log('AdminAuthGuard 컴포넌트 실행, shelterId:', shelterId);
 
   // 데이터 초기화
   const { isInitialized, error } = useAdminDataInitializer(shelterId);
