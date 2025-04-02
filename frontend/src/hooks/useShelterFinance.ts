@@ -7,11 +7,14 @@ import {
   fetchWithdrawalWeeklySums,
 } from '@/api/donations/donation';
 
-interface WeeklyComparison {
-  current: number;
-  previous: number;
-  change: number;
-  changePercent: number;
+interface WeeklySumsResponse {
+  '5WeeksAgo': number;
+  '4WeeksAgo': number;
+  '3WeeksAgo': number;
+  '2WeeksAgo': number;
+  '1WeeksAgo': number;
+  ThisWeek: number;
+  Prediction: number;
 }
 
 interface UseShelterFinanceResult {
@@ -20,13 +23,9 @@ interface UseShelterFinanceResult {
   totalWithdrawal: number | null;
   balance: number | null;
 
-  // 주간 비교 데이터
-  weeklyDonation: WeeklyComparison | null;
-  weeklyWithdrawal: WeeklyComparison | null;
-
-  // 예측 데이터
-  donationPrediction: number | null;
-  withdrawalPrediction: number | null;
+  // 원본 주간 데이터
+  weeklyDonationData: WeeklySumsResponse | null;
+  weeklyWithdrawalData: WeeklySumsResponse | null;
 
   // 상태 관리
   isLoading: boolean;
@@ -37,7 +36,7 @@ interface UseShelterFinanceResult {
 /**
  * 보호소의 재정 정보를 종합적으로 조회하는 커스텀 훅
  * @param shelterId 보호소 ID
- * @returns 기부/지출 금액, 잔액, 주간 비교, 예측 데이터 정보
+ * @returns 기부/지출 금액, 잔액, 주간 데이터 정보
  */
 export const useShelterFinance = (
   shelterId: number
@@ -47,40 +46,15 @@ export const useShelterFinance = (
   const [totalWithdrawal, setTotalWithdrawal] = useState<number | null>(null);
   const [balance, setBalance] = useState<number | null>(null);
 
-  // 주간 비교 데이터 상태
-  const [weeklyDonation, setWeeklyDonation] = useState<WeeklyComparison | null>(
-    null
-  );
-  const [weeklyWithdrawal, setWeeklyWithdrawal] =
-    useState<WeeklyComparison | null>(null);
+  // 원본 주간 데이터
+  const [weeklyDonationData, setWeeklyDonationData] =
+    useState<WeeklySumsResponse | null>(null);
+  const [weeklyWithdrawalData, setWeeklyWithdrawalData] =
+    useState<WeeklySumsResponse | null>(null);
 
-  // 예측 데이터 상태
-  const [donationPrediction, setDonationPrediction] = useState<number | null>(
-    null
-  );
-  const [withdrawalPrediction, setWithdrawalPrediction] = useState<
-    number | null
-  >(null);
-
-  // 로딩 및 에러 상태
+  // 상태 관리
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
-
-  /**
-   * 변화율 계산 함수
-   * @param current 현재 값
-   * @param previous 이전 값
-   * @returns 변화량 및 변화율
-   */
-  const calculateChange = (
-    current: number,
-    previous: number
-  ): { change: number; changePercent: number } => {
-    const change = current - previous;
-    const changePercent = previous === 0 ? 0 : (change / previous) * 100;
-
-    return { change, changePercent };
-  };
 
   /**
    * 모든 데이터를 조회하는 함수
@@ -113,36 +87,9 @@ export const useShelterFinance = (
       setTotalWithdrawal(withdrawalAmount);
       setBalance(donationAmount - withdrawalAmount);
 
-      // 2. 주간 비교 데이터 처리
-      const currentWeekDonation = donationWeeklyResponse.ThisWeek;
-      const previousWeekDonation = donationWeeklyResponse['1WeeksAgo'];
-      const { change: donationChange, changePercent: donationChangePercent } =
-        calculateChange(currentWeekDonation, previousWeekDonation);
-
-      setWeeklyDonation({
-        current: currentWeekDonation,
-        previous: previousWeekDonation,
-        change: donationChange,
-        changePercent: donationChangePercent,
-      });
-
-      const currentWeekWithdrawal = withdrawalWeeklyResponse.ThisWeek;
-      const previousWeekWithdrawal = withdrawalWeeklyResponse['1WeeksAgo'];
-      const {
-        change: withdrawalChange,
-        changePercent: withdrawalChangePercent,
-      } = calculateChange(currentWeekWithdrawal, previousWeekWithdrawal);
-
-      setWeeklyWithdrawal({
-        current: currentWeekWithdrawal,
-        previous: previousWeekWithdrawal,
-        change: withdrawalChange,
-        changePercent: withdrawalChangePercent,
-      });
-
-      // 3. 예측 데이터 처리
-      setDonationPrediction(donationWeeklyResponse.Prediction);
-      setWithdrawalPrediction(withdrawalWeeklyResponse.Prediction);
+      // 2. 원본 주간 데이터 저장
+      setWeeklyDonationData(donationWeeklyResponse);
+      setWeeklyWithdrawalData(withdrawalWeeklyResponse);
     } catch (err) {
       setError(
         err instanceof Error
@@ -171,13 +118,9 @@ export const useShelterFinance = (
     totalWithdrawal,
     balance,
 
-    // 주간 비교 데이터
-    weeklyDonation,
-    weeklyWithdrawal,
-
-    // 예측 데이터
-    donationPrediction,
-    withdrawalPrediction,
+    // 원본 주간 데이터
+    weeklyDonationData,
+    weeklyWithdrawalData,
 
     // 상태 관리
     isLoading,

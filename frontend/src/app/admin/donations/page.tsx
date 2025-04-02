@@ -1,40 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import styles from './page.module.scss';
 import DonationTracker from '@/components/admin/DonationTracker/DonationTracker';
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 import IconBox from '@/components/common/IconBox/IconBox';
-import {
-  fetchShelterTotalAmount,
-  fetchShelterTotalWithdrawal,
-  fetchDonationWeeklySums,
-  fetchWithdrawalWeeklySums,
-} from '@/api/donations/donation';
+import { useShelterFinance } from '@/hooks/useShelterFinance';
 
-// 임시 입금 내역 데이터
-const mockDepositData = Array(10)
-  .fill(null)
-  .map((_, index) => ({
-    type: index % 2 === 0 ? '단체' : '지정(강아지)',
-    name: '서울보호소',
-    amount: 99999,
-    date: '2025.03.04',
-    message: '보호소 후원금',
-  }));
-
-// 임시 출금 내역 데이터
-const mockWithdrawData = Array(10)
-  .fill(null)
-  .map((_, index) => ({
-    type: index % 2 === 0 ? '단체' : '지정(강아지)',
-    category: '의료비',
-    content: '중장형 수술',
-    amount: 99999,
-    date: '2025.03.04',
-    isEvidence: true,
-    isReceipt: true,
-  }));
+// TODO: API에서 입출금 내역을 불러오는 로직 추가 필요
 
 interface StatItem {
   month: string;
@@ -42,89 +14,40 @@ interface StatItem {
 }
 
 export default function DonationsPage() {
-  // 상태 관리
-  const [totalAmount, setTotalAmount] = useState<number>(0);
-  const [lastMonthIncome, setLastMonthIncome] = useState<number>(0);
-  const [lastMonthExpense, setLastMonthExpense] = useState<number>(0);
-  const [donationStats, setDonationStats] = useState<StatItem[]>([]);
-  const [withdrawalStats, setWithdrawalStats] = useState<StatItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | null>(null);
-
   // 1번 보호소 기준으로 데이터 로드 (필요시 동적으로 변경할 수 있습니다)
   const shelterId = 1;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
+  // useShelterFinance 훅 사용
+  const {
+    totalDonation,
+    totalWithdrawal,
+    weeklyDonationData, // API에서 받은 원본 주간 데이터
+    weeklyWithdrawalData, // API에서 받은 원본 주간 데이터
+    isLoading,
+    error,
+    refetch,
+  } = useShelterFinance(shelterId);
 
-      try {
-        // 모든 API 호출을 병렬로 실행
-        const [
-          donationResponse,
-          withdrawalResponse,
-          weeklyDonationsResponse,
-          weeklyWithdrawalsResponse,
-        ] = await Promise.all([
-          fetchShelterTotalAmount(shelterId),
-          fetchShelterTotalWithdrawal(shelterId),
-          fetchDonationWeeklySums(),
-          fetchWithdrawalWeeklySums(),
-        ]);
+  // API 응답에서 주간 통계 데이터 구성
+  const donationStats: StatItem[] = [
+    { month: '5주 전', value: weeklyDonationData?.['5WeeksAgo'] || 0 },
+    { month: '4주 전', value: weeklyDonationData?.['4WeeksAgo'] || 0 },
+    { month: '3주 전', value: weeklyDonationData?.['3WeeksAgo'] || 0 },
+    { month: '2주 전', value: weeklyDonationData?.['2WeeksAgo'] || 0 },
+    { month: '1주 전', value: weeklyDonationData?.['1WeeksAgo'] || 0 },
+    { month: '이번 주', value: weeklyDonationData?.['ThisWeek'] || 0 },
+    { month: '예측', value: weeklyDonationData?.['Prediction'] || 0 },
+  ];
 
-        // 총액 데이터 저장
-        setTotalAmount(donationResponse.totalAmount);
-        setLastMonthIncome(donationResponse.totalAmount); // 당장은 기존처럼 유지
-        setLastMonthExpense(withdrawalResponse.totalAmount); // 당장은 기존처럼 유지
-
-        // 주간 기부금액 데이터 변환 (차트용)
-        const donationWeeklyStats: StatItem[] = [
-          { month: '5주 전', value: weeklyDonationsResponse['5WeeksAgo'] },
-          { month: '4주 전', value: weeklyDonationsResponse['4WeeksAgo'] },
-          { month: '3주 전', value: weeklyDonationsResponse['3WeeksAgo'] },
-          { month: '2주 전', value: weeklyDonationsResponse['2WeeksAgo'] },
-          { month: '1주 전', value: weeklyDonationsResponse['1WeeksAgo'] },
-          { month: '이번 주', value: weeklyDonationsResponse['ThisWeek'] },
-          { month: '예측', value: weeklyDonationsResponse['Prediction'] },
-        ];
-
-        // 주간 지출금액 데이터 변환 (차트용)
-        const withdrawalWeeklyStats: StatItem[] = [
-          { month: '5주 전', value: weeklyWithdrawalsResponse['5WeeksAgo'] },
-          { month: '4주 전', value: weeklyWithdrawalsResponse['4WeeksAgo'] },
-          { month: '3주 전', value: weeklyWithdrawalsResponse['3WeeksAgo'] },
-          { month: '2주 전', value: weeklyWithdrawalsResponse['2WeeksAgo'] },
-          { month: '1주 전', value: weeklyWithdrawalsResponse['1WeeksAgo'] },
-          { month: '이번 주', value: weeklyWithdrawalsResponse['ThisWeek'] },
-          { month: '예측', value: weeklyWithdrawalsResponse['Prediction'] },
-        ];
-
-        setDonationStats(donationWeeklyStats);
-        setWithdrawalStats(withdrawalWeeklyStats);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err
-            : new Error('데이터를 불러오는 중 오류가 발생했습니다.')
-        );
-        console.error('데이터 로드 오류:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [shelterId]);
-
-  // 데이터 통합
-  const data = {
-    totalAmount,
-    lastMonthIncome,
-    lastMonthExpense,
-    donationStats,
-    withdrawalStats,
-  };
+  const withdrawalStats: StatItem[] = [
+    { month: '5주 전', value: weeklyWithdrawalData?.['5WeeksAgo'] || 0 },
+    { month: '4주 전', value: weeklyWithdrawalData?.['4WeeksAgo'] || 0 },
+    { month: '3주 전', value: weeklyWithdrawalData?.['3WeeksAgo'] || 0 },
+    { month: '2주 전', value: weeklyWithdrawalData?.['2WeeksAgo'] || 0 },
+    { month: '1주 전', value: weeklyWithdrawalData?.['1WeeksAgo'] || 0 },
+    { month: '이번 주', value: weeklyWithdrawalData?.['ThisWeek'] || 0 },
+    { month: '예측', value: weeklyWithdrawalData?.['Prediction'] || 0 },
+  ];
 
   // 로딩 상태 처리
   if (isLoading) {
@@ -141,10 +64,7 @@ export default function DonationsPage() {
       <div className={styles.donationsPage}>
         <div className={styles.errorState}>
           <p>데이터를 불러오는 중 오류가 발생했습니다.</p>
-          <button
-            className={styles.retryButton}
-            onClick={() => window.location.reload()}
-          >
+          <button className={styles.retryButton} onClick={refetch}>
             다시 시도
           </button>
         </div>
@@ -189,21 +109,18 @@ export default function DonationsPage() {
             {/* 왼쪽에 총액 표시 */}
             <DonationTracker
               variant='total'
-              amount={data.totalAmount}
-              compareDeposit={data.lastMonthIncome}
-              compareWithdraw={data.lastMonthExpense}
+              amount={totalDonation || 0}
+              compareDeposit={totalDonation || 0}
+              compareWithdraw={totalWithdrawal || 0}
             />
           </div>
 
           <div className={styles.rightColumn}>
             {/* 오른쪽 상단에 입금 내역 */}
-            <DonationTracker variant='deposit' amount={data.lastMonthIncome} />
+            <DonationTracker variant='deposit' amount={totalDonation || 0} />
 
             {/* 오른쪽 하단에 출금 내역 */}
-            <DonationTracker
-              variant='withdraw'
-              amount={data.lastMonthExpense}
-            />
+            <DonationTracker variant='withdraw' amount={totalWithdrawal || 0} />
           </div>
         </div>
 
@@ -218,13 +135,15 @@ export default function DonationsPage() {
           <div className={styles.chartCard}>
             <div className={styles.chartTitle}>수입</div>
             <div className={styles.barChart}>
-              {data.donationStats.map((item, index) => (
+              {donationStats.map((item, index) => (
                 <div key={index} className={styles.barChartItem}>
                   <div className={styles.barValue}>
                     {formatNumber(item.value)}
                   </div>
                   <div
-                    className={`${styles.bar} ${index === 6 ? styles.barHighlight : ''}`}
+                    className={`${styles.bar} ${
+                      index === 6 ? styles.barHighlight : ''
+                    }`}
                     style={{
                       height: `${getBarHeight(item.value, maxDonationValue)}px`,
                     }}
@@ -239,15 +158,20 @@ export default function DonationsPage() {
           <div className={styles.chartCard}>
             <div className={styles.chartTitle}>지출</div>
             <div className={styles.barChart}>
-              {data.withdrawalStats.map((item, index) => (
+              {withdrawalStats.map((item, index) => (
                 <div key={index} className={styles.barChartItem}>
                   <div className={styles.barValue}>
                     {formatNumber(item.value)}
                   </div>
                   <div
-                    className={`${styles.bar} ${index === 6 ? styles.barHighlight : ''}`}
+                    className={`${styles.bar} ${
+                      index === 6 ? styles.barHighlight : ''
+                    }`}
                     style={{
-                      height: `${getBarHeight(item.value, maxWithdrawalValue)}px`,
+                      height: `${getBarHeight(
+                        item.value,
+                        maxWithdrawalValue
+                      )}px`,
                     }}
                   ></div>
                   <div className={styles.barLabel}>{item.month}</div>
@@ -267,10 +191,10 @@ export default function DonationsPage() {
           </div>
         </div>
 
-        {/* FinanceTable 컴포넌트 사용 */}
+        {/* FinanceTable 컴포넌트 사용 - 실제 API 데이터로 교체 필요 */}
         <FinanceTable
-          depositData={mockDepositData}
-          withdrawData={mockWithdrawData}
+          depositData={[]}
+          withdrawData={[]}
           className={styles.financeTable}
         />
       </section>
