@@ -62,8 +62,8 @@ export const adaptWithdrawalsToWithdrawTable = (
       content: `${item.category} 지출`, // 명확한 컨텐츠 정보가 없는 경우 카테고리로 대체
       amount: parseInt(item.transactionBalance, 10),
       date,
-      isEvidence: true, // 임시로 모두 true 처리 (API에서 해당 정보가 없음)
-      isReceipt: true, // 임시로 모두 true 처리 (API에서 해당 정보가 없음)
+      isEvidence: false, // 임시로 모두 true 처리 (API에서 해당 정보가 없음)
+      isReceipt: false, // 임시로 모두 true 처리 (API에서 해당 정보가 없음)
     };
   });
 };
