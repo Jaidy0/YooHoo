@@ -69,7 +69,7 @@ function KakaoLoginCallbackPage() {
     }
 
     verifyAuth();
-  }, [checkAuthStatus, router, user]);
+  }, [checkAuthStatus, router]);
 
   if (isLoading) {
     return (

@@ -34,7 +34,6 @@ export async function fetchCurrentUser(): Promise<User | null> {
   if (process.env.NODE_ENV === 'development') {
     console.log('개발 환경: 모의 사용자 데이터 반환 (API 호출 없음)');
 
-    // 약간의 지연 추가
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     // localStorage에서 로그인 상태 확인
