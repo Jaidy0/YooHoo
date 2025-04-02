@@ -72,7 +72,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         >
           마이 후원 레포트
         </MoveButton>
-        {user?.is_admin && (
+        {user?.isAdmin && (
           <MoveButton
             leftIcon={<IconBox name='dog' size={20} />}
             className={styles.moveButton}
