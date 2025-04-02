@@ -20,7 +20,7 @@ const meta: Meta<typeof ShelterCard> = {
     title: { control: 'text' },
     description: { control: 'text' },
     dogCount: { control: 'number' },
-    likeCount: { control: 'number' },
+    reliability: { control: 'number' },
     onClick: { action: 'clicked' },
   },
   decorators: [
@@ -41,7 +41,7 @@ export const Default: Story = {
     title: '동물보호연합',
     description: '다함께 지켜가는 후원 행복\n모두의 힘으로 아이들을 지켜주세요',
     dogCount: 99,
-    likeCount: 99,
+    reliability: 99,
   },
 };
 
@@ -71,7 +71,7 @@ export const ZeroCounts: Story = {
   args: {
     ...Default.args,
     dogCount: 0,
-    likeCount: 0,
+    reliability: 0,
   },
 };
 
@@ -79,7 +79,7 @@ export const LargeCounts: Story = {
   args: {
     ...Default.args,
     dogCount: 999,
-    likeCount: 999,
+    reliability: 999,
   },
 };
 

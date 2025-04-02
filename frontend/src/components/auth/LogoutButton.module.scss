@@ -1,0 +1,15 @@
+.logoutBtn {
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border: none;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
