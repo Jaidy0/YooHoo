@@ -93,7 +93,6 @@ export default function AccountSection({
                   onClick={() => handleAccountSelect(index)}
                 >
                   <AccountInfoCard
-                    title='출금 계좌'
                     bankName={account.bankName}
                     accountNumber={account.accountNo}
                     isSelected={selectedAccountIdx === index}
@@ -119,7 +118,6 @@ export default function AccountSection({
             </div>
           ) : (
             <AccountInfoCard
-              title='입금 계좌'
               bankName={shelterAccount.bankName}
               accountNumber={shelterAccount.accountNo}
             />

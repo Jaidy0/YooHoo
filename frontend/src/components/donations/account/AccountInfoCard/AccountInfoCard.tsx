@@ -2,21 +2,22 @@ import styles from './AccountInfoCard.module.scss';
 import { IconBox } from '@/components/common/IconBox/IconBox';
 
 type AccountInfoCardProps = {
-  title: string;
   bankName: string;
   accountNumber: string;
-  isSelected?: boolean; // 선택 여부 prop 추가
+  isSelected?: boolean;
 };
 
 export default function AccountInfoCard({
-  title,
   bankName,
-  accountNumber,
-  isSelected = false, // 기본값은 false
+  accountNumber = '', // 기본값 제공
+  isSelected = false,
 }: AccountInfoCardProps) {
-  // 계좌번호 포맷팅 함수 (ex: 1234-5678-9012 형식으로 변환)
+  // 계좌번호 포맷팅 함수 (undefined/null 체크 추가)
   const formatAccountNumber = (accountNo: string) => {
-    // 기본 포맷팅 로직 (필요에 따라 수정)
+    // accountNo가 없거나 문자열이 아닌 경우 빈 문자열 반환
+    if (!accountNo) return '';
+
+    // 기본 포맷팅 로직
     if (accountNo.length > 8) {
       return `${accountNo.slice(0, 4)}-${accountNo.slice(4, 8)}-${accountNo.slice(8)}`;
     }
@@ -25,7 +26,6 @@ export default function AccountInfoCard({
 
   return (
     <>
-      <div className={styles.cardHeader}>{title}</div>
       <div
         className={`${styles.accountInfoCard} ${isSelected ? styles.selected : ''}`}
       >
@@ -34,9 +34,11 @@ export default function AccountInfoCard({
             <IconBox name='account' size={24} />
           </div>
           <div className={styles.accountDetails}>
-            <p className={styles.bankName}>{bankName}</p>
+            <p className={styles.bankName}>{bankName || '은행 정보 없음'}</p>
             <p className={styles.accountNumber}>
-              {formatAccountNumber(accountNumber)}
+              {accountNumber
+                ? formatAccountNumber(accountNumber)
+                : '계좌번호 정보 없음'}
             </p>
           </div>
           {isSelected && (

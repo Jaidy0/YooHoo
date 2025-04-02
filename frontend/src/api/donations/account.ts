@@ -38,12 +38,27 @@ export const getShelterAccountInfo = async (
   try {
     const response = await axios.post(
       `${API_BASE_URL}/api/shelter/${shelterId}/accountinfo`,
-      {}, // 빈 객체 전송
+      {},
       {
         withCredentials: true,
       }
     );
-    return response.data;
+
+    // 응답 데이터 형식에 맞게 변환
+    const data = response.data;
+
+    // 계좌번호 키 찾기 (shelterAccountNo:{shelterId} 형태)
+    const accountNoKey = Object.keys(data).find((key) =>
+      key.startsWith(`shelterAccountNo:${shelterId}`)
+    );
+
+    if (!accountNoKey) return null;
+
+    // 단체 계좌 정보 구성
+    return {
+      accountNo: data[accountNoKey],
+      bankName: '반디은행', // 은행 정보가 응답에 없으므로 기본값 사용
+    };
   } catch (error) {
     console.error(`단체 ID ${shelterId}의 계좌 정보 조회 실패:`, error);
     return null;
