@@ -12,32 +12,37 @@ import SearchBar from '@/components/common/SearchBar/SearchBar';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useDogData } from '@/hooks/useDogData';
 
-// 탭 메뉴 아이템
+// 탭 메뉴 아이템 (DogStatus enum에 맞춤)
 const dogStatusTabs = [
   { name: '전체', link: '/admin/dogs?status=all', status: 'all' },
   {
     name: '보호중',
     link: '/admin/dogs?status=protected',
-    status: DogStatus.PROTECTED,
+    status: DogStatus.PROTECTED, // 0
   },
   {
     name: '임시보호',
     link: '/admin/dogs?status=temporary',
-    status: DogStatus.TEMPORARY,
+    status: DogStatus.TEMPORARY, // 1
   },
   {
     name: '입양완료',
     link: '/admin/dogs?status=adopted',
-    status: DogStatus.ADOPTED,
+    status: DogStatus.ADOPTED, // 2
+  },
+  {
+    name: '사망',
+    link: '/admin/dogs?status=deceased',
+    status: DogStatus.DECEASED, // 3
   },
 ];
 
 export default function DogsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
-  const shelterId = 1; // 실제로는 사용자 컨텍스트에서 가져오거나 URL에서 추출해야 합니다
+  const shelterId = 1; // 실제로는 사용자 컨텍스트에서 가져오거나 URL에서 추출
 
-  // 커스텀 훅 사용
+  // 커스텀 훅 사용 - 20개씩 표시
   const {
     dogs,
     totalPages,
@@ -51,17 +56,16 @@ export default function DogsPage() {
   } = useDogData({
     shelterId,
     initialStatus: 'all',
+    pageSize: 20, // 한 페이지에 20마리 표시
   });
 
   // 탭 변경 시 상태 필터 업데이트
   useEffect(() => {
     const selectedStatus = dogStatusTabs[activeTab].status;
 
-    // 타입 검사 및 변환
     if (selectedStatus === 'all') {
       setStatus('all');
     } else {
-      // 숫자 상태를 배열로 변환
       setStatus([selectedStatus as number]);
     }
   }, [activeTab, setStatus]);
@@ -76,7 +80,12 @@ export default function DogsPage() {
   };
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page - 1); // UI는 1-based, API는 0-based
+    // UI는 1-based, API는 0-based이므로 변환
+    const apiPage = page - 1;
+
+    // 페이지 변경하고 데이터 새로 로드
+    setCurrentPage(apiPage);
+
     // 상단으로 스크롤
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -128,12 +137,12 @@ export default function DogsPage() {
         ) : (
           <>
             <div className={styles.dogGrid}>
-              {dogs.length > 0 ? (
+              {dogs && dogs.length > 0 ? (
                 dogs.map((dog) => (
                   <DogCard
                     key={dog.dogId}
                     dog={dog}
-                    onClick={handleDogClick}
+                    onClick={() => handleDogClick(dog.dogId)}
                     disableRouting={true} // 관리자 페이지에서는 직접 라우팅 방지
                   />
                 ))
@@ -146,11 +155,11 @@ export default function DogsPage() {
               )}
             </div>
 
-            {dogs.length > 0 && (
+            {dogs && dogs.length > 0 && (
               <div className={styles.paginationContainer}>
                 <Pagination
                   currentPage={currentPage + 1} // UI는 1-based로 표시
-                  totalPages={totalPages}
+                  totalPages={totalPages || 1}
                   onPageChange={handlePageChange}
                   pageRangeDisplayed={5}
                 />

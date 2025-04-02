@@ -6,6 +6,7 @@ import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import IconBox from '@/components/common/IconBox/IconBox';
 import LogoutBtn from '@/components/auth/LogoutBtn';
 import { useAuthStore } from '@/store/authStore';
+import NicknameModal from '../NicknameModal/NicknameModal';
 
 interface DashboardProps {
   className?: string;
@@ -14,6 +15,7 @@ interface DashboardProps {
 export default function Dashboard({ className = '' }: DashboardProps) {
   const { user } = useAuthStore();
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 더미 데이터
   const [userInfo] = useState({
@@ -30,6 +32,11 @@ export default function Dashboard({ className = '' }: DashboardProps) {
 
   const handleMoveToReportPage = () => {
     router.push('/yoohoo/profile/donation-report');
+  };
+
+  const handleSaveNickname = (newNickname: string) => {
+    setUserInfo((prev) => ({ ...prev, nickname: newNickname }));
+    setIsModalOpen(false);
   };
 
   const handleMoveToShelterManage = () => {
@@ -90,6 +97,14 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         />
         <MySummaryCard title='후원 강아지 수' value={donationStats.dogCount} />
       </div>
+
+      {isModalOpen && (
+        <NicknameModal
+          initialValue={userInfo.nickname}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveNickname}
+        />
+      )}
     </div>
   );
 }

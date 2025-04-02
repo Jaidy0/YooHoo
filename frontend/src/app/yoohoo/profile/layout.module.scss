@@ -1,14 +1,15 @@
-.dashboardContainer {
-  padding: 10px;
-}
-
 .profileLayout {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
-.tabMenu {
+// .dashboardContainer {
+//   padding: 10px;
+//   border-radius: 10px;
+// }
+
+.tabMenuWrapper {
   position: sticky;
   top: 0; /* 상단에 고정 */
   z-index: 10;
