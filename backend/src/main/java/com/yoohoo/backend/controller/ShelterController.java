@@ -115,7 +115,7 @@ public class ShelterController {
         return ResponseEntity.ok(shelterFinanceService.getAccountAndCardFromRedis(shelterId));
     }
 
-        // 보호소 로고 이미지 업로드
+    // 보호소 로고 이미지 업로드
     @PostMapping("/{shelterId}/imageupload")
     public ResponseEntity<?> uploadShelterLogo(
             @PathVariable Long shelterId,

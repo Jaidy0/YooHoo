@@ -4,10 +4,12 @@ import com.yoohoo.backend.entity.File;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface FileRepository extends JpaRepository<File, Long> {
 
     // entityType과 entityId로 File을 찾는 메서드
@@ -17,5 +19,9 @@ public interface FileRepository extends JpaRepository<File, Long> {
     @Query("SELECT f.fileUrl FROM File f WHERE f.entityType = :entityType AND f.entityId = :entityId")
     String findFileUrlByEntityTypeAndEntityId(@Param("entityType") Integer entityType, @Param("entityId") Long entityId);
 
+<<<<<<< HEAD
     List<File> findByEntityTypeAndEntityIdIn(int entityType, List<Long> entityIds);
+=======
+    List<File> findByEntityTypeAndEntityIdIn(Integer entityType, List<Long> entityIds);
+>>>>>>> feat/#193-be-History7,9수정
 }

@@ -4,20 +4,17 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class BankbookRequestDTO {
+public class InquireTransactionRequest {
     @JsonProperty("Header")
     private Header header;
     private String accountNo;
-    private String startDate;
-    private String endDate;
-    private String transactionType;
-    private String orderByType;
     private String transactionUniqueNo;
+    private Long shelterId;
 
     @Data
     public static class Header {
         @JsonProperty("apiName")
-        private String apiName = "inquireTransactionHistoryList";
+        private String apiName = "inquireTransactionHistory";
         @JsonProperty("transmissionDate")
         private String transmissionDate;
         @JsonProperty("transmissionTime")
@@ -27,7 +24,7 @@ public class BankbookRequestDTO {
         @JsonProperty("fintechAppNo")
         private String fintechAppNo = "001";
         @JsonProperty("apiServiceCode")
-        private String apiServiceCode = "inquireTransactionHistoryList";
+        private String apiServiceCode = "inquireTransactionHistory";
         @JsonProperty("institutionTransactionUniqueNo")
         private String institutionTransactionUniqueNo;
         @JsonProperty("apiKey")

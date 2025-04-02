@@ -224,4 +224,27 @@ public class WithdrawalService {
 
         return result;
     }
+
+    public List<Map<String, Object>> getWithdrawalsByShelterId(Long shelterId) {
+        List<Withdrawal> withdrawals = withdrawalRepository.findByShelterId(shelterId);
+        return withdrawals.stream().map(withdrawal -> {
+            Map<String, Object> response = new HashMap<>();
+            response.put("withdrawalId", withdrawal.getWithdrawalId());
+            response.put("category", withdrawal.getCategory());
+            response.put("transactionBalance", withdrawal.getTransactionBalance());
+            response.put("date", withdrawal.getDate());
+            response.put("merchantId", withdrawal.getMerchantId());
+            response.put("shelterId", withdrawal.getShelterId());
+            response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+
+            if (withdrawal.getDogId() == null) {
+                response.put("name", "단체");
+            } else {
+                Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
+                response.put("name", optionalDog.map(Dog::getName).orElse("Unknown"));
+            }
+
+            return response;
+        }).collect(Collectors.toList());
+    }
 }

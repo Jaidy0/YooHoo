@@ -4,6 +4,7 @@ import com.yoohoo.backend.service.WithdrawalService;
 import com.yoohoo.backend.entity.Withdrawal;
 import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.repository.WithdrawalRepository;
+import com.yoohoo.backend.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/withdrawal")
@@ -35,6 +37,9 @@ public class WithdrawalController {
     
     @Autowired
     private WithdrawalRepository withdrawalRepository;
+    
+    @Autowired
+    private UserService userService;
     
     @Value("${app.domain}")
     private String domain;
@@ -55,8 +60,12 @@ public class WithdrawalController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Map<String, Object>>> getAllWithdrawals() {
-        List<Map<String, Object>> withdrawals = withdrawalService.getAllWithdrawals();
+    public ResponseEntity<List<Map<String, Object>>> getAllWithdrawals(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        
+        Long shelterId = userService.getShelterIdByUserId(userId);
+        List<Map<String, Object>> withdrawals = withdrawalService.getWithdrawalsByShelterId(shelterId);
         return ResponseEntity.ok(withdrawals);
     }
 

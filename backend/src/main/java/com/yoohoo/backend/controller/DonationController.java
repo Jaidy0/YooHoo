@@ -167,8 +167,7 @@ public class DonationController {
         // 추가 필드 설정
         transferRequest.setDepositTransactionSummary("입금");
         transferRequest.setWithdrawalTransactionSummary("출금");
-
-
+  
         // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -238,15 +237,15 @@ public class DonationController {
 
     // 유저가 후원한 단체의 이름 목록 조회
     @GetMapping("/shelters")
-    public ResponseEntity<List<String>> getShelterNames(HttpSession session) {
+    public ResponseEntity<List<Map<String, String>>> getShelterNames(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         
         if (userId == null) {
             return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
         }
 
-        List<String> shelterNames = donationService.getShelterNamesByUserId(userId);
-        return ResponseEntity.ok(shelterNames);
+        List<Map<String, String>> shelterNamesWithFileUrl = donationService.getShelterNamesWithFileUrlByUserId(userId);
+        return ResponseEntity.ok(shelterNamesWithFileUrl);
     }
 
     @GetMapping("/total-amount")

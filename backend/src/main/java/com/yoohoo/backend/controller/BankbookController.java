@@ -1,6 +1,8 @@
 package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.dto.BankbookResponseDTO;
+import com.yoohoo.backend.dto.InquireTransactionRequest; // 추가된 import
+import com.yoohoo.backend.dto.InquireTransactionResponse;
 import com.yoohoo.backend.service.BankbookService;
 import com.yoohoo.backend.service.WithdrawalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,12 @@ public class BankbookController {
         }
     }
 
+    @PostMapping("/newInquireTransactionHistory")
+    public ResponseEntity<InquireTransactionResponse> newInquireTransactionHistory(@RequestBody InquireTransactionRequest request) {
+        InquireTransactionResponse response = bankbookService.newInquireTransactionHistory(request);
+        return response != null ? ResponseEntity.ok(response) : ResponseEntity.badRequest().body(null);
+    }
+
     public static class ShelterRequest {
         private Long shelterId;
 
@@ -45,5 +53,4 @@ public class BankbookController {
             this.shelterId = shelterId;
         }
     }
-
 }

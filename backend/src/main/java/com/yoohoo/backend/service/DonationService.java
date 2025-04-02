@@ -4,7 +4,9 @@ import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.dto.DonationDTO;
 
 import com.yoohoo.backend.entity.Dog;
+import com.yoohoo.backend.entity.File;
 import com.yoohoo.backend.repository.DonationRepository;
+import com.yoohoo.backend.repository.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class DonationService {
 
     @Autowired
     private DonationRepository donationRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     public List<Donation> getDonationsByUserId(Long userId) {
         return donationRepository.findByUser_UserId(userId);
@@ -176,5 +181,33 @@ public class DonationService {
         result.put("Prediction", prediction);
 
         return result;
+    }
+
+    public List<Map<String, String>> getShelterNamesWithFileUrlByUserId(Long userId) {
+        List<Donation> donations = donationRepository.findByUser_UserId(userId);
+        
+        // Shelter ID 목록을 가져옵니다.
+        List<Long> shelterIds = donations.stream()
+                .map(donation -> donation.getShelter().getShelterId())
+                .distinct()
+                .collect(Collectors.toList());
+
+        // File 엔티티를 가져옵니다.
+        List<File> files = fileRepository.findByEntityTypeAndEntityIdIn(0, shelterIds);
+
+        // Shelter 이름과 fileUrl을 매핑합니다.
+        return donations.stream()
+                .map(donation -> {
+                    Map<String, String> result = new HashMap<>();
+                    result.put("shelterName", donation.getShelter().getName());
+                    // 해당 shelterId에 대한 fileUrl을 찾습니다.
+                    files.stream()
+                            .filter(file -> file.getEntityId().equals(donation.getShelter().getShelterId()))
+                            .findFirst()
+                            .ifPresent(file -> result.put("fileUrl", file.getFileUrl()));
+                    return result;
+                })
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
