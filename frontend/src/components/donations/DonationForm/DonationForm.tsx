@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import styles from './DonationForm.module.scss';
@@ -16,7 +16,8 @@ import AmountSection from '../AmountSection/AmountSection';
 import Button from '@/components/common/buttons/Button/Button';
 
 import { DonationFormData } from '@/types/donation';
-import { p } from 'node_modules/msw/lib/core/GraphQLHandler-Pox7fIFM';
+import { useDonationSubmit } from '@/hooks/donations/useDonationSubmit';
+import { useShelterAccount } from '@/hooks/donations/useShelterAccount';
 
 type DonationFormProps = {
   initialShelterId?: number;
@@ -28,12 +29,16 @@ export default function DonationForm({
   initialDogId,
 }: DonationFormProps) {
   const router = useRouter();
-  //   const { mutate: submitDonation} = useDonationSubmit();
+  const { submitDonation, isLoading, error, isSuccess } = useDonationSubmit();
+
+  // 단체 계좌 정보 가져오기
+  const [shelterAccountNumber, setShelterAccountNumber] = useState<string>('');
 
   // 폼 데이터 상태
   const [formData, setFormData] = useState<DonationFormData>({
     shelterId: initialShelterId ?? 0,
     shelterName: '',
+    shelterAccountNumber: '',
     donationType: 0, // 0: 정기후원 기본값
     paymentDay: 0,
     targetType: 'shelter', // 단체후원 기본값
@@ -45,6 +50,18 @@ export default function DonationForm({
     anonymousDonation: false,
     amount: 0,
   });
+
+  // 단체 계좌 정보 가져오기
+  const { accountInfo: shelterAccount } = useShelterAccount(formData.shelterId);
+
+  // 단체 계좌 정보가 변경되면 폼 데이터 업데이트
+  useEffect(() => {
+    if (shelterAccount && shelterAccount.accountNo) {
+      updateFormData({
+        shelterAccountNumber: shelterAccount.accountNo,
+      });
+    }
+  }, [shelterAccount]);
 
   // 각 단계 완료 상태
   const [stepsCompleted, setStepsCompleted] = useState({
@@ -90,11 +107,24 @@ export default function DonationForm({
     return (completedCount / requiredSteps.length) * 100;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // 후원하기 버튼 클릭 핸들러
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // submitDonation(FormData, {});
-    router.push('/yoohoo/donate/complete');
+
+    if (calculateProgress() !== 100) {
+      return; // 모든 단계가 완료되지 않으면 제출하지 않음
+    }
+
+    await submitDonation(formData);
+    // 성공 페이지로 이동은 useEffect에서 처리
   };
+
+  // 후원 성공 시 완료 페이지로 이동
+  useEffect(() => {
+    if (isSuccess) {
+      router.push('/yoohoo/donate/complete');
+    }
+  }, [isSuccess, router]);
 
   // 폼 데이터 업데이트 함수
   const updateFormData = (data: Partial<DonationFormData>) => {
@@ -241,14 +271,24 @@ export default function DonationForm({
           <p>후원할 단체를 선택해주세요.</p>
         )}
       </div>
+
+      {/* 에러 메시지 표시 */}
+      {error && <div className={styles.errorMessage}>{error}</div>}
+
       <div className={styles.buttonContainer}>
         <Button
           onClick={handleSubmit}
           className={styles.submitButton}
-          variant={calculateProgress() === 100 ? 'primary' : 'disabled'}
-          disabled={calculateProgress() !== 100}
+          variant={
+            calculateProgress() === 100
+              ? isLoading
+                ? 'disabled'
+                : 'primary'
+              : 'disabled'
+          }
+          disabled={calculateProgress() !== 100 || isLoading}
         >
-          후원하기
+          {isLoading ? '처리 중...' : '후원하기'}
         </Button>
       </div>
     </div>
