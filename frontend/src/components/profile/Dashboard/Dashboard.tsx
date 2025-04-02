@@ -65,7 +65,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         >
           마이 후원 레포트
         </MoveButton>
-        {user?.shelter_id && (
+        {user?.is_admin && (
           <MoveButton
             leftIcon={<IconBox name='dog' size={20} />}
             className={styles.moveButton}

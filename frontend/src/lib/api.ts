@@ -50,7 +50,7 @@ export async function fetchCurrentUser(): Promise<User | null> {
       user_id: 1,
       nickname: '테스트 유저',
       kakao_email: 'test@example.com',
-      is_admin: true,
+      is_admin: false,
       shelter_id: 1,
       created_at: '2024-03-15T10:30:00Z', // ISO 8601 형식의 날짜 추가
     };
