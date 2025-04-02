@@ -182,13 +182,11 @@ export interface WithdrawalResponse {
  */
 export const saveWithdrawalToBoth = async (
   withdrawalData: WithdrawalRequest
-): Promise<{
-  cardResponse: WithdrawalResponse;
-  bankbookResponse: WithdrawalResponse;
-}> => {
+): Promise<void> => {
   try {
     // 두 API 요청을 병렬로 실행
-    const [cardResponse, bankbookResponse] = await Promise.all([
+    // 응답은 무시하고 요청 성공 여부만 확인
+    await Promise.all([
       axios.post<WithdrawalResponse>(
         `${API_BASE_URL}/api/card/saveWithdrawal`,
         withdrawalData
@@ -198,14 +196,26 @@ export const saveWithdrawalToBoth = async (
         withdrawalData
       ),
     ]);
-
-    // 두 응답을 객체로 반환
-    return {
-      cardResponse: cardResponse.data,
-      bankbookResponse: bankbookResponse.data,
-    };
+    console.log('출금 정보 업데이트 성공');
   } catch (error) {
-    console.error('출금 정보 저장 실패:', error);
+    console.error('출금 정보 업데이트 실패:', error);
+    throw error;
+  }
+};
+
+/**
+ * 보호소의 재정 정보를 초기화하는 API (응답은 무시)
+ * @param shelterId 보호소 ID
+ */
+export const initializeShelterFinInfo = async (
+  shelterId: number
+): Promise<void> => {
+  try {
+    await axios.post(`${API_BASE_URL}/api/shelter/${shelterId}/fininfo`);
+    // 응답은 무시하고 요청 성공 여부만 확인
+    console.log('보호소 재정 정보 초기화 요청 성공');
+  } catch (error) {
+    console.error('보호소 재정 정보 초기화 요청 실패:', error);
     throw error;
   }
 };
