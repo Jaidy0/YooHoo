@@ -1,17 +1,15 @@
 // app/yoohoo/(auth)/login/kakao/callback/page.tsx
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 import styles from './page.module.scss';
-import Image from 'next/image';
 
 function KakaoLoginCallbackPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
   const { checkAuthStatus, user, isLoading, error } = useAuthStore();
-  const [showAdminOptions, setShowAdminOptions] = useState(false);
 
   useEffect(() => {
     async function verifyAuth() {
@@ -58,8 +56,10 @@ function KakaoLoginCallbackPage() {
 
         // 사용자 타입에 따른 처리
         if (user?.is_admin) {
-          setShowAdminOptions(true);
+          console.log('관리자로 판단됨');
+          router.push('/yoohoo/login/choice');
         } else {
+          console.log('일반 사용자로 판단됨');
           router.push('/yoohoo');
         }
       } catch (error) {
@@ -69,12 +69,7 @@ function KakaoLoginCallbackPage() {
     }
 
     verifyAuth();
-  }, [checkAuthStatus, router, user, searchParams]);
-
-  // 관리자 옵션 선택 핸들러
-  function handleAdminChoice(destination: 'main' | 'admin') {
-    router.push(destination === 'main' ? '/yoohoo' : '/admin');
-  }
+  }, [checkAuthStatus, router, user]);
 
   if (isLoading) {
     return (
@@ -93,40 +88,6 @@ function KakaoLoginCallbackPage() {
         <button onClick={() => router.push('/yoohoo/login/kakao')}>
           다시 시도하기
         </button>
-      </div>
-    );
-  }
-
-  // 관리자용 선택 화면
-  if (showAdminOptions) {
-    return (
-      <div className={styles.adminChoiceContainer}>
-        <div className={styles.questionContainer}>
-          <h2>
-            <span className={styles.hi}>안녕하세요! 관리자님,</span>어디로
-            이동할까요?
-          </h2>
-          <div className={styles.buttonContainer}>
-            <button onClick={() => handleAdminChoice('main')}>
-              <Image
-                src='/images/shiba.png'
-                alt='home'
-                width={50}
-                height={50}
-              />
-              <span>메인</span>
-            </button>
-            <button onClick={() => handleAdminChoice('admin')}>
-              <Image
-                src='/images/shiba.png'
-                alt='home'
-                width={50}
-                height={50}
-              />
-              <span>관리자</span>
-            </button>
-          </div>
-        </div>
       </div>
     );
   }

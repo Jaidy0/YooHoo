@@ -9,10 +9,6 @@
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  &:hover {
-    // background-color: darken($yh-orange, 10%);
-  }
-
   &:active {
     transform: scale(0.98);
   }
