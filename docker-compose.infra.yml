@@ -8,6 +8,7 @@ services:
       TZ: ${TZ}
     ports:
       - "${MYSQL_PORT}:3306"
+    command: --default-time-zone='Asia/Seoul'
     restart: always
     volumes:
       - mysql_data:/var/lib/mysql
@@ -16,6 +17,7 @@ services:
     image: redis:latest
     ports:
       - "${REDIS_PORT}:6379"
+    restart: always
     volumes:
       - redis_data:/data
 
@@ -25,7 +27,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    restart: always
     volumes:
       - ./nginx:/etc/nginx
       - /etc/letsencrypt:/etc/letsencrypt:ro
