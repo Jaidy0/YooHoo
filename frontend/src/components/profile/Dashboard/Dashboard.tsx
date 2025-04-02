@@ -4,21 +4,24 @@ import styles from './Dashboard.module.scss';
 import MySummaryCard from '@/components/profile/MySummaryCard/MySummaryCard';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import IconBox from '@/components/common/IconBox/IconBox';
+import LogoutBtn from '@/components/auth/LogoutBtn';
+import { useAuthStore } from '@/store/authStore';
 
 interface DashboardProps {
   className?: string;
 }
 
 export default function Dashboard({ className = '' }: DashboardProps) {
+  const { user } = useAuthStore();
   const router = useRouter();
 
   // 더미 데이터
-  const [userInfo, setUserInfo] = useState({
+  const [userInfo] = useState({
     nickname: '닉네임',
     createdAt: 24,
   });
 
-  const [donationStats, setDonationStats] = useState({
+  const [donationStats] = useState({
     donationCount: 15,
     totalAmount: 10000,
     organizationCount: 2,
@@ -29,6 +32,10 @@ export default function Dashboard({ className = '' }: DashboardProps) {
     router.push('/yoohoo/profile/donation-report');
   };
 
+  const handleMoveToShelterManage = () => {
+    router.push('/admin');
+  };
+
   return (
     <div className={`${styles.dashboard} ${className}`}>
       {/* 사용자 정보 헤더 */}
@@ -36,10 +43,14 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         <h2 className={styles.userText}>
           {userInfo.nickname}님, <br />
           <span className={styles.accentText}>유후</span>와 함께한지
-          <span className={styles.accentText}>{userInfo.createdAt}일</span>째예요!
+          <span className={styles.accentText}>{userInfo.createdAt}일</span>
+          째예요!
         </h2>
-        <div className={styles.userSettingsButton}>
-          <IconBox name='gear' size={20} />
+        <div className={styles.userBtns}>
+          <div className={styles.userSettingsButton}>
+            <IconBox name='gear' size={20} />
+          </div>
+          <LogoutBtn />
         </div>
       </div>
 
@@ -50,9 +61,20 @@ export default function Dashboard({ className = '' }: DashboardProps) {
           rightIcon={<IconBox name='chevron' size={20} />}
           className={styles.moveButton}
           variant='secondary'
+          onClick={handleMoveToReportPage}
         >
           마이 후원 레포트
         </MoveButton>
+        {user?.shelter_id && (
+          <MoveButton
+            leftIcon={<IconBox name='dog' size={20} />}
+            className={styles.moveButton}
+            variant='yellow'
+            onClick={handleMoveToShelterManage}
+          >
+            단체 관리
+          </MoveButton>
+        )}
       </div>
 
       {/* 요약 카드 그리드 */}

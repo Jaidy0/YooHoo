@@ -37,6 +37,15 @@ export async function fetchCurrentUser(): Promise<User | null> {
     // 약간의 지연 추가
     await new Promise((resolve) => setTimeout(resolve, 500));
 
+    // localStorage에서 로그인 상태 확인
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+
+    if (!isLoggedIn) {
+      console.log('로그인 상태 아님');
+      return null;
+    }
+
+    // 로그인 상태일 때만 모의 데이터 반환
     return {
       user_id: 1,
       nickname: '테스트 유저',
@@ -59,9 +68,17 @@ export async function fetchCurrentUser(): Promise<User | null> {
 
 export async function logoutUser(): Promise<boolean> {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      // 개발 환경: localStorage에서 로그인 상태 제거
+      console.log('개발 환경: 로그아웃 처리');
+      localStorage.removeItem('isLoggedIn');
+      return true;
+    }
+
     await fetchWithAxios('/api/auth/kakao-logout', {
       method: 'POST',
     });
+
     return true;
   } catch (error) {
     console.error('로그아웃 실패:', error);

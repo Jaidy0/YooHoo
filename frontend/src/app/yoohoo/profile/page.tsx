@@ -20,11 +20,9 @@ interface DonationHistory {
 
 export default function DonationHistoryPage() {
   const isAuthenticated = useAuthGuard();
-
-  if (!isAuthenticated) {
-    return null; // 또는 로딩 컴포넌트
-  }
-
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
   const [donationHistory, setDonationHistory] = useState<DonationHistory[]>([
     {
       id: 1,
@@ -70,9 +68,9 @@ export default function DonationHistoryPage() {
     },
   ]);
 
-  const [startDate, setStartDate] = useState<Date | null>(null);
-  const [endDate, setEndDate] = useState<Date | null>(null);
-  const [showPicker, setShowPicker] = useState(false);
+  if (!isAuthenticated) {
+    return null; // 또는 로딩 컴포넌트
+  }
 
   // 날짜 필터링
   const filteredDonations = donationHistory.filter((donation) => {

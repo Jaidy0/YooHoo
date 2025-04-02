@@ -25,6 +25,7 @@ import iconCutiDog from '@/assets/imgs/icons/iconCutiDog.svg';
 import iconKakao from '@/assets/imgs/icons/iconKakao.svg';
 import AccountIcon from '@/assets/imgs/icons/iconAccount.svg';
 import iconSmile from '@/assets/imgs/icons/iconSmile.svg';
+import iconLogout from '@/assets/imgs/icons/iconLogout.svg';
 
 // 아이콘 컴포넌트 매핑 객체
 const ICON_COMPONENTS = {
@@ -50,6 +51,7 @@ const ICON_COMPONENTS = {
   kakao: iconKakao,
   account: AccountIcon,
   smile: iconSmile,
+  logout: iconLogout,
 } as const;
 
 // 아이콘 이름 타입

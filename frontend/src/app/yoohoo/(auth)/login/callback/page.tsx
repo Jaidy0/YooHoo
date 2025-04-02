@@ -16,6 +16,12 @@ function KakaoLoginCallbackPage() {
   useEffect(() => {
     async function verifyAuth() {
       try {
+        // 개발 환경에서 로그인 성공 시 localStorage 설정
+        if (process.env.NODE_ENV === 'development') {
+          localStorage.setItem('isLoggedIn', 'true');
+          console.log('개발 환경: 로그인 상태 저장됨');
+        }
+
         // URL에서 인증 코드 가져오기
         // const code = searchParams.get('code');
 
@@ -43,7 +49,6 @@ function KakaoLoginCallbackPage() {
 
         // 인증 상태 확인
         const isAuthenticated = await checkAuthStatus();
-        console.log('## user', user);
 
         if (!isAuthenticated) {
           console.error('인증 실패');
