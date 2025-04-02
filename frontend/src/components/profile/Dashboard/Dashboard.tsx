@@ -7,6 +7,7 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import LogoutBtn from '@/components/auth/LogoutBtn';
 import { useAuthStore } from '@/store/authStore';
 import NicknameModal from '../NicknameModal/NicknameModal';
+import { useDonationStats } from '@/hooks/donations/useDonationStats';
 
 interface DashboardProps {
   className?: string;
@@ -17,13 +18,8 @@ export default function Dashboard({ className = '' }: DashboardProps) {
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // 더미 데이터 (user 정보가 없을 경우 대비)
-  const [donationStats] = useState({
-    donationCount: 15,
-    totalAmount: 10000,
-    organizationCount: 2,
-    dogCount: 3,
-  });
+  // 실제 후원 통계 데이터 가져오기
+  const { stats, isLoading: isLoadingStats } = useDonationStats();
 
   // 가입일로부터 현재까지의 일수 계산
   const calculateDaysSinceJoin = () => {
@@ -111,16 +107,10 @@ export default function Dashboard({ className = '' }: DashboardProps) {
 
       {/* 요약 카드 그리드 */}
       <div className={styles.summaryGrid}>
-        <MySummaryCard
-          title='후원한 횟수'
-          value={donationStats.donationCount}
-        />
-        <MySummaryCard title='후원한 금액' value={donationStats.totalAmount} />
-        <MySummaryCard
-          title='후원 단체 수'
-          value={donationStats.organizationCount}
-        />
-        <MySummaryCard title='후원 강아지 수' value={donationStats.dogCount} />
+        <MySummaryCard title='후원한 횟수' value={stats.donationCount} />
+        <MySummaryCard title='후원한 금액' value={stats.totalAmount} />
+        <MySummaryCard title='후원 단체 수' value={stats.organizationCount} />
+        <MySummaryCard title='후원 강아지 수' value={stats.dogCount} />
       </div>
 
       {isModalOpen && (
