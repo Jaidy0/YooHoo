@@ -158,3 +158,54 @@ export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
     throw error;
   }
 };
+
+/**
+ * 출금 요청 인터페이스
+ */
+export interface WithdrawalRequest {
+  shelterId: number;
+}
+
+/**
+ * 출금 응답 인터페이스
+ */
+export interface WithdrawalResponse {
+  success: boolean;
+  message?: string;
+  data?: unknown;
+}
+
+/**
+ * 카드와 통장 출금 정보를 동시에 저장하는 함수
+ * @param withdrawalData 출금 요청 데이터
+ * @returns 카드 및 통장 출금 응답 데이터
+ */
+export const saveWithdrawalToBoth = async (
+  withdrawalData: WithdrawalRequest
+): Promise<{
+  cardResponse: WithdrawalResponse;
+  bankbookResponse: WithdrawalResponse;
+}> => {
+  try {
+    // 두 API 요청을 병렬로 실행
+    const [cardResponse, bankbookResponse] = await Promise.all([
+      axios.post<WithdrawalResponse>(
+        `${API_BASE_URL}/api/card/saveWithdrawal`,
+        withdrawalData
+      ),
+      axios.post<WithdrawalResponse>(
+        `${API_BASE_URL}/api/bankbook/saveWithdrawal`,
+        withdrawalData
+      ),
+    ]);
+
+    // 두 응답을 객체로 반환
+    return {
+      cardResponse: cardResponse.data,
+      bankbookResponse: bankbookResponse.data,
+    };
+  } catch (error) {
+    console.error('출금 정보 저장 실패:', error);
+    throw error;
+  }
+};

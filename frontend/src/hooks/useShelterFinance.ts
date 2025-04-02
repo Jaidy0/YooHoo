@@ -9,6 +9,9 @@ import {
   fetchAllWithdrawals,
   type DonationItem,
   type WithdrawalItem,
+  saveWithdrawalToBoth, // 추가된 함수
+  type WithdrawalRequest, // 추가된 타입
+  type WithdrawalResponse, // 추가된 타입
 } from '@/api/donations/donation';
 
 interface WeeklySumsResponse {
@@ -39,6 +42,16 @@ interface UseShelterFinanceResult {
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
+
+  // 출금 저장 함수
+  saveWithdrawal: (shelterId: number) => Promise<{
+    cardResponse: WithdrawalResponse;
+    bankbookResponse: WithdrawalResponse;
+  }>;
+
+  // 출금 저장 관련 상태
+  isSaving: boolean;
+  saveError: Error | null;
 }
 
 /**
@@ -67,6 +80,10 @@ export const useShelterFinance = (
   // 상태 관리
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<Error | null>(null);
+
+  // 출금 저장 관련 상태
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [saveError, setSaveError] = useState<Error | null>(null);
 
   /**
    * 모든 데이터를 조회하는 함수
@@ -122,6 +139,38 @@ export const useShelterFinance = (
     }
   }, [shelterId]);
 
+  /**
+   * 카드와 통장 출금 정보를 동시에 저장하는 함수
+   */
+  const saveWithdrawal = useCallback(
+    async (withdrawalShelterId: number = shelterId) => {
+      setIsSaving(true);
+      setSaveError(null);
+
+      try {
+        const request: WithdrawalRequest = { shelterId: withdrawalShelterId };
+        const result = await saveWithdrawalToBoth(request);
+
+        // 저장에 성공하면 데이터를 다시 불러옴
+        await fetchData();
+
+        return result;
+      } catch (err) {
+        const errorInstance =
+          err instanceof Error
+            ? err
+            : new Error('출금 정보를 저장하는 중 오류가 발생했습니다.');
+
+        setSaveError(errorInstance);
+        console.error('출금 정보 저장 오류:', err);
+        throw errorInstance;
+      } finally {
+        setIsSaving(false);
+      }
+    },
+    [shelterId, fetchData]
+  );
+
   // 컴포넌트 마운트 시 데이터 조회
   useEffect(() => {
     fetchData();
@@ -150,5 +199,10 @@ export const useShelterFinance = (
     isLoading,
     error,
     refetch,
+
+    // 출금 저장 함수와 관련 상태
+    saveWithdrawal,
+    isSaving,
+    saveError,
   };
 };
