@@ -8,47 +8,26 @@ import styles from './page.module.scss';
 
 function KakaoLoginCallbackPage() {
   const router = useRouter();
-  // const searchParams = useSearchParams();
   const { checkAuthStatus, isLoading, error } = useAuthStore();
 
   useEffect(() => {
     async function verifyAuth() {
       try {
-        // 개발 환경에서 로그인 성공 시 localStorage 설정
+        // 1. 개발 환경 설정
         if (process.env.NODE_ENV === 'development') {
           localStorage.setItem('isLoggedIn', 'true');
           console.log('개발 환경: 로그인 상태 저장됨');
         }
 
-        // URL에서 인증 코드 가져오기
-        // const code = searchParams.get('code');
+        // 2. 인증 상태 확인
+        const authResult = await checkAuthStatus();
+        console.log('인증 결과:', authResult);
 
-        // if (!code) {
-        //   console.error('인증 코드가 없습니다.');
-        //   router.push('/yoohoo/login/kakao');
-        //   return;
-        // }
-        // console.log('###');
-        // MSW가 처리할 카카오 로그인 API 호출
-        // const response = await fetch(
-        //   `${process.env.NEXT_PUBLIC_API_URL}/api/auth/kakao-login?code=${code}`,
-        //   {
-        //     credentials: 'include', // 쿠키 포함
-        //     headers: {
-        //       'Content-Type': 'application/json',
-        //     },
-        //   }
-        // );
+        // 3. 상태 업데이트 완료 대기
+        await new Promise((resolve) => setTimeout(resolve, 0));
 
-        // console.log('response', response);
-        // if (!response.ok) {
-        //   throw new Error('로그인 처리 중 오류가 발생했습니다.');
-        // }
-
-        // 인증 상태 확인
-        const { isAuthenticated, isAdmin } = await checkAuthStatus();
-        console.log('인증 상태:', isAuthenticated);
-        console.log('관리자 여부:', isAdmin);
+        // 4. 최종 상태 확인
+        const { isAuthenticated, isAdmin } = authResult;
 
         if (!isAuthenticated) {
           console.error('인증 실패');
@@ -56,7 +35,7 @@ function KakaoLoginCallbackPage() {
           return;
         }
 
-        // 사용자 타입에 따른 처리
+        // 5. 사용자 타입에 따른 처리
         if (isAdmin) {
           console.log('관리자로 판단됨');
           router.push('/yoohoo/login/choice');

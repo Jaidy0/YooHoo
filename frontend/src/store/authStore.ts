@@ -26,31 +26,40 @@ function createAuthStore() {
       try {
         set({ isLoading: true, error: null });
 
+        // 1. API 호출
         const userData = await fetchCurrentUser();
+        console.log('createAuthStore userData', userData);
 
-        if (userData) {
-          set({
-            user: userData,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-
-          return {
-            isAuthenticated: true,
-            isAdmin: userData.is_admin,
-          };
-        } else {
+        if (!userData) {
           set({
             user: null,
             isAuthenticated: false,
             isLoading: false,
           });
-
-          return {
-            isAuthenticated: false,
-            isAdmin: false,
-          };
+          return { isAuthenticated: false, isAdmin: false };
         }
+
+        // 2. 상태 업데이트
+        set({
+          user: userData,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+
+        // 3. 상태 업데이트 완료 대기
+        await new Promise<void>((resolve) => {
+          set((state) => {
+            resolve();
+            return state;
+          });
+        });
+
+        // 4. 최종 상태 확인 후 반환
+        const currentState = get();
+        return {
+          isAuthenticated: currentState.isAuthenticated,
+          isAdmin: currentState.user?.isAdmin || false,
+        };
       } catch (error) {
         console.error('인증 상태 확인 실패:', error);
         set({
@@ -59,11 +68,7 @@ function createAuthStore() {
           isLoading: false,
           error: '인증 확인 중 오류가 발생했습니다.',
         });
-
-        return {
-          isAuthenticated: false,
-          isAdmin: false,
-        };
+        return { isAuthenticated: false, isAdmin: false };
       }
     },
 

@@ -38,6 +38,12 @@
 
   // iOS 스크롤 부드럽게
   -webkit-overflow-scrolling: touch;
+
+  padding-bottom: 66px; // 기본적으로 padding-bottom 적용
+  // BottomNav가 숨겨질 때 padding 제거
+  :global(.hide-bottom-nav) & {
+    padding-bottom: 0;
+  }
 }
 
 // 헤더와 하단 네비게이션 사이의 컨텐츠 영역

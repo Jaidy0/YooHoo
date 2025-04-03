@@ -66,9 +66,9 @@ export default function MainPage() {
     function checkAuth() {
       checkAuthStatus();
     }
-
+    console.log('메인페이지 체크합니다.');
     checkAuth();
-  }, [checkAuthStatus]);
+  }, []);
 
   if (isLoading) {
     return (
@@ -138,17 +138,31 @@ export default function MainPage() {
         </div>
 
         <div className={styles.dogImage}>
-          <Image
-            src='/images/mainbandi.png'
-            alt='강아지 이미지'
-            width={0}
-            height={0}
-            sizes='100vw'
-            style={{
-              width: '350px',
-              height: 'auto',
-            }}
-          />
+          {isAuthenticated ? (
+            <Image
+              src='/images/bandi-bark.png'
+              alt='강아지 이미지'
+              width={0}
+              height={0}
+              sizes='100vw'
+              style={{
+                width: '330px',
+                height: 'auto',
+              }}
+            />
+          ) : (
+            <Image
+              src='/images/bandi-standing.png'
+              alt='강아지 이미지'
+              width={0}
+              height={0}
+              sizes='100vw'
+              style={{
+                width: '250px',
+                height: 'auto',
+              }}
+            />
+          )}
         </div>
       </section>
 
