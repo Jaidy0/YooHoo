@@ -23,10 +23,10 @@ export default function Dashboard({ className = '' }: DashboardProps) {
 
   // 가입일로부터 현재까지의 일수 계산
   const calculateDaysSinceJoin = () => {
-    if (!user?.created_at) return 1; // 정보가 없으면 기본값 1일
+    if (!user?.createdAt) return 1; // 정보가 없으면 기본값 1일
 
     // 가입일 날짜만 추출 (시간 제외)
-    const createDate = new Date(user.created_at.split('T')[0]);
+    const createDate = new Date(user.createdAt.split('T')[0]);
 
     // 오늘 날짜 (시간 제외)
     const today = new Date();
