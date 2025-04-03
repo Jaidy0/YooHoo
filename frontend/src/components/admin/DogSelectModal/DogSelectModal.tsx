@@ -4,26 +4,15 @@ import { useState, useEffect } from 'react';
 import styles from './DogSelectModal.module.scss';
 import IconBox from '@/components/common/IconBox/IconBox';
 import Button from '@/components/common/buttons/Button/Button';
-import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
 import { useDogNames } from '@/hooks/useDogNames';
+import { assignDogToWithdrawal } from '@/api/donations/donation';
 
 interface DogSelectModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   initialDogId?: string;
-  onSave: (selectedDogId: string) => void;
-  expenseInfo?: {
-    type: string;
-    category: string;
-    amount: number;
-    date: string;
-    content: string;
-    isEvidence: boolean;
-    isReceipt: boolean;
-  };
-  onEvidenceClick?: () => void;
-  onReceiptClick?: () => void;
+  withDrawId: number;
 }
 
 export default function DogSelectModal({
@@ -31,14 +20,13 @@ export default function DogSelectModal({
   onClose,
   title,
   initialDogId = '',
-  onSave,
-  expenseInfo,
-  onEvidenceClick,
-  onReceiptClick,
+  withDrawId,
 }: DogSelectModalProps) {
-  const [selectedDogId, setSelectedDogId] = useState(initialDogId);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedDogId, setSelectedDogId] = useState<string>(initialDogId);
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   const [selectedDogName, setSelectedDogName] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // 커스텀 훅 사용
   const { dogNames, isLoading, error, refetch } = useDogNames();
@@ -56,8 +44,11 @@ export default function DogSelectModal({
     // isOpen이 true로 변경될 때만 refetch 호출
     if (isOpen) {
       refetch();
+      // 모달 열릴 때 에러 상태 초기화
+      setSubmitError(null);
+      setIsSubmitting(false);
     }
-  }, [isOpen]); // refetch 의존성 제거
+  }, [isOpen, refetch]);
 
   // 모달이 열리지 않으면 렌더링하지 않음
   if (!isOpen) return null;
@@ -67,6 +58,28 @@ export default function DogSelectModal({
     setSelectedDogName(name);
     setSelectedDogId(dogId.toString());
     setIsDropdownOpen(false);
+  };
+
+  // 강아지 ID 할당 API 호출
+  const handleSave = async () => {
+    if (!selectedDogId || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const dogInfo = await assignDogToWithdrawal(
+        withDrawId,
+        parseInt(selectedDogId, 10)
+      );
+      console.log('강아지 할당 성공:', dogInfo);
+      onClose();
+    } catch (err) {
+      console.error('강아지 할당 중 오류 발생:', err);
+      setSubmitError('강아지 할당에 실패했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,7 +125,11 @@ export default function DogSelectModal({
                   dogNames.map((dog) => (
                     <div
                       key={dog.dogId}
-                      className={`${styles.dropdownItem} ${selectedDogId === dog.dogId.toString() ? styles.selected : ''}`}
+                      className={`${styles.dropdownItem} ${
+                        selectedDogId === dog.dogId.toString()
+                          ? styles.selected
+                          : ''
+                      }`}
                       onClick={() => handleDogSelect(dog.dogId, dog.name)}
                     >
                       <span>{dog.name}</span>
@@ -123,21 +140,9 @@ export default function DogSelectModal({
             )}
           </div>
 
-          {/* 증빙자료/영수증 버튼 그룹 */}
-          {(onEvidenceClick || onReceiptClick) && (
-            <div className={styles.buttonGroup}>
-              {onEvidenceClick && expenseInfo?.isEvidence && (
-                <RoundButton variant='secondary' onClick={onEvidenceClick}>
-                  증빙자료 보기
-                </RoundButton>
-              )}
-
-              {onReceiptClick && expenseInfo?.isReceipt && (
-                <RoundButton variant='secondary' onClick={onReceiptClick}>
-                  영수증 보기
-                </RoundButton>
-              )}
-            </div>
+          {/* 제출 에러 메시지 */}
+          {submitError && (
+            <div className={styles.errorMessage}>{submitError}</div>
           )}
         </div>
 
@@ -146,15 +151,10 @@ export default function DogSelectModal({
             variant='primary'
             size='md'
             className={styles.saveButton}
-            onClick={() => {
-              if (selectedDogId) {
-                onSave(selectedDogId);
-                onClose();
-              }
-            }}
-            disabled={!selectedDogId}
+            onClick={handleSave}
+            disabled={!selectedDogId || isSubmitting}
           >
-            선택 완료
+            {isSubmitting ? '처리 중...' : '선택 완료'}
           </Button>
         </div>
       </div>

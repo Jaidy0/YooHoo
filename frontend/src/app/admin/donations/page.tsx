@@ -81,6 +81,7 @@ export default function DonationsPage() {
   // 더미 데이터: 출금 내역 (WithdrawTableRowProps 형식)
   const dummyWithdrawData: WithdrawTableRowProps[] = [
     {
+      withdrawId: 1,
       variant: 'row',
       type: '운영비',
       category: '사료/간식',
@@ -93,6 +94,7 @@ export default function DonationsPage() {
       receipt: 'receipt_file_1.pdf',
     },
     {
+      withdrawId: 2,
       variant: 'row',
       type: '의료비',
       category: '예방접종',
@@ -105,6 +107,7 @@ export default function DonationsPage() {
       receipt: 'receipt_file_2.pdf',
     },
     {
+      withdrawId: 3,
       variant: 'row',
       type: '시설비',
       category: '유지보수',
@@ -116,6 +119,7 @@ export default function DonationsPage() {
       isReceipt: false,
     },
     {
+      withdrawId: 4,
       variant: 'row',
       type: '장비비',
       category: '기구/장비',
@@ -127,6 +131,7 @@ export default function DonationsPage() {
       receipt: 'receipt_file_4.pdf',
     },
     {
+      withdrawId: 5,
       variant: 'row',
       type: '인건비',
       category: '급여',

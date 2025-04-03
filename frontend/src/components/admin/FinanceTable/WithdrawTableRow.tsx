@@ -8,6 +8,7 @@ import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
 
 export interface WithdrawTableRowProps {
   variant?: 'header' | 'row';
+  withdrawId: number;
   type: string;
   category?: string;
   content?: string;
@@ -34,6 +35,7 @@ export default function WithdrawTableRow({
   evidence = '',
   isReceipt,
   receipt = '',
+  withdrawId,
 }: WithdrawTableRowProps) {
   // 모달 상태 관리
   const [isDogSelectModalOpen, setIsDogSelectModalOpen] = useState(false);
@@ -116,69 +118,9 @@ export default function WithdrawTableRow({
       <DogSelectModal
         isOpen={isDogSelectModalOpen}
         onClose={closeDogSelectModal}
+        withDrawId={withdrawId}
         title={`${type} 상세 정보`}
-      >
-        <div className={styles.modalContent}>
-          <div className={styles.modalBadgeContainer}>
-            <Badge variant='negative' className={styles.modalBadge}>
-              {type}
-            </Badge>
-          </div>
-
-          <div className={styles.modalGrid}>
-            <div className={styles.modalGridItem}>
-              <span className={styles.modalLabel}>카테고리</span>
-              <span className={styles.modalValue}>{category}</span>
-            </div>
-            <div className={styles.modalGridItem}>
-              <span className={styles.modalLabel}>금액</span>
-              <span className={styles.modalValue}>
-                {formatAmount(amount)}원
-              </span>
-            </div>
-            <div className={styles.modalGridItem}>
-              <span className={styles.modalLabel}>날짜</span>
-              <span className={styles.modalValue}>{date}</span>
-            </div>
-            <div className={styles.modalGridItem}>
-              <span className={styles.modalLabel}>내용</span>
-              <span className={styles.modalValue}>{content}</span>
-            </div>
-          </div>
-
-          <div className={styles.modalButtonGroup}>
-            {isEvidence && (
-              <RoundButton
-                variant='secondary'
-                onClick={() => {
-                  closeDogSelectModal();
-                  openEvidenceModal();
-                }}
-              >
-                증빙자료 보기
-              </RoundButton>
-            )}
-
-            {isReceipt && (
-              <RoundButton
-                variant='secondary'
-                onClick={() => {
-                  closeDogSelectModal();
-                  openReceiptModal();
-                }}
-              >
-                영수증 보기
-              </RoundButton>
-            )}
-          </div>
-
-          <div className={styles.modalActions}>
-            <RoundButton variant='primary' onClick={closeDogSelectModal}>
-              확인
-            </RoundButton>
-          </div>
-        </div>
-      </DogSelectModal>
+      />
 
       {/* 증빙자료 모달 */}
       <EvidanceModal

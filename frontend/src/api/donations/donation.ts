@@ -209,3 +209,28 @@ export const saveWithdrawalToBoth = async (
     throw error;
   }
 };
+
+/**
+ * 출금 내역에 강아지 ID 할당 API
+ * @param withdrawalId 출금 내역 ID
+ * @param newDogId 새로 할당할 강아지 ID
+ * @returns 강아지 정보 (이름 등)
+ */
+export const assignDogToWithdrawal = async (
+  withdrawalId: number,
+  newDogId: number
+) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/api/withdrawal/${withdrawalId}/dogId`,
+      { newDogId },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`출금 내역 ID ${withdrawalId}에 강아지 할당 실패:`, error);
+    throw error;
+  }
+};
