@@ -45,8 +45,10 @@ export default function ReceiptUploadModal({
     }
 
     try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const result = await uploadReceiptImage(selectedFile);
       // 업로드 성공 시 처리는 onSuccess와 onDataChange에서 처리됨
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       // 에러는 훅에서 처리됨
     }
