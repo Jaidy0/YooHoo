@@ -17,7 +17,6 @@ export interface WithdrawTableRowProps {
   date: string;
   isReceipt: boolean;
   transactionUniqueNo: number;
-  receipt?: string;
   onReceiptChange?: () => void; // 영수증 변경 시 호출할 콜백
 }
 
@@ -27,15 +26,15 @@ const formatAmount = (value: number) => {
 
 export default function WithdrawTableRow({
   variant = 'row',
+  withdrawalId,
   type,
   category = '-',
   content = '-',
   amount,
   date,
   isReceipt,
-  withdrawalId,
-  onReceiptChange,
   transactionUniqueNo,
+  onReceiptChange,
 }: WithdrawTableRowProps) {
   // 상태 관리
   const [localIsReceipt, setLocalIsReceipt] = useState(isReceipt);
