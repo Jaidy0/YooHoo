@@ -78,7 +78,7 @@ export const getShelterAccountInfo = async (
     // 단체 계좌 정보 구성
     return {
       accountNo: data[accountNoKey],
-      bankName: '반디은행', // 은행 정보가 응답에 없으므로 기본값 사용
+      bankName: '싸피은행', // 은행 정보가 응답에 없으므로 기본값 사용
     };
   } catch (error) {
     console.error(`단체 ID ${shelterId}의 계좌 정보 조회 실패:`, error);
