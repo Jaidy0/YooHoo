@@ -22,16 +22,15 @@ http {
     # HTTP 접근을 HTTPS로 리다이렉트
     server {
         listen 80;
-        server_name j12b209.p.ssafy.io;  # 실제 도메인명으로 변경
+        server_name j12b209.p.ssafy.io;
 
         return 301 https://$host$request_uri;
     }
 
     # HTTPS 서버 블록 (SSL 인증서 경로 및 추가 설정 필요)
     server {
-        listen 443 ssl;
-        http2;
-        server_name j12b209.p.ssafy.io;  # 실제 도메인명으로 변경
+        listen 443 ssl http2;
+        server_name j12b209.p.ssafy.io;
 
         # Certbot에서 발급받은 SSL 인증서 경로
         ssl_certificate /etc/letsencrypt/live/j12b209.p.ssafy.io/fullchain.pem;
