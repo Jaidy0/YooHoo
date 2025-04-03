@@ -1,102 +1,84 @@
-@use '@/assets/styles/abstracts/variables' as *;
-
 .evidenceContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  padding: 1.5rem;
+  max-width: 500px;
   width: 100%;
 }
 
-.previewContainer {
-  width: 100%;
-  height: 400px;
-  max-height: 60vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: $spacing-lg;
-  overflow: hidden;
-  background-color: $color-background-light;
-  border-radius: $border-radius-md;
-  border: 1px solid $color-border;
+.loadingMessage,
+.errorMessage,
+.noDataMessage {
+  text-align: center;
+  padding: 2rem 0;
+  color: $text-555;
 }
 
-.evidencePreview {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  width: 100%;
-  height: 100%;
+.errorMessage {
+  color: $yh-orange;
 }
 
-.fileIcon {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 120px;
-  background-color: $yh-ivory;
-  border-radius: $border-radius-sm;
-  position: relative;
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-md;
+  color: $color-primary-dark;
+  border-bottom: 1px solid $color-border;
+  padding-bottom: $spacing-sm;
+}
 
-  &::before {
-    content: '📄';
-    font-size: 48px;
-    margin-bottom: $spacing-sm;
+.dataRow {
+  display: flex;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: $spacing-lg;
   }
 }
 
-.fileName {
-  position: absolute;
-  bottom: -30px;
-  width: 200px;
-  text-align: center;
-  font-size: $font-size-sm;
+.label {
+  flex: 0 0 120px;
+  font-weight: $font-weight-medium;
   color: $text-555;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.value {
+  flex: 1;
+  color: $text-333;
+}
+
+.highlightValue {
+  font-weight: $font-weight-bold;
+  color: $yh-orange;
 }
 
 .buttonContainer {
   display: flex;
-  gap: $spacing-md;
+  justify-content: center;
   margin-top: $spacing-lg;
-}
 
-.noEvidence {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: $spacing-xl;
-  color: $text-777;
-  text-align: center;
-
-  p {
-    margin-bottom: $spacing-lg;
-    font-size: $font-size-md;
+  button {
+    min-width: 120px;
   }
 }
 
-/* 반응형 처리 */
-@media (max-width: $breakpoint-md) {
-  .previewContainer {
-    height: 300px;
-  }
-}
-
-@media (max-width: $breakpoint-sm) {
-  .previewContainer {
-    height: 250px;
+// 카드 증빙 전용 스타일
+.cardData {
+  .cardInfo {
+    background-color: $yh-ivory;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
   }
 
-  .buttonContainer {
-    flex-direction: column;
-    width: 100%;
+  .merchantName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-sm;
+  }
 
-    button {
-      width: 100%;
-    }
+  .transactionAmount {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-primary-dark;
+    margin-bottom: $spacing-md;
   }
 }
