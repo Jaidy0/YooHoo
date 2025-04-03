@@ -6,7 +6,7 @@ import {
   fetchDonationWeeklySums,
   fetchWithdrawalWeeklySums,
   fetchShelterDonations,
-  fetchAllWithdrawals,
+  // fetchAllWithdrawals,
   type DonationItem,
   type WithdrawalItem,
   saveWithdrawalToBoth, // 추가된 함수
@@ -109,7 +109,7 @@ export const useShelterFinance = (
         fetchDonationWeeklySums(),
         fetchWithdrawalWeeklySums(),
         fetchShelterDonations(shelterId),
-        fetchAllWithdrawals(),
+        // fetchAllWithdrawals(),
       ]);
 
       // 1. 총액 데이터 처리

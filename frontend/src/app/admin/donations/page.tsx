@@ -5,10 +5,13 @@ import DonationTracker from '@/components/admin/DonationTracker/DonationTracker'
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useShelterFinance } from '@/hooks/useShelterFinance';
-import {
-  adaptDonationsToDepositTable,
-  adaptWithdrawalsToWithdrawTable,
-} from '@/lib/util/financeAdapter';
+// import {
+//   adaptDonationsToDepositTable,
+//   adaptWithdrawalsToWithdrawTable,
+// } from '@/lib/util/financeAdapter';
+
+import type { WithdrawTableRowProps } from '@/components/admin/FinanceTable/WithdrawTableRow';
+import { DepositTableRowProps } from '@/components/admin/FinanceTable/DepositTableRow';
 
 interface StatItem {
   month: string;
@@ -25,12 +28,115 @@ export default function DonationsPage() {
     totalWithdrawal,
     weeklyDonationData,
     weeklyWithdrawalData,
-    donationItems,
-    withdrawalItems,
+    // donationItems,
+    // withdrawalItems,
     isLoading,
     error,
     refetch,
   } = useShelterFinance(shelterId);
+
+  // 더미 데이터: 입금 내역 (DepositTableRowProps 형식)
+  const dummyDepositData: DepositTableRowProps[] = [
+    {
+      variant: 'row',
+      type: '정기후원',
+      name: '김철수',
+      amount: 50000,
+      message: '아이들을 위해 써주세요',
+      date: '2025-04-03',
+    },
+    {
+      variant: 'row',
+      type: '일시후원',
+      name: '이영희',
+      amount: 100000,
+      message: '따뜻한 겨울 보내세요',
+      date: '2025-04-02',
+    },
+    {
+      variant: 'row',
+      type: '정기후원',
+      name: '박지민',
+      amount: 30000,
+      message: '매달 작지만 도움이 되길 바랍니다',
+      date: '2025-03-30',
+    },
+    {
+      variant: 'row',
+      type: '일시후원',
+      name: '정민수',
+      amount: 200000,
+      message: '특별한 날 기부합니다',
+      date: '2025-03-28',
+    },
+    {
+      variant: 'row',
+      type: '정기후원',
+      name: '홍길동',
+      amount: 75000,
+      date: '2025-03-25',
+    },
+  ];
+
+  // 더미 데이터: 출금 내역 (WithdrawTableRowProps 형식)
+  const dummyWithdrawData: WithdrawTableRowProps[] = [
+    {
+      variant: 'row',
+      type: '운영비',
+      category: '사료/간식',
+      content: '강아지 사료 구매',
+      amount: 180000,
+      date: '2025-04-01',
+      isEvidence: true,
+      evidence: 'evidence_file_1.jpg',
+      isReceipt: true,
+      receipt: 'receipt_file_1.pdf',
+    },
+    {
+      variant: 'row',
+      type: '의료비',
+      category: '예방접종',
+      content: '구조견 예방접종 비용',
+      amount: 120000,
+      date: '2025-03-29',
+      isEvidence: true,
+      evidence: 'evidence_file_2.jpg',
+      isReceipt: true,
+      receipt: 'receipt_file_2.pdf',
+    },
+    {
+      variant: 'row',
+      type: '시설비',
+      category: '유지보수',
+      content: '견사 수리 및 청소',
+      amount: 90000,
+      date: '2025-03-26',
+      isEvidence: true,
+      evidence: 'evidence_file_3.jpg',
+      isReceipt: false,
+    },
+    {
+      variant: 'row',
+      type: '장비비',
+      category: '기구/장비',
+      content: '운반용 캐리어 구매',
+      amount: 60000,
+      date: '2025-03-22',
+      isEvidence: false,
+      isReceipt: true,
+      receipt: 'receipt_file_4.pdf',
+    },
+    {
+      variant: 'row',
+      type: '인건비',
+      category: '급여',
+      content: '직원 3월 급여',
+      amount: 250000,
+      date: '2025-03-20',
+      isEvidence: false,
+      isReceipt: false,
+    },
+  ];
 
   // API 응답에서 주간 통계 데이터 구성
   const donationStats: StatItem[] = [
@@ -197,8 +303,8 @@ export default function DonationsPage() {
 
         {/* FinanceTable 컴포넌트에 실제 API 데이터 전달 */}
         <FinanceTable
-          depositData={adaptDonationsToDepositTable(donationItems)}
-          withdrawData={adaptWithdrawalsToWithdrawTable(withdrawalItems)}
+          depositData={dummyDepositData}
+          withdrawData={dummyWithdrawData}
           className={styles.financeTable}
         />
       </section>
