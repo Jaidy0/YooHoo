@@ -13,23 +13,23 @@ export const getUserAccounts = async (): Promise<AccountInfo[]> => {
   // 더미 데이터 정의
   const dummyAccounts = [
     {
-      accountNo: "9990994821193495",
-      bankName: "싸피은행",
-      accountBalance: "0"
+      accountNo: '9990994821193495',
+      bankName: '싸피은행',
+      accountBalance: '0',
     },
     {
-      accountNo: "9995373132603649",
-      bankName: "싸피은행",
-      accountBalance: "0"
-    }
+      accountNo: '9995373132603649',
+      bankName: '싸피은행',
+      accountBalance: '0',
+    },
   ];
-  
+
   // 개발 환경에서는 즉시 더미 데이터 반환
   if (process.env.NODE_ENV === 'development') {
     console.log('개발 환경에서 더미 계좌 데이터 사용');
     return dummyAccounts;
   }
-  
+
   try {
     const response = await axios.post(
       `${API_BASE_URL}/api/donations/accounts`,
@@ -83,5 +83,35 @@ export const getShelterAccountInfo = async (
   } catch (error) {
     console.error(`단체 ID ${shelterId}의 계좌 정보 조회 실패:`, error);
     return null;
+  }
+};
+
+/**
+ * 후원 전송 API
+ * @param donationData 후원 데이터
+ * @returns 후원 결과
+ */
+export const transferDonation = async (donationData: {
+  depositAccountNo: string; // 입금 계좌번호 (단체)
+  transactionBalance: string; // 거래 금액
+  withdrawalAccountNo: string; // 출금 계좌번호 (사용자)
+  cheeringMessage: string; // 응원 메시지
+  depositorName: string; // 입금자 이름
+  donationType: number; // 후원 유형 (0: 정기, 1: 일시)
+  dogId?: number; // 강아지 ID (강아지 후원 시)
+  shelterId: number; // 단체 ID
+}) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/api/donations/transfer`,
+      donationData,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('후원 처리 실패:', error);
+    throw error;
   }
 };

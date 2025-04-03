@@ -5,7 +5,7 @@ import SearchBar from '@/components/common/SearchBar/SearchBar';
 import StepTitle from '../../StepTitle/StepTitle';
 import ShelterCard from '../ShelterCard/ShelterCard';
 import styles from './ShelterSection.module.scss';
-import { useShelterList } from '@/hooks/useShelterList';
+import { useDonationShelterList } from '@/hooks/donations/useDonationShelterList';
 
 type ShelterSectionProps = {
   selectedShelterId: number;
@@ -23,7 +23,7 @@ export default function ShelterSection({
   const selectedShelterRef = useRef<HTMLDivElement>(null);
 
   // useShelterList 훅 사용
-  const { shelters, isLoading, error } = useShelterList(sort);
+  const { shelters, isLoading, error } = useDonationShelterList(sort);
 
   // 검색 처리
   const handleSearch = (term: string) => {

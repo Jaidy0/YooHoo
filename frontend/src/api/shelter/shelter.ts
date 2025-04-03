@@ -68,3 +68,16 @@ export const getDogCountByShelter = async (
     };
   }
 };
+
+// 후원했던 단체 조회
+export const getRecentDonatedShelters = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/donations/shelters`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('최근 후원 단체 조회 실패:', error);
+    return [];
+  }
+};
