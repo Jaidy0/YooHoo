@@ -27,6 +27,11 @@ export interface BadgeProps {
    * 뱃지 내용
    */
   children: React.ReactNode;
+
+  /**
+   * 클릭 이벤트 핸들러
+   */
+  onClick?: () => void;
 }
 
 export default function Badge({
@@ -35,8 +40,14 @@ export default function Badge({
   width,
   height,
   className = '',
+  onClick,
 }: BadgeProps) {
-  const badgeClasses = [styles.badge, styles[`badge--${variant}`], className]
+  const badgeClasses = [
+    styles.badge,
+    styles[`badge--${variant}`],
+    className,
+    onClick ? styles.clickable : '',
+  ]
     .filter(Boolean)
     .join(' ');
 
@@ -50,7 +61,13 @@ export default function Badge({
   };
 
   return (
-    <div className={badgeClasses} style={customStyle}>
+    <div
+      className={badgeClasses}
+      style={customStyle}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+    >
       <span className={styles.content}>{children}</span>
     </div>
   );

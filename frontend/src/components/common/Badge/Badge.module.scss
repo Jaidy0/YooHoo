@@ -37,3 +37,37 @@
 .content {
   position: relative;
 }
+
+.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: $yh-orange;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  &:hover::after {
+    opacity: 1;
+  }
+}
