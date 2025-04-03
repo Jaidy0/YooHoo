@@ -35,7 +35,7 @@ http {
         server $EC2_PUBLIC_HOST:$CANARY_BACKEND_PORT;
     }
     upstream jenkins_server {
-        server 127.0.0.1:9090;
+        server jenkins:8080;
     }
 
     # 최종 버전 값($final_version)에 따른 프론트엔드/백엔드 매핑
