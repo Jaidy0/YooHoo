@@ -24,6 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoohoo.backend.dto.DonationDTO;
+import com.yoohoo.backend.dto.DogsDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -59,6 +60,7 @@ public class DonationController {
     @GetMapping
     public ResponseEntity<List<DonationDTO>> getDonations(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("User ID from session: " + userId);
         
         if (userId == null) {
             return ResponseEntity.badRequest().build();
@@ -89,6 +91,7 @@ public class DonationController {
             @RequestBody Map<String, String> dateRange) {
 
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("User ID from session: " + userId);
 
         if (userId == null) {
             return ResponseEntity.badRequest().build();
@@ -102,20 +105,23 @@ public class DonationController {
     }
 
     @GetMapping("/dogs")
-    public ResponseEntity<List<DonationDTO>> getDogsByUser(HttpSession session) {
+    public ResponseEntity<List<DogsDTO>> getDogsByUser(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("User ID from session: " + userId);
         
         if (userId == null) {
             return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
         }
 
-        List<DonationDTO> dogs = donationService.getDogsByUserId(userId);
+        // 강아지 정보를 포함한 후원 내역을 가져옵니다.
+        List<DogsDTO> dogs = donationService.getDogsByUserId(userId);
         return ResponseEntity.ok(dogs);
     }
 
     @PostMapping("/accounts")
     public ResponseEntity<?> getAccountInfo(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("User ID from session: " + userId);
         if (userId == null) {
             return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
         }
@@ -137,6 +143,7 @@ public class DonationController {
 
         // 세션에서 userId 가져오기
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("User ID from session: " + userId);
         if (userId == null) {
             return ResponseEntity.badRequest().body("User ID not found in session.");
         }
@@ -243,6 +250,7 @@ public class DonationController {
     @GetMapping("/shelters")
     public ResponseEntity<List<Map<String, String>>> getShelterNames(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
+        System.out.println("User ID from session: " + userId);
         
         if (userId == null) {
             return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
@@ -255,6 +263,7 @@ public class DonationController {
     @GetMapping("/total-amount")
     public ResponseEntity<Map<String, Object>> getTotalDonationAmount(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId"); 
+        System.out.println("User ID from session: " + userId);
         
         if (userId == null) {
             return ResponseEntity.badRequest().body(null); // 사용자 ID가 없으면 null 반환

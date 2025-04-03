@@ -2,11 +2,13 @@ package com.yoohoo.backend.service;
 
 import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.dto.DonationDTO;
+import com.yoohoo.backend.dto.DogsDTO;
 
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.File;
 import com.yoohoo.backend.repository.DonationRepository;
 import com.yoohoo.backend.repository.FileRepository;
+import com.yoohoo.backend.repository.DogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,9 @@ public class DonationService {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private DogRepository dogRepository;
 
     public List<Donation> getDonationsByUserId(Long userId) {
         return donationRepository.findByUser_UserId(userId);
@@ -54,24 +59,24 @@ public class DonationService {
                 .collect(Collectors.toList());
     }
 
-    public List<DonationDTO> getDogsByUserId(Long userId) {
-        List<Donation> donations = donationRepository.findByUser_UserId(userId);
-        return donations.stream()
-                .map(donation -> {
-                    DonationDTO dto = new DonationDTO();
-                    dto.setDonationId(donation.getDonationId());
-                    dto.setDonationAmount(donation.getDonationAmount());
-                    dto.setTransactionUniqueNo(donation.getTransactionUniqueNo());
-                    dto.setDonationDate(donation.getDonationDate());
-                    dto.setDepositorName(donation.getDepositorName());
-                    dto.setCheeringMessage(donation.getCheeringMessage());
-                    dto.setUserNickname(donation.getUser().getNickname());
-                    dto.setDogName(donation.getDog() != null ? donation.getDog().getName() : null);
-                    dto.setShelterName(donation.getShelter() != null ? donation.getShelter().getName() : null);
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
+    // public List<DonationDTO> getDogsByUserId(Long userId) {
+    //     List<Donation> donations = donationRepository.findByUser_UserId(userId);
+    //     return donations.stream()
+    //             .map(donation -> {
+    //                 DonationDTO dto = new DonationDTO();
+    //                 dto.setDonationId(donation.getDonationId());
+    //                 dto.setDonationAmount(donation.getDonationAmount());
+    //                 dto.setTransactionUniqueNo(donation.getTransactionUniqueNo());
+    //                 dto.setDonationDate(donation.getDonationDate());
+    //                 dto.setDepositorName(donation.getDepositorName());
+    //                 dto.setCheeringMessage(donation.getCheeringMessage());
+    //                 dto.setUserNickname(donation.getUser().getNickname());
+    //                 dto.setDogName(donation.getDog() != null ? donation.getDog().getName() : null);
+    //                 dto.setShelterName(donation.getShelter() != null ? donation.getShelter().getName() : null);
+    //                 return dto;
+    //             })
+    //             .collect(Collectors.toList());
+    // }
 
     // Donation 객체 저장
     public void saveDonation(Donation donation) {
@@ -208,6 +213,37 @@ public class DonationService {
                     return result;
                 })
                 .distinct()
+                .collect(Collectors.toList());
+    }
+
+    // 사용자가 후원한 강아지 엔티티 조회
+    public List<DogsDTO> getDogsByUserId(Long userId) {
+        List<Donation> donations = donationRepository.findByUser_UserId(userId);
+        
+        return donations.stream()
+                .filter(donation -> donation.getDog() != null) // dog_id가 null이 아닌 경우 필터링
+                .map(donation -> {
+                    Long dogId = donation.getDog().getDogId();
+                    Dog dog = dogRepository.findById(dogId).orElse(null); // Dog 엔티티 반환
+                    if (dog != null) {
+                        DogsDTO dto = new DogsDTO();
+                        dto.setDogId(dog.getDogId());
+                        dto.setName(dog.getName());
+                        dto.setAge(dog.getAge());
+                        dto.setWeight(dog.getWeight());
+                        dto.setGender(dog.getGender());
+                        dto.setBreed(dog.getBreed());
+                        dto.setEnergetic(dog.getEnergetic());
+                        dto.setFamiliarity(dog.getFamiliarity());
+                        dto.setIsVaccination(dog.getIsVaccination());
+                        dto.setIsNeutered(dog.getIsNeutered());
+                        dto.setStatus(dog.getStatus());
+                        dto.setAdmissionDate(dog.getAdmissionDate());
+                        return dto;
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull) // null이 아닌 DogsDTO 객체만 필터링
                 .collect(Collectors.toList());
     }
 }
