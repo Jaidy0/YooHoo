@@ -195,9 +195,13 @@ public class DonationController {
                     donation.setUser(user); // user 필드 설정
 
                     // Dog와 Shelter 객체 설정
-                    Dog dog = dogService.findById(transferRequest.getDogId());
+                    if (transferRequest.getDogId() != null) {
+                        Dog dog = dogService.findById(transferRequest.getDogId());
+                        donation.setDog(dog);
+                    } else {
+                        donation.setDog(null);
+                    }
                     Shelter shelter = shelterService.findById(transferRequest.getShelterId());
-                    donation.setDog(dog);
                     donation.setShelter(shelter);
 
                     // Donation 저장
