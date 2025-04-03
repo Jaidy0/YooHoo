@@ -18,16 +18,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import com.yoohoo.backend.dto.ShelterRequest;
+import com.yoohoo.backend.dto.BankbookResponseDTO;
+import com.yoohoo.backend.dto.CardResponseDTO;
 import com.yoohoo.backend.dto.TransferRequestDTO;
 import com.yoohoo.backend.dto.TransferResponseDTO;
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.entity.Shelter;
 import com.yoohoo.backend.entity.User;
+import com.yoohoo.backend.service.BankbookService;
+import com.yoohoo.backend.service.DevService;
 import com.yoohoo.backend.service.DogService;
 import com.yoohoo.backend.service.DonationService;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.UserService;
+import com.yoohoo.backend.service.WithdrawalService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -37,28 +43,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DevController {
     
-     private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
     private final UserService userService;
     private final DogService dogService;
     private final ShelterService shelterService;
     private final DonationService donationService;
-
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final DevService devService;
+    private final WithdrawalService withdrawalService;
 
     @PostMapping("/transfer")
-    public ResponseEntity<String> handleTransfer(@RequestParam Long userId, @RequestBody TransferRequestDTO transferRequest, HttpSession session) {
+    public ResponseEntity<String> handleTransfer(@RequestParam Long userId, @RequestParam String userKey, @RequestBody TransferRequestDTO transferRequest) {
         // Define and initialize apiUrl
         String apiUrl = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/updateDemandDepositAccountTransfer";
-
-
-        // 1. Redis에서 userKey 조회
-        String userKey = redisTemplate.opsForValue().get("userKey:" + userId);
-        if (userKey == null) {
-            return ResponseEntity.badRequest().body("Redis에서 userKey를 찾을 수 없습니다.");
-        }
-
         // User 객체 가져오기
         User user = userService.findById(userId); // userService를 통해 User 객체를 가져옵니다.
+        
         if (user == null) {
             return ResponseEntity.badRequest().body("User not found.");
         }
@@ -77,11 +76,6 @@ public class DevController {
         // 추가 필드 설정
         transferRequest.setDepositTransactionSummary("입금");
         transferRequest.setWithdrawalTransactionSummary("출금");
-        transferRequest.setCheeringMessage("후원합니다!");
-        transferRequest.setDepositorName("유");
-        transferRequest.setDonationType(1);
-        transferRequest.setDogId(1L);
-        transferRequest.setShelterId(1L);
 
         // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
@@ -110,9 +104,13 @@ public class DevController {
                     donation.setUser(user); // user 필드 설정
 
                     // Dog와 Shelter 객체 설정
-                    Dog dog = dogService.findById(transferRequest.getDogId());
+                    if (transferRequest.getDogId() != null) {
+                        Dog dog = dogService.findById(transferRequest.getDogId());
+                        donation.setDog(dog);
+                    } else {
+                        donation.setDog(null);
+                    }
                     Shelter shelter = shelterService.findById(transferRequest.getShelterId());
-                    donation.setDog(dog);
                     donation.setShelter(shelter);
 
                     // Donation 저장
@@ -143,4 +141,26 @@ public class DevController {
         return transmissionDate + transmissionTime + randomNumber; // 총 20자리
     }
 
+    @PostMapping("/bank/saveWithdrawal")
+    public ResponseEntity<BankbookResponseDTO> saveAndReturnTransactionHistory(@RequestBody ShelterRequest shelterRequest) {
+        BankbookResponseDTO response = devService.bankinquireTransactionHistory(shelterRequest);
+        if (response != null) {
+            withdrawalService.saveWithdrawal(response, shelterRequest.getShelterId());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    
+
+        @PostMapping("/card/saveWithdrawal")
+    public ResponseEntity<CardResponseDTO> saveAndReturnCreditCardTransactions(@RequestBody ShelterRequest shelterRequest) {
+        CardResponseDTO response = devService.cardinquireCreditCardTransactions(shelterRequest);
+        if (response != null) {
+            withdrawalService.saveCardTransactions(response, shelterRequest.getShelterId());
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }

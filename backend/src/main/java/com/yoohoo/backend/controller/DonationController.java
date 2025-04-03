@@ -167,12 +167,7 @@ public class DonationController {
         // 추가 필드 설정
         transferRequest.setDepositTransactionSummary("입금");
         transferRequest.setWithdrawalTransactionSummary("출금");
-        transferRequest.setCheeringMessage("후원합니다!");
-        transferRequest.setDepositorName("유");
-        transferRequest.setDonationType(1);
-        transferRequest.setDogId(1L);
-        transferRequest.setShelterId(1L);
-
+  
         // HTTP 요청 헤더 설정
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -200,9 +195,13 @@ public class DonationController {
                     donation.setUser(user); // user 필드 설정
 
                     // Dog와 Shelter 객체 설정
-                    Dog dog = dogService.findById(transferRequest.getDogId());
+                    if (transferRequest.getDogId() != null) {
+                        Dog dog = dogService.findById(transferRequest.getDogId());
+                        donation.setDog(dog);
+                    } else {
+                        donation.setDog(null);
+                    }
                     Shelter shelter = shelterService.findById(transferRequest.getShelterId());
-                    donation.setDog(dog);
                     donation.setShelter(shelter);
 
                     // Donation 저장
@@ -219,6 +218,7 @@ public class DonationController {
             return ResponseEntity.badRequest().body("Failed to process transfer: " + e.getMessage());
         }
     }
+
 
     // 랜덤 숫자 생성 메서드
     private String generateUniqueTransactionNo(LocalDateTime now) {
