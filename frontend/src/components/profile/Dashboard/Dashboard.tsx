@@ -19,7 +19,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 실제 후원 통계 데이터 가져오기
-  const { stats, isLoading: isLoadingStats } = useDonationStats();
+  const { stats } = useDonationStats();
 
   // 가입일로부터 현재까지의 일수 계산
   const calculateDaysSinceJoin = () => {

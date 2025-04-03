@@ -5,6 +5,10 @@ import { Dog, Gender, DogStatus } from '@/types/dog';
 import styles from './DogDetailView.module.scss';
 import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
 import IconBox from '@/components/common/IconBox/IconBox';
+import DonationHistoryItem from '@/components/donations/DonationHistoryItem/DonationHistoryItem';
+import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
+import { FormattedDepositItem } from '@/types/adminDonation';
+import { useDogFinance } from '@/hooks/useDogFinance';
 
 interface DogDetailViewProps {
   selectedDog: Dog;
@@ -17,6 +21,17 @@ export default function DogDetailView({
   dogDetails,
   onClose,
 }: DogDetailViewProps) {
+  // 후원 내역 데이터 가져오기
+  const { depositData, isLoading, error } = useDogFinance(
+    // String(dogDetails.dogId)
+    String(306)
+  );
+
+  console.log(depositData);
+
+  // 총 후원금액 계산
+  const totalDonation = depositData.reduce((sum, item) => sum + item.amount, 0);
+
   // admissionDate가 존재할 때만 날짜 포맷팅을 처리
   const formattedAdmissionDate = dogDetails.admissionDate
     ? new Date(dogDetails.admissionDate).toLocaleDateString('ko-KR', {
@@ -150,6 +165,43 @@ export default function DogDetailView({
               <li>중성화: {dogDetails.isNeutered ? '완료' : '미완료'}</li>
               <li>정기 건강검진: 진행 중</li>
             </ul>
+          </section>
+          <section className={styles.detailSection}>
+            <h3 className={styles.sectionTitle}>모금 현황</h3>
+            <div className={styles.donationStatus}>
+              <div className={styles.donationAmount}>
+                <span className={styles.donationLabel}>현재 모금액</span>
+                <span className={styles.currentAmount}>{totalDonation}</span>
+              </div>
+              <div>
+                <span className={styles.historyLabel}>최근 후원 내역</span>
+                <div className={styles.donationHistory}>
+                  {isLoading ? (
+                    <div className={styles.loadingContainer}>
+                      <LoadingSpinner />
+                    </div>
+                  ) : error ? (
+                    <div className={styles.errorMessage}>{error}</div>
+                  ) : depositData.length === 0 ? (
+                    <div className={styles.emptyMessage}>
+                      아직 후원 내역이 없습니다.
+                    </div>
+                  ) : (
+                    depositData.map(
+                      (donation: FormattedDepositItem, index: number) => (
+                        <DonationHistoryItem
+                          key={index}
+                          date={donation.date}
+                          donorName={donation.depositorName}
+                          amount={`${donation.amount.toLocaleString()}원`}
+                          message={donation.message}
+                        />
+                      )
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
           </section>
         </div>
       </div>
