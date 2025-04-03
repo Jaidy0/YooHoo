@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './Dashboard.module.scss';
 import MySummaryCard from '@/components/profile/MySummaryCard/MySummaryCard';
@@ -19,7 +19,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 실제 후원 통계 데이터 가져오기
-  const { stats, isLoading: isLoadingStats } = useDonationStats();
+  const { stats } = useDonationStats();
 
   // 가입일로부터 현재까지의 일수 계산
   const calculateDaysSinceJoin = () => {
@@ -54,6 +54,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
 
   const handleSaveNickname = (newNickname: string) => {
     // 닉네임 변경 로직은 별도 API 필요
+    console.log('저장하려는 newNickname : ', newNickname);
     setIsModalOpen(false);
   };
 

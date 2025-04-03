@@ -37,7 +37,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
           fetchDogDonations(dogId),
           fetchDogWithdrawals(dogId),
         ]);
-
+        console.log('raw depositsResult : ', depositsResult);
         setRawDepositData(depositsResult);
         setRawWithdrawData(withdrawalsResult);
       } catch (err) {
@@ -60,6 +60,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
     amount: item.donationAmount,
     date: new Date(item.donationDate).toLocaleDateString('ko-KR'),
     message: item.cheeringMessage || '-',
+    depositorName: item.depositorName || '-',
   }));
 
   // 출금 데이터 포맷 변환

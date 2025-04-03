@@ -71,6 +71,7 @@ export interface FormattedDepositItem {
   amount: number;
   date: string;
   message: string;
+  depositorName: string;
 }
 
 // FinanceTable 컴포넌트에서 사용하는 출금 내역 형식
