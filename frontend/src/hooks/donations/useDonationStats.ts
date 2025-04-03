@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getUserDonations } from '@/api/donations/myDonation';
+import { usePathname } from 'next/navigation';
 
 interface Donation {
   donationId: number;
@@ -21,6 +22,7 @@ interface DonationStats {
 }
 
 export const useDonationStats = () => {
+  const pathname = usePathname();
   const [donations, setDonations] = useState<Donation[]>([]);
   const [stats, setStats] = useState<DonationStats>({
     donationCount: 0,
@@ -33,6 +35,12 @@ export const useDonationStats = () => {
 
   useEffect(() => {
     const fetchDonations = async () => {
+      // 메인 프로필 페이지에서만 API 호출
+      if (pathname !== '/yoohoo/profile' && pathname !== '/yoohoo/profile/') {
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         setError(null);
@@ -79,7 +87,7 @@ export const useDonationStats = () => {
     };
 
     fetchDonations();
-  }, []);
+  }, [pathname]);
 
   return { donations, stats, isLoading, error };
 };
