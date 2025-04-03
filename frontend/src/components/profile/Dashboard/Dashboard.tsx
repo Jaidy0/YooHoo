@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './Dashboard.module.scss';
 import MySummaryCard from '@/components/profile/MySummaryCard/MySummaryCard';
@@ -50,11 +50,6 @@ export default function Dashboard({ className = '' }: DashboardProps) {
 
   const handleMoveToReportPage = () => {
     router.push('/yoohoo/profile/donation-report');
-  };
-
-  const handleSaveNickname = (newNickname: string) => {
-    // 닉네임 변경 로직은 별도 API 필요
-    setIsModalOpen(false);
   };
 
   const handleMoveToShelterManage = () => {
@@ -113,11 +108,11 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         <MySummaryCard title='후원 강아지 수' value={stats.dogCount} />
       </div>
 
+      {/* 닉네임 수정 모달 */}
       {isModalOpen && (
         <NicknameModal
           initialValue={user?.nickname || ''}
           onClose={() => setIsModalOpen(false)}
-          onSave={handleSaveNickname}
         />
       )}
     </div>
