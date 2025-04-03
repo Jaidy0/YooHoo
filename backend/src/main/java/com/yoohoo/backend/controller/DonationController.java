@@ -24,7 +24,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.http.MediaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yoohoo.backend.dto.DonationDTO;
-import com.yoohoo.backend.dto.DogsDTO;
+import com.yoohoo.backend.dto.DogListDTO;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -105,17 +105,16 @@ public class DonationController {
     }
 
     @GetMapping("/dogs")
-    public ResponseEntity<List<DogsDTO>> getDogsByUser(HttpSession session) {
+    public ResponseEntity<List<DogListDTO>> getDogsByUser(HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
         System.out.println("User ID from session: " + userId);
         
         if (userId == null) {
             return ResponseEntity.badRequest().build(); // 사용자 ID가 없으면 400 Bad Request
         }
-
         // 강아지 정보를 포함한 후원 내역을 가져옵니다.
-        List<DogsDTO> dogs = donationService.getDogsByUserId(userId);
-        return ResponseEntity.ok(dogs);
+        List<DogListDTO> dogsWithImages = donationService.getDogsByUserId(userId);
+        return ResponseEntity.ok(dogsWithImages);
     }
 
     @PostMapping("/accounts")

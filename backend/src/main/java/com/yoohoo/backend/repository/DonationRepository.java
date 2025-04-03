@@ -1,7 +1,12 @@
 package com.yoohoo.backend.repository;
 
+import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.Donation;
+
+import io.lettuce.core.dynamic.annotation.Param;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -23,4 +28,8 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
 
     // 특정 날짜 범위의 기부 내역 조회
     List<Donation> findByDonationDateBetween(LocalDate startDate, LocalDate endDate);
+
+    @Query("SELECT d.dog FROM Donation d WHERE d.user.userId = :userId")
+    List<Dog> findDogsByUserId(@Param("userId") Long userId);
+
 }

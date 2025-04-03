@@ -57,8 +57,11 @@ public class WithdrawalService {
 
     public void saveCardTransactions(CardResponseDTO response, Long shelterId) {
         for (CardResponseDTO.Transaction transaction : response.getRec().getTransactionList()) {
-            String merchantName = getMerchantNameByCategoryId(transaction.getCategoryId());
-            String content = merchantName;
+            String categoryId = transaction.getCategoryId();
+            Long merchantId = Long.parseLong(transaction.getMerchantId());
+            String content = getMerchantIndustryAndNameByMerchantId(merchantId);
+            String category = getMerchantCategory(merchantId);
+
 
             // Check if the transaction already exists
             if (!withdrawalRepository.existsByTransactionUniqueNo(transaction.getTransactionUniqueNo())) {
@@ -67,10 +70,10 @@ public class WithdrawalService {
                 withdrawal.setContent(content);
                 withdrawal.setShelterId(shelterId);
                 withdrawal.setDogId(null);
-                withdrawal.setCategory(transaction.getCategoryName());
+                withdrawal.setCategory(category);
                 withdrawal.setTransactionBalance(transaction.getTransactionBalance());
                 withdrawal.setDate(transaction.getTransactionDate());
-                withdrawal.setMerchantId(Long.parseLong(transaction.getMerchantId()));
+                withdrawal.setMerchantId(merchantId);
                 withdrawal.setTransactionUniqueNo(transaction.getTransactionUniqueNo());
 
                 // Save the withdrawal
@@ -80,6 +83,15 @@ public class WithdrawalService {
                 System.out.println("Transaction with unique number " + transaction.getTransactionUniqueNo() + " already exists.");
             }
         }
+    }
+
+    private String getMerchantIndustryAndName(String categoryId) {
+        List<MerchantCategory> categories = merchantCategoryRepository.findByCategoryId(categoryId);
+        if (!categories.isEmpty()) {
+            MerchantCategory category = categories.get(0);
+            return category.getIndustry() + " - " + category.getMerchantName();
+        }
+        return "Unknown Merchant";
     }
 
     private String getMerchantNameByCategoryId(String categoryId) {
@@ -93,6 +105,14 @@ public class WithdrawalService {
     private String getMerchantCategory(Long merchantId) {
         MerchantCategory merchantCategory = merchantCategoryRepository.findByMerchantId(merchantId);
         return merchantCategory != null ? merchantCategory.getCategory() : "Unknown";
+    }
+
+    private String getMerchantIndustryAndNameByMerchantId(Long merchantId) {
+        MerchantCategory category = merchantCategoryRepository.findByMerchantId(merchantId);
+        if (category != null) {
+            return category.getIndustry() + " - " + category.getMerchantName();
+        }
+        return "Unknown Merchant";
     }
 
     public Optional<String> updateDogId(Long withdrawalId, Long newDogId) {

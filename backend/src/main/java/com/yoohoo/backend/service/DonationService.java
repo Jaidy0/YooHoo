@@ -2,7 +2,7 @@ package com.yoohoo.backend.service;
 
 import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.dto.DonationDTO;
-import com.yoohoo.backend.dto.DogsDTO;
+import com.yoohoo.backend.dto.DogListDTO;
 
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.File;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,9 @@ public class DonationService {
 
     @Autowired
     private DogRepository dogRepository;
+
+    @Autowired
+    private S3Service s3Service;
 
     public List<Donation> getDonationsByUserId(Long userId) {
         return donationRepository.findByUser_UserId(userId);
@@ -217,33 +221,22 @@ public class DonationService {
     }
 
     // 사용자가 후원한 강아지 엔티티 조회
-    public List<DogsDTO> getDogsByUserId(Long userId) {
-        List<Donation> donations = donationRepository.findByUser_UserId(userId);
-        
-        return donations.stream()
-                .filter(donation -> donation.getDog() != null) // dog_id가 null이 아닌 경우 필터링
-                .map(donation -> {
-                    Long dogId = donation.getDog().getDogId();
-                    Dog dog = dogRepository.findById(dogId).orElse(null); // Dog 엔티티 반환
-                    if (dog != null) {
-                        DogsDTO dto = new DogsDTO();
-                        dto.setDogId(dog.getDogId());
-                        dto.setName(dog.getName());
-                        dto.setAge(dog.getAge());
-                        dto.setWeight(dog.getWeight());
-                        dto.setGender(dog.getGender());
-                        dto.setBreed(dog.getBreed());
-                        dto.setEnergetic(dog.getEnergetic());
-                        dto.setFamiliarity(dog.getFamiliarity());
-                        dto.setIsVaccination(dog.getIsVaccination());
-                        dto.setIsNeutered(dog.getIsNeutered());
-                        dto.setStatus(dog.getStatus());
-                        dto.setAdmissionDate(dog.getAdmissionDate());
-                        return dto;
-                    }
-                    return null;
-                })
-                .filter(Objects::nonNull) // null이 아닌 DogsDTO 객체만 필터링
-                .collect(Collectors.toList());
+    public List<DogListDTO> getDogsByUserId(Long userId) {
+    // 사용자의 후원 강아지 목록 (Dog 엔티티 리스트)
+    List<Dog> dogs = donationRepository.findDogsByUserId(userId);
+
+    List<Long> dogIds = dogs.stream()
+            .map(Dog::getDogId)
+            .collect(Collectors.toList());
+
+    // 🔹 file 테이블에서 entityType=1인 이미지 URL 한 번에 조회
+    Map<Long, String> imageUrlMap = s3Service.getFileUrlsByEntityTypeAndEntityIds(1, dogIds);
+    
+    return dogs.stream()
+            .map(dog -> {
+                String imageUrl = imageUrlMap.get(dog.getDogId());
+                return DogListDTO.fromEntity(dog, Optional.ofNullable(imageUrl));
+            })
+            .collect(Collectors.toList());
     }
 }
