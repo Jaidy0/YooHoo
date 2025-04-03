@@ -57,11 +57,6 @@ const dummyDogs: Dog[] = [
 ];
 
 export default function MyDonateDogPage() {
-  // 강아지 카드 클릭 핸들러
-  const handleDogCardClick = (dogId: number) => {
-    console.log(`강아지 ID ${dogId} 카드가 클릭되었습니다.`);
-  };
-
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>내가 후원한 강아지</h1>
@@ -69,7 +64,7 @@ export default function MyDonateDogPage() {
       <div className={styles.dogGrid}>
         {dummyDogs.map((dog) => (
           <div key={dog.dogId} className={styles.dogCardWrapper}>
-            <DogCard dog={dog} onClick={handleDogCardClick} />
+            <DogCard dog={dog} disableRouting={true} />
           </div>
         ))}
       </div>
