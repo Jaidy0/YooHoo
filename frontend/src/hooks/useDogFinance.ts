@@ -65,6 +65,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
   // 출금 데이터 포맷 변환
   const withdrawData: FormattedWithdrawalItem[] = rawWithdrawData.map(
     (item) => ({
+      withdrawalId: item.withdrawalId, // 추가: withdrawalId 포함
       type: item.type === 'DOG' ? '지정(강아지)' : '단체',
       category: item.category,
       content: item.content || '-',
@@ -72,8 +73,8 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
       date: new Date(item.withdrawalDate || item.date).toLocaleDateString(
         'ko-KR'
       ),
-      isEvidence: item.isEvidence || false,
       isReceipt: item.isReceipt || false,
+      transactionUniqueNo: parseInt(item.transactionUniqueNo || '0', 10), // 추가: transactionUniqueNo 포함 (문자열을 숫자로 변환)
     })
   );
 
