@@ -27,7 +27,7 @@ export function useAdminDataInitializer(shelterId: number) {
           // 1. 입출금 내역 업데이트
           console.log('[디버깅] saveWithdrawal 호출 전');
           console.log('[디버깅] saveWithdrawal 타입:', typeof saveWithdrawal);
-          await saveWithdrawal(shelterId);
+          await saveWithdrawal();
           console.log('[디버깅] saveWithdrawal 완료');
 
           // 2. 재정 정보 초기화 요청

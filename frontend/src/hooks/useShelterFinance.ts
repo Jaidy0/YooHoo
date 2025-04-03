@@ -7,22 +7,15 @@ import {
   fetchWithdrawalWeeklySums,
   fetchShelterDonations,
   fetchAllWithdrawals,
+  saveWithdrawalToBoth,
+  // 타입 import
   type DonationItem,
   type WithdrawalItem,
-  saveWithdrawalToBoth, // 추가된 함수
-  type WithdrawalRequest, // 추가된 타입
-  type WithdrawalResponse, // 추가된 타입
+  // type TotalAmountResponse,
+  type WeeklySumsResponse,
+  type WithdrawalRequest,
+  type WithdrawalResponse,
 } from '@/api/donations/donation';
-
-interface WeeklySumsResponse {
-  '5WeeksAgo': number;
-  '4WeeksAgo': number;
-  '3WeeksAgo': number;
-  '2WeeksAgo': number;
-  '1WeeksAgo': number;
-  ThisWeek: number;
-  Prediction: number;
-}
 
 interface UseShelterFinanceResult {
   // 총액 데이터
@@ -44,7 +37,7 @@ interface UseShelterFinanceResult {
   refetch: () => Promise<void>;
 
   // 출금 저장 함수
-  saveWithdrawal: (shelterId: number) => Promise<{
+  saveWithdrawal: (withdrawalData?: WithdrawalRequest) => Promise<{
     cardResponse: WithdrawalResponse;
     bankbookResponse: WithdrawalResponse;
   }>;
@@ -59,9 +52,7 @@ interface UseShelterFinanceResult {
  * @param shelterId 보호소 ID
  * @returns 기부/지출 금액, 잔액, 주간 데이터 정보
  */
-export const useShelterFinance = (
-  shelterId: number
-): UseShelterFinanceResult => {
+export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
   // 총액 데이터 상태
   const [totalDonation, setTotalDonation] = useState<number | null>(null);
   const [totalWithdrawal, setTotalWithdrawal] = useState<number | null>(null);
@@ -143,12 +134,12 @@ export const useShelterFinance = (
    * 카드와 통장 출금 정보를 동시에 저장하는 함수
    */
   const saveWithdrawal = useCallback(
-    async (withdrawalShelterId: number = shelterId) => {
+    async (withdrawalData?: WithdrawalRequest) => {
       setIsSaving(true);
       setSaveError(null);
 
       try {
-        const request: WithdrawalRequest = { shelterId: withdrawalShelterId };
+        const request: WithdrawalRequest = withdrawalData ?? { shelterId };
         const result = await saveWithdrawalToBoth(request);
 
         // 저장에 성공하면 데이터를 다시 불러옴
@@ -205,4 +196,4 @@ export const useShelterFinance = (
     isSaving,
     saveError,
   };
-};
+}
