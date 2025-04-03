@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE_URL: string =
+  process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
 
 export interface UploadReceiptResponse {
   url: string;
@@ -19,13 +19,27 @@ export const uploadReceipt = async (
   formData.append('file', file);
 
   const response = await axios.post<UploadReceiptResponse>(
-    `${BASE_URL}/api/withdrawal/${withdrawId}/imageupload`,
+    `${API_BASE_URL}/api/withdrawal/${withdrawId}/imageupload`,
     formData,
     {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     }
+  );
+
+  return response.data;
+};
+
+/**
+ * 영수증 이미지 URL 조회 API
+ * @param withdrawId 출금 ID
+ */
+export const getReceiptFileUrl = async (
+  withdrawId: number
+): Promise<string> => {
+  const response = await axios.get<string>(
+    `${API_BASE_URL}/api/withdrawal/${withdrawId}/fileUrl`
   );
 
   return response.data;
@@ -39,7 +53,7 @@ export const deleteReceipt = async (
   withdrawId: number
 ): Promise<{ success: boolean }> => {
   const response = await axios.delete<{ success: boolean }>(
-    `${BASE_URL}/api/withdrawal/${withdrawId}/receipt`
+    `${API_BASE_URL}/api/withdrawal/${withdrawId}/receipt`
   );
 
   return response.data;
