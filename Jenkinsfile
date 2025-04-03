@@ -132,7 +132,7 @@ pipeline {
                             . \${WORKSPACE}/.env
                             set +a
 
-                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT \$JENKINS_PORT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
+                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
 
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
@@ -169,7 +169,7 @@ pipeline {
                                 set -a
                                 . \${WORKSPACE}/.env
                                 set +a
-                                envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$JENKINS_PORT' < \${WORKSPACE}/nginx/nginx.canary.develop.conf.template > ./nginx/nginx.conf
+                                envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.canary.develop.conf.template > ./nginx/nginx.conf
                                 docker exec nginx_lb nginx -s reload
                             """
                         } else {
@@ -179,7 +179,7 @@ pipeline {
                                     set -a
                                     . \${WORKSPACE}/.env
                                     set +a
-                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT \$JENKINS_PORT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
+                                    envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.develop.conf.template > ./nginx/nginx.conf
                                     docker exec nginx_lb nginx -s reload
                                 """
                             }
@@ -378,7 +378,7 @@ pipeline {
                             set -a
                             . \${WORKSPACE}/.env
                             set +a
-                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$JENKINS_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
@@ -432,7 +432,7 @@ pipeline {
                             set -a
                             . \${WORKSPACE}/.env
                             set +a
-                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$JENKINS_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
+                            envsubst '\$EC2_PUBLIC_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.develop.conf.template > ./nginx/nginx.conf
                             docker exec nginx_lb nginx -s reload
                         """
                     }
