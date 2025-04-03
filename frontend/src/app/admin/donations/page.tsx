@@ -104,7 +104,7 @@ export default function DonationsPage() {
       isEvidence: true,
       evidence: 'evidence_file_2.jpg',
       isReceipt: true,
-      receipt: 'receipt_file_2.pdf',
+      receipt: '/images/dummy.jpeg',
     },
     {
       withdrawId: 3,

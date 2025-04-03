@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import styles from './FinanceTable.module.scss';
 import Badge from '@/components/common/Badge/Badge';
 import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
 import DogSelectModal from '@/components/admin/DogSelectModal/DogSelectModal';
 import EvidanceModal from '@/components/admin/EvidenceModal/EvidanceModal';
 import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
+import ReceiptUploadModal from '@/components/admin/ReceiptUploadModal/ReceiptUploadModal';
 
 export interface WithdrawTableRowProps {
   variant?: 'header' | 'row';
@@ -18,6 +19,7 @@ export interface WithdrawTableRowProps {
   evidence?: string;
   isReceipt: boolean;
   receipt?: string;
+  onReceiptChange?: () => void; // 영수증 변경 시 호출할 콜백
 }
 
 const formatAmount = (value: number) => {
@@ -36,11 +38,37 @@ export default function WithdrawTableRow({
   isReceipt,
   receipt = '',
   withdrawId,
+  onReceiptChange,
 }: WithdrawTableRowProps) {
+  // 상태 관리
+  const [localIsReceipt, setLocalIsReceipt] = useState(isReceipt);
+  const [localReceipt, setLocalReceipt] = useState(receipt);
+
   // 모달 상태 관리
   const [isDogSelectModalOpen, setIsDogSelectModalOpen] = useState(false);
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [isReceiptUploadModalOpen, setIsReceiptUploadModalOpen] =
+    useState(false);
+
+  // 영수증 변경 처리
+  const handleReceiptChange = useCallback(() => {
+    // 로컬 상태 갱신
+    setLocalIsReceipt(true);
+
+    // 부모 컴포넌트에 변경 알림
+    onReceiptChange?.();
+  }, [onReceiptChange]);
+
+  // 영수증 삭제 처리
+  const handleReceiptDelete = useCallback(() => {
+    // 로컬 상태 갱신
+    setLocalIsReceipt(false);
+    setLocalReceipt('');
+
+    // 부모 컴포넌트에 변경 알림
+    onReceiptChange?.();
+  }, [onReceiptChange]);
 
   // DogSelect 모달 열기/닫기
   const openDogSelectModal = () => {
@@ -64,6 +92,23 @@ export default function WithdrawTableRow({
   };
   const closeReceiptModal = () => {
     setIsReceiptModalOpen(false);
+  };
+
+  // 영수증 업로드 모달 열기/닫기
+  const openReceiptUploadModal = () => {
+    setIsReceiptUploadModalOpen(true);
+  };
+  const closeReceiptUploadModal = () => {
+    setIsReceiptUploadModalOpen(false);
+  };
+
+  // 영수증 버튼 클릭 핸들러
+  const handleReceiptButtonClick = () => {
+    if (localIsReceipt) {
+      openReceiptModal();
+    } else {
+      openReceiptUploadModal();
+    }
   };
 
   return (
@@ -103,13 +148,12 @@ export default function WithdrawTableRow({
             )}
           </div>
           <div className={styles.receipt}>
-            {isReceipt ? (
-              <RoundButton variant='primary' onClick={openReceiptModal}>
-                영수증보기
-              </RoundButton>
-            ) : (
-              <RoundButton variant='secondary'>추가하기</RoundButton>
-            )}
+            <RoundButton
+              variant={localIsReceipt ? 'primary' : 'secondary'}
+              onClick={handleReceiptButtonClick}
+            >
+              {localIsReceipt ? '영수증보기' : '추가하기'}
+            </RoundButton>
           </div>
         </div>
       )}
@@ -129,12 +173,26 @@ export default function WithdrawTableRow({
         evidenceUrl={evidence}
       />
 
-      {/* 영수증 모달 */}
-      <ReceiptModal
-        isOpen={isReceiptModalOpen}
-        onClose={closeReceiptModal}
-        receiptUrl={receipt}
-      />
+      {/* 영수증 모달 - 영수증이 있을 때 표시 */}
+      {localIsReceipt && (
+        <ReceiptModal
+          isOpen={isReceiptModalOpen}
+          onClose={closeReceiptModal}
+          receiptUrl={localReceipt || receipt}
+          withdrawId={withdrawId}
+          onDeleteSuccess={handleReceiptDelete}
+        />
+      )}
+
+      {/* 영수증 업로드 모달 - 영수증이 없을 때 표시 */}
+      {!localIsReceipt && (
+        <ReceiptUploadModal
+          isOpen={isReceiptUploadModalOpen}
+          onClose={closeReceiptUploadModal}
+          withdrawId={withdrawId}
+          onUploadSuccess={handleReceiptChange}
+        />
+      )}
     </div>
   );
 }

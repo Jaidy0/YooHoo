@@ -6,6 +6,7 @@ export interface ModalProps {
   onClose: () => void;
   title: string;
   children: React.ReactNode;
+  className?: string; // className 속성 추가 (선택적)
 }
 
 export default function Modal({
@@ -13,6 +14,7 @@ export default function Modal({
   onClose,
   title,
   children,
+  className = '', // 기본값 설정
 }: ModalProps) {
   // 모달 DOM 요소 참조
   const modalRef = useRef<HTMLDivElement>(null);
@@ -50,7 +52,7 @@ export default function Modal({
   return (
     <div className={styles.overlay} onClick={handleOverlayClick}>
       <div
-        className={styles.modal}
+        className={`${styles.modal} ${className}`}
         ref={modalRef}
         role='dialog'
         aria-modal='true'
