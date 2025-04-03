@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './page.module.scss';
 import SectionBox from '@/components/common/SectionBox/SectionBox';
 import MyHistoryCard from '@/components/common/Card/MyHistoryCard/MyHistoryCard';
@@ -8,83 +8,43 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import 'react-datepicker/dist/react-datepicker.css';
 import DateRangePicker from '@/components/profile/DateRangePicker/DateRangePicker';
 import { useAuthGuard } from '@/components/auth/AuthGuard/AuthGuard';
-
-interface DonationHistory {
-  id: number;
-  type: string; // 일시 후원 or 정기 후원
-  organization: string;
-  targetName?: string; // 특정 강아지 이름 (있는 경우)
-  amount: number;
-  date: string;
-}
+import { useDonationsByDateRange } from '@/hooks/donations/useDonationHistory';
 
 export default function DonationHistoryPage() {
   const isAuthenticated = useAuthGuard();
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [showPicker, setShowPicker] = useState(false);
-  const [donationHistory, setDonationHistory] = useState<DonationHistory[]>([
-    {
-      id: 1,
-      type: '일시 후원',
-      organization: '간장치킨 보호소',
-      amount: 10000,
-      date: '2025.03.08',
-    },
-    {
-      id: 2,
-      type: '정기 후원',
-      organization: '간장치킨 보호소',
-      amount: 10000,
-      date: '2025.03.08',
-    },
-    {
-      id: 3,
-      type: '일시 후원',
-      organization: '간장치킨 보호소',
-      amount: 10000,
-      date: '2025.02.08',
-    },
-    {
-      id: 4,
-      type: '일시 후원',
-      organization: '간장치킨 보호소',
-      amount: 10000,
-      date: '2025.02.08',
-    },
-    {
-      id: 5,
-      type: '일시 후원',
-      organization: '간장치킨 보호소',
-      amount: 10000,
-      date: '2025.01.08',
-    },
-    {
-      id: 6,
-      type: '일시 후원',
-      organization: '간장치킨 보호소',
-      amount: 10000,
-      date: '2025.01.08',
-    },
-  ]);
+  const {
+    donations: donationHistory,
+    getDonationsByDateRange,
+    isLoading,
+    error,
+  } = useDonationsByDateRange();
+
+  // 날짜 변경 시 API 호출
+  useEffect(() => {
+    if (startDate && endDate) {
+      getDonationsByDateRange(startDate, endDate);
+    }
+  }, [startDate, endDate, getDonationsByDateRange]);
 
   if (!isAuthenticated) {
     return null; // 또는 로딩 컴포넌트
   }
 
-  // 날짜 필터링
-  const filteredDonations = donationHistory.filter((donation) => {
-    const donationDate = new Date(donation.date.replace(/\./g, '-'));
-    if (startDate && donationDate < startDate) return false;
-    if (endDate && donationDate > endDate) return false;
-    return true;
-  });
+  // 날짜 변경 후 API 호출
+  const handleDateReset = async () => {
+    setStartDate(null);
+    setEndDate(null);
+    await getDonationsByDateRange(null, null);
+  };
 
   // 월별로 그룹화
-  const groupHistoryByMonth = (data: DonationHistory[]) => {
-    const grouped: Record<string, DonationHistory[]> = {};
-    data.forEach((donation) => {
-      const date = new Date(donation.date.replace(/\./g, '-'));
+  const groupHistoryByMonth = () => {
+    const grouped: Record<string, typeof donationHistory> = {};
+    donationHistory.forEach((donation) => {
+      const date = new Date(donation.donationDate);
       const yearMonth = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
       if (!grouped[yearMonth]) grouped[yearMonth] = [];
       grouped[yearMonth].push(donation);
@@ -92,7 +52,7 @@ export default function DonationHistoryPage() {
     return grouped;
   };
 
-  const groupedEntries = Object.entries(groupHistoryByMonth(filteredDonations));
+  const groupedEntries = Object.entries(groupHistoryByMonth());
   const firstMonthGroup = groupedEntries[0];
   const restMonthGroups = groupedEntries.slice(1);
 
@@ -121,27 +81,27 @@ export default function DonationHistoryPage() {
               onStartDateChange={setStartDate}
               onEndDateChange={setEndDate}
             />
-            <button
-              className={styles.resetButton}
-              onClick={() => {
-                setStartDate(null);
-                setEndDate(null);
-              }}
-            >
+            <button className={styles.resetButton} onClick={handleDateReset}>
               전체 기간
             </button>
           </div>
         )}
 
-        {firstMonthGroup && firstMonthGroup[1].length > 0 ? (
+        {isLoading ? (
+          <p className={styles.loadingMessage}>로딩 중...</p>
+        ) : error ? (
+          <p className={styles.emptyMessage}>
+            해당 기간 내 후원 내역이 없습니다.
+          </p>
+        ) : firstMonthGroup && firstMonthGroup[1].length > 0 ? (
           <div className={styles.historyList}>
             {firstMonthGroup[1].map((donation) => (
               <MyHistoryCard
-                key={donation.id}
-                badgeText={donation.type}
-                subText={donation.organization}
-                mainText={`${donation.amount.toLocaleString()}원`}
-                date={donation.date}
+                key={donation.donationId}
+                badgeText={donation.dogName ? '강아지 후원' : '단체 후원'}
+                subText={donation.dogName || donation.shelterName}
+                mainText={`${donation.donationAmount.toLocaleString()}원`}
+                date={donation.donationDate.replace(/-/g, '.')}
                 variant='history'
                 style={{ width: '100%' }}
               />
@@ -158,11 +118,11 @@ export default function DonationHistoryPage() {
           <div className={styles.historyList}>
             {donations.map((donation) => (
               <MyHistoryCard
-                key={donation.id}
-                badgeText={donation.type}
-                subText={donation.organization}
-                mainText={`${donation.amount.toLocaleString()}원`}
-                date={donation.date}
+                key={donation.donationId}
+                badgeText={donation.dogName ? '강아지 후원' : '단체 후원'}
+                subText={donation.dogName || donation.shelterName}
+                mainText={`${donation.donationAmount.toLocaleString()}원`}
+                date={donation.donationDate.replace(/-/g, '.')}
                 variant='history'
                 style={{ width: '100%' }}
               />
