@@ -52,6 +52,17 @@ export default function DonationHistoryPage() {
     return grouped;
   };
 
+  // subText 포맷팅 함수
+  const formatSubText = (donation: any) => {
+    if (donation.dogName) {
+      // 강아지 후원인 경우 "보호소명(강아지명)" 형식으로 표시
+      return `${donation.shelterName}(${donation.dogName})`;
+    } else {
+      // 단체 후원인 경우 보호소명만 표시
+      return donation.shelterName;
+    }
+  };
+
   const groupedEntries = Object.entries(groupHistoryByMonth());
   const firstMonthGroup = groupedEntries[0];
   const restMonthGroups = groupedEntries.slice(1);
@@ -99,7 +110,7 @@ export default function DonationHistoryPage() {
               <MyHistoryCard
                 key={donation.donationId}
                 badgeText={donation.dogName ? '강아지 후원' : '단체 후원'}
-                subText={donation.dogName || donation.shelterName}
+                subText={formatSubText(donation)}
                 mainText={`${donation.donationAmount.toLocaleString()}원`}
                 date={donation.donationDate.replace(/-/g, '.')}
                 variant='history'
@@ -120,7 +131,7 @@ export default function DonationHistoryPage() {
               <MyHistoryCard
                 key={donation.donationId}
                 badgeText={donation.dogName ? '강아지 후원' : '단체 후원'}
-                subText={donation.dogName || donation.shelterName}
+                subText={formatSubText(donation)}
                 mainText={`${donation.donationAmount.toLocaleString()}원`}
                 date={donation.donationDate.replace(/-/g, '.')}
                 variant='history'
