@@ -9,15 +9,14 @@ import ReceiptUploadModal from '@/components/admin/ReceiptUploadModal/ReceiptUpl
 
 export interface WithdrawTableRowProps {
   variant?: 'header' | 'row';
-  withdrawId: number;
+  withdrawalId: number;
   type: string;
   category?: string;
   content?: string;
   amount: number;
   date: string;
-  isEvidence: boolean;
-  evidence?: string;
   isReceipt: boolean;
+  transactionUniqueNo: number;
   receipt?: string;
   onReceiptChange?: () => void; // 영수증 변경 시 호출할 콜백
 }
@@ -33,16 +32,13 @@ export default function WithdrawTableRow({
   content = '-',
   amount,
   date,
-  isEvidence,
-  evidence = '',
   isReceipt,
-  receipt = '',
-  withdrawId,
+  withdrawalId,
   onReceiptChange,
+  transactionUniqueNo,
 }: WithdrawTableRowProps) {
   // 상태 관리
   const [localIsReceipt, setLocalIsReceipt] = useState(isReceipt);
-  const [localReceipt, setLocalReceipt] = useState(receipt);
 
   // 모달 상태 관리
   const [isDogSelectModalOpen, setIsDogSelectModalOpen] = useState(false);
@@ -55,16 +51,6 @@ export default function WithdrawTableRow({
   const handleReceiptChange = useCallback(() => {
     // 로컬 상태 갱신
     setLocalIsReceipt(true);
-
-    // 부모 컴포넌트에 변경 알림
-    onReceiptChange?.();
-  }, [onReceiptChange]);
-
-  // 영수증 삭제 처리
-  const handleReceiptDelete = useCallback(() => {
-    // 로컬 상태 갱신
-    setLocalIsReceipt(false);
-    setLocalReceipt('');
 
     // 부모 컴포넌트에 변경 알림
     onReceiptChange?.();
@@ -139,13 +125,9 @@ export default function WithdrawTableRow({
           <div className={styles.content}>{content}</div>
           <div className={styles.date}>{date}</div>
           <div className={styles.evidence}>
-            {isEvidence ? (
-              <RoundButton variant='primary' onClick={openEvidenceModal}>
-                자료보기
-              </RoundButton>
-            ) : (
-              <RoundButton variant='secondary'>추가하기</RoundButton>
-            )}
+            <RoundButton variant='primary' onClick={openEvidenceModal}>
+              자료보기
+            </RoundButton>
           </div>
           <div className={styles.receipt}>
             <RoundButton
@@ -162,7 +144,7 @@ export default function WithdrawTableRow({
       <DogSelectModal
         isOpen={isDogSelectModalOpen}
         onClose={closeDogSelectModal}
-        withDrawId={withdrawId}
+        withDrawId={withdrawalId}
         title={`${type} 상세 정보`}
       />
 
@@ -170,7 +152,8 @@ export default function WithdrawTableRow({
       <EvidanceModal
         isOpen={isEvidenceModalOpen}
         onClose={closeEvidenceModal}
-        evidenceUrl={evidence}
+        transactionUniqueNo={transactionUniqueNo}
+        type={content === '인건비'}
       />
 
       {/* 영수증 모달 - 영수증이 있을 때 표시 */}
@@ -178,9 +161,7 @@ export default function WithdrawTableRow({
         <ReceiptModal
           isOpen={isReceiptModalOpen}
           onClose={closeReceiptModal}
-          receiptUrl={localReceipt || receipt}
-          withdrawId={withdrawId}
-          onDeleteSuccess={handleReceiptDelete}
+          withdrawId={withdrawalId}
         />
       )}
 
@@ -189,7 +170,7 @@ export default function WithdrawTableRow({
         <ReceiptUploadModal
           isOpen={isReceiptUploadModalOpen}
           onClose={closeReceiptUploadModal}
-          withdrawId={withdrawId}
+          withdrawId={withdrawalId}
           onUploadSuccess={handleReceiptChange}
         />
       )}
