@@ -7,7 +7,8 @@ import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 
 export interface FinanceTableProps {
   depositData: Omit<DepositTableRowProps, 'variant'>[];
-  withdrawData: Omit<WithdrawTableRowProps, 'variant'>[];
+  // 출금 데이터 타입을 WithdrawTableRow에서 필요로 하는 속성에 맞게 수정
+  withdrawData: Omit<WithdrawTableRowProps, 'variant' | 'onReceiptChange'>[];
   className?: string;
 }
 
@@ -51,6 +52,13 @@ export default function FinanceTable({
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+
+  // 영수증 상태 변경 핸들러 함수 (출금 데이터를 위한 콜백)
+  const handleReceiptChange = () => {
+    // 필요한 경우 상태 업데이트 또는 부모 컴포넌트에 알림
+    console.log('Receipt status changed');
+    // 추가 로직이 필요한 경우 여기에 작성
   };
 
   return (
@@ -97,13 +105,14 @@ export default function FinanceTable({
             {/* 출금 테이블 헤더 */}
             <WithdrawTableRow
               variant='header'
+              withdrawalId={0}
               type=''
               category=''
               content=''
               amount={0}
               date=''
-              isEvidence={false}
               isReceipt={false}
+              transactionUniqueNo={0}
             />
 
             {/* 출금 테이블 데이터 행 */}
@@ -112,6 +121,7 @@ export default function FinanceTable({
                 <WithdrawTableRow
                   key={index}
                   {...(item as Omit<WithdrawTableRowProps, 'variant'>)}
+                  onReceiptChange={handleReceiptChange}
                 />
               ))
             ) : (

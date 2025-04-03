@@ -1,3 +1,4 @@
+// types/adminDonation.ts
 // 입금 내역 인터페이스
 export interface DonationItem {
   donationId: number;
@@ -76,11 +77,12 @@ export interface FormattedDepositItem {
 
 // FinanceTable 컴포넌트에서 사용하는 출금 내역 형식
 export interface FormattedWithdrawalItem {
+  withdrawalId: number; // 추가: 출금 ID
   type: string;
   category: string;
   content: string;
   amount: number;
   date: string;
-  isEvidence: boolean;
   isReceipt: boolean;
+  transactionUniqueNo: number; // 추가: 거래 고유 번호
 }
