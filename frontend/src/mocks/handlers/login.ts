@@ -23,7 +23,7 @@ export const loginHandlers: RequestHandler[] = [
       userId: 1,
       nickname: '테스트 유저',
       kakaoEmail: 'test@example.com',
-      is_admin: true,
+      isAdmin: true,
       shelterId: null,
       createdAt: new Date().toISOString(),
     });
@@ -36,7 +36,7 @@ export const loginHandlers: RequestHandler[] = [
       userId: 1,
       nickname: '테스트 유저',
       kakaoEmail: 'test@example.com',
-      is_admin: true,
+      isAdmin: true,
       shelterId: null,
       createdAt: new Date().toISOString(),
     });

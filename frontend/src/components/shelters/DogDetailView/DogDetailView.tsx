@@ -3,6 +3,8 @@
 import Image from 'next/image';
 import { Dog, Gender, DogStatus } from '@/types/dog';
 import styles from './DogDetailView.module.scss';
+import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
+import IconBox from '@/components/common/IconBox/IconBox';
 
 interface DogDetailViewProps {
   selectedDog: Dog;
@@ -26,9 +28,11 @@ export default function DogDetailView({
 
   return (
     <div className={styles.dogDetailView}>
-      <button className={styles.backButton} onClick={onClose}>
-        ← 목록으로 돌아가기
-      </button>
+      <div className={styles.backButtonContainer}>
+        <RoundButton onClick={onClose} className={styles.backButton}>
+          <IconBox name='arrow' size={16}></IconBox>목록으로 돌아가기
+        </RoundButton>
+      </div>
 
       <div className={styles.dogDetailContainer}>
         <div className={styles.dogDetailHeader}>
@@ -39,6 +43,7 @@ export default function DogDetailView({
               className={styles.dogDetailImage}
               width={400}
               height={400}
+              style={{ width: '100%', height: 'auto' }}
             />
           </div>
           <div className={styles.dogInfoContainer}>

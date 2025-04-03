@@ -58,7 +58,7 @@ function createAuthStore() {
         const currentState = get();
         return {
           isAuthenticated: currentState.isAuthenticated,
-          isAdmin: currentState.user?.is_admin || false,
+          isAdmin: currentState.user?.isAdmin || false,
         };
       } catch (error) {
         console.error('인증 상태 확인 실패:', error);
