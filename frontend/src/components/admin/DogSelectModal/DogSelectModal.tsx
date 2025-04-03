@@ -5,12 +5,7 @@ import styles from './DogSelectModal.module.scss';
 import IconBox from '@/components/common/IconBox/IconBox';
 import Button from '@/components/common/buttons/Button/Button';
 import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
-
-// 간소화된 강아지 데이터 인터페이스
-interface Dog {
-  id: string;
-  name: string;
-}
+import { useDogNames } from '@/hooks/useDogNames';
 
 interface DogSelectModalProps {
   isOpen: boolean;
@@ -43,42 +38,35 @@ export default function DogSelectModal({
 }: DogSelectModalProps) {
   const [selectedDogId, setSelectedDogId] = useState(initialDogId);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [dogList, setDogList] = useState<Dog[]>([]);
   const [selectedDogName, setSelectedDogName] = useState<string>('');
 
-  // 강아지 목록 가져오기 (실제로는 API 호출)
+  // 커스텀 훅 사용
+  const { dogNames, isLoading, error, refetch } = useDogNames();
+
+  // 초기 선택된 강아지 설정
   useEffect(() => {
-    // 임시 데이터 (실제 구현 시에는 API 호출로 대체)
-    const dogs: Dog[] = [
-      { id: 'dog1', name: '럭키' },
-      { id: 'dog2', name: '해피' },
-      { id: 'dog3', name: '초코' },
-      { id: 'dog4', name: '바둑이' },
-      { id: 'dog5', name: '꼬미' },
-    ];
-
-    setDogList(dogs);
-
-    // 초기 선택된 강아지 설정
-    if (initialDogId) {
-      const dog = dogs.find((d) => d.id === initialDogId);
+    if (initialDogId && dogNames.length > 0) {
+      const dog = dogNames.find((d) => d.dogId.toString() === initialDogId);
       if (dog) setSelectedDogName(dog.name);
     }
-  }, [initialDogId]);
+  }, [initialDogId, dogNames]);
+
+  // 모달이 열릴 때 데이터 리프레시 - 한 번만 호출되도록 isOpen 상태 변화 감지
+  useEffect(() => {
+    // isOpen이 true로 변경될 때만 refetch 호출
+    if (isOpen) {
+      refetch();
+    }
+  }, [isOpen]); // refetch 의존성 제거
 
   // 모달이 열리지 않으면 렌더링하지 않음
   if (!isOpen) return null;
 
   // 강아지 선택 핸들러
-  const handleDogSelect = (dog: Dog) => {
-    setSelectedDogName(dog.name);
-    setSelectedDogId(dog.id);
+  const handleDogSelect = (dogId: number, name: string) => {
+    setSelectedDogName(name);
+    setSelectedDogId(dogId.toString());
     setIsDropdownOpen(false);
-  };
-
-  // 금액 포맷팅
-  const formatAmount = (value: number) => {
-    return new Intl.NumberFormat('ko-KR').format(value);
   };
 
   return (
@@ -92,39 +80,9 @@ export default function DogSelectModal({
         </div>
 
         <div className={styles.content}>
-          {/* 지출 정보가 제공된 경우 표시 */}
-          {expenseInfo && (
-            <div className={styles.expenseInfo}>
-              <div className={styles.expenseType}>{expenseInfo.type}</div>
-
-              <div className={styles.expenseGrid}>
-                <div className={styles.expenseItem}>
-                  <span className={styles.label}>카테고리</span>
-                  <span className={styles.value}>{expenseInfo.category}</span>
-                </div>
-                <div className={styles.expenseItem}>
-                  <span className={styles.label}>금액</span>
-                  <span className={styles.value}>
-                    {formatAmount(expenseInfo.amount)}원
-                  </span>
-                </div>
-                <div className={styles.expenseItem}>
-                  <span className={styles.label}>날짜</span>
-                  <span className={styles.value}>{expenseInfo.date}</span>
-                </div>
-                <div className={styles.expenseItem}>
-                  <span className={styles.label}>내용</span>
-                  <span className={styles.value}>{expenseInfo.content}</span>
-                </div>
-              </div>
-
-              <div className={styles.separator}></div>
-            </div>
-          )}
-
           <label className={styles.label}>강아지 선택</label>
 
-          {/* 간소화된 강아지 선택 드롭다운 */}
+          {/* 강아지 선택 드롭다운 */}
           <div className={styles.dropdownContainer}>
             <div
               className={styles.dropdownHeader}
@@ -142,15 +100,25 @@ export default function DogSelectModal({
 
             {isDropdownOpen && (
               <div className={styles.dropdownList}>
-                {dogList.map((dog) => (
-                  <div
-                    key={dog.id}
-                    className={`${styles.dropdownItem} ${selectedDogId === dog.id ? styles.selected : ''}`}
-                    onClick={() => handleDogSelect(dog)}
-                  >
-                    <span>{dog.name}</span>
+                {isLoading ? (
+                  <div className={styles.loadingMessage}>로딩 중...</div>
+                ) : error ? (
+                  <div className={styles.errorMessage}>{error}</div>
+                ) : dogNames.length === 0 ? (
+                  <div className={styles.emptyMessage}>
+                    등록된 강아지가 없습니다
                   </div>
-                ))}
+                ) : (
+                  dogNames.map((dog) => (
+                    <div
+                      key={dog.dogId}
+                      className={`${styles.dropdownItem} ${selectedDogId === dog.dogId.toString() ? styles.selected : ''}`}
+                      onClick={() => handleDogSelect(dog.dogId, dog.name)}
+                    >
+                      <span>{dog.name}</span>
+                    </div>
+                  ))
+                )}
               </div>
             )}
           </div>
