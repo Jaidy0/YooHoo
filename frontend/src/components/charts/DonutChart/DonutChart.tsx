@@ -96,7 +96,7 @@ export default function DonutChart({
                   0
                 );
                 const percentage = Math.round((value / total) * 100);
-                return `${label}: ${percentage}%`;
+                return `${label}: ${value}건`;
               },
             },
           },

@@ -77,7 +77,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
           onBackClick={!isMainPage ? () => window.history.back() : undefined}
         />
       )}
-      <main className={styles.main}>{children}</main>
+      <main
+        className={`${styles.main} ${shouldHideBottomNav ? 'hide-bottom-nav' : ''}`}
+      >
+        {children}
+      </main>
 
       {!shouldHideBottomNav && <BottomNav items={navItems} />}
     </div>

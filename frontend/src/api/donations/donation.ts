@@ -1,26 +1,17 @@
-// src/api/donation/donation.ts
+// src/api/donations/donation.ts
 import axios from 'axios';
+import {
+  DonationItem,
+  WithdrawalItem,
+  TotalAmountResponse,
+  TotalAmountRequest,
+  WeeklySumsResponse,
+  WithdrawalRequest,
+  WithdrawalResponse,
+} from '@/types/adminDonation';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
-
-interface TotalAmountRequest {
-  shelterId: number;
-}
-
-interface TotalAmountResponse {
-  totalAmount: number;
-}
-
-interface WeeklySumsResponse {
-  '5WeeksAgo': number;
-  '4WeeksAgo': number;
-  '3WeeksAgo': number;
-  '2WeeksAgo': number;
-  '1WeeksAgo': number;
-  ThisWeek: number;
-  Prediction: number;
-}
 
 /**
  * 특정 보호소의 총 기부금액을 조회하는 API
@@ -31,9 +22,10 @@ export const fetchShelterTotalAmount = async (
   shelterId: number
 ): Promise<TotalAmountResponse> => {
   try {
+    const request: TotalAmountRequest = { shelterId };
     const response = await axios.post<TotalAmountResponse>(
       `${API_BASE_URL}/api/donations/shelter/total-amount`,
-      { shelterId }
+      request
     );
     return response.data;
   } catch (error) {
@@ -51,9 +43,10 @@ export const fetchShelterTotalWithdrawal = async (
   shelterId: number
 ): Promise<TotalAmountResponse> => {
   try {
+    const request: TotalAmountRequest = { shelterId };
     const response = await axios.post<TotalAmountResponse>(
       `${API_BASE_URL}/api/withdrawal/shelter/total-amount`,
-      { shelterId }
+      request
     );
     return response.data;
   } catch (error) {
@@ -96,33 +89,6 @@ export const fetchWithdrawalWeeklySums =
     }
   };
 
-// src/api/donations/donation.ts에 추가할 코드
-
-// 입금 내역 인터페이스
-export interface DonationItem {
-  donationId: number;
-  donationAmount: number;
-  transactionUniqueNo: string;
-  donationDate: string;
-  depositorName: string;
-  cheeringMessage: string | null;
-  userNickname: string | null;
-  dogName: string | null;
-  shelterName: string;
-}
-
-// 출금 내역 인터페이스
-export interface WithdrawalItem {
-  date: string;
-  withdrawalId: number;
-  transactionUniqueNo: string;
-  merchantId: number | null;
-  name: string;
-  transactionBalance: string;
-  shelterId: number;
-  category: string;
-}
-
 /**
  * 단체 입금 내역 전체 조회 API
  * @param shelterId 보호소 ID
@@ -132,9 +98,10 @@ export const fetchShelterDonations = async (
   shelterId: number
 ): Promise<DonationItem[]> => {
   try {
+    const request: TotalAmountRequest = { shelterId };
     const response = await axios.post<DonationItem[]>(
       `${API_BASE_URL}/api/donations/shelter-total`,
-      { shelterId }
+      request
     );
     return response.data;
   } catch (error) {
@@ -160,22 +127,6 @@ export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
 };
 
 /**
- * 출금 요청 인터페이스
- */
-export interface WithdrawalRequest {
-  shelterId: number;
-}
-
-/**
- * 출금 응답 인터페이스
- */
-export interface WithdrawalResponse {
-  success: boolean;
-  message?: string;
-  data?: unknown;
-}
-
-/**
  * 카드와 통장 출금 정보를 동시에 저장하는 함수
  * @param withdrawalData 출금 요청 데이터
  * @returns 카드 및 통장 출금 응답 데이터
@@ -199,13 +150,13 @@ export const saveWithdrawalToBoth = async (
       ),
     ]);
 
-    // 두 응답을 객체로 반환
+    console.log('출금 정보 업데이트 성공');
     return {
       cardResponse: cardResponse.data,
       bankbookResponse: bankbookResponse.data,
     };
   } catch (error) {
-    console.error('출금 정보 저장 실패:', error);
+    console.error('출금 정보 업데이트 실패:', error);
     throw error;
   }
 };
@@ -234,3 +185,32 @@ export const assignDogToWithdrawal = async (
     throw error;
   }
 };
+
+/**
+ * 보호소의 재정 정보를 초기화하는 API (응답은 무시)
+ * @param shelterId 보호소 ID
+ */
+export const initializeShelterFinInfo = async (
+  shelterId: number
+): Promise<void> => {
+  try {
+    await axios.post(`${API_BASE_URL}/api/shelter/${shelterId}/fininfo`);
+    // 응답은 무시하고 요청 성공 여부만 확인
+    console.log('보호소 재정 정보 초기화 요청 성공');
+  } catch (error) {
+    console.error('보호소 재정 정보 초기화 요청 실패:', error);
+    throw error;
+  }
+};
+
+// 타입들을 명시적으로 내보내기
+export type {
+  DonationItem,
+  WithdrawalItem,
+  TotalAmountRequest,
+  TotalAmountResponse,
+  WeeklySumsResponse,
+  WithdrawalRequest,
+  WithdrawalResponse,
+};
+

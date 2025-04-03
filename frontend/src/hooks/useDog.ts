@@ -29,8 +29,9 @@ export function useDog(dogId: number | string): UseDogResult {
     setError(null);
 
     try {
-      const response = await getDogById(normalizedDogId);
-      setDog(response.data);
+      const dogData = await getDogById(normalizedDogId);
+
+      setDog(dogData);
     } catch (err) {
       setError('강아지 정보를 불러오는데 실패했습니다.');
       console.error(`강아지 ID ${normalizedDogId} 조회 중 오류:`, err);

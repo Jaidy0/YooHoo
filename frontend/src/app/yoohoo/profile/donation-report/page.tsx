@@ -1,27 +1,80 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import SectionBox from '@/components/common/SectionBox/SectionBox';
 import DonutChart from '@/components/charts/DonutChart/DonutChart';
 import BarChart from '@/components/charts/BarChart/BarChart';
 import styles from './page.module.scss';
+import { getUserDonations } from '@/api/donations/myDonation';
+import { useAuthStore } from '@/store/authStore';
+import { Donation, ReportData } from '@/types/donation';
+import { processDataForReport } from '@/lib/util/donationReportUtils';
 
 export default function DonationReportPage() {
-  // 더미 데이터 (실제 구현 시 API에서 가져올 데이터)
-  const reportData = {
+  const { user } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasData, setHasData] = useState(false);
+  const [reportData, setReportData] = useState<ReportData>({
     donationType: {
       labels: ['단체 후원', '지정 후원'],
-      values: [10, 5],
+      values: [0, 0],
     },
-    monthlyDonation: {
-      labels: ['11월', '12월', '1월', '2월', '3월'],
-      values: [1, 3, 4, 2, 3],
-      totalCount: 13,
-      recentMonths: 3,
+    weeklyDonation: {
+      labels: [],
+      values: [],
+      totalCount: 0,
+      recentPeriods: 5,
     },
     shelterDonation: {
-      labels: ['댕댕 보호소', '바라봄', '행복 보호소'],
-      values: [1, 2, 1],
+      labels: [],
+      values: [],
     },
-    username: '닉네임',
-  };
+    username: user?.nickname || '회원',
+  });
+
+  useEffect(() => {
+    const fetchDonations = async () => {
+      try {
+        setIsLoading(true);
+        const donations = await getUserDonations();
+
+        // 데이터가 있는지 확인
+        if (donations && donations.length > 0) {
+          setHasData(true);
+          // 데이터 처리 후 reportData 상태 업데이트
+          const processedData = processDataForReport(
+            donations,
+            user?.nickname || '회원'
+          );
+          setReportData(processedData);
+        } else {
+          setHasData(false);
+        }
+      } catch (error) {
+        console.error('후원 내역 조회 실패:', error);
+        setHasData(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDonations();
+  }, [user]);
+
+  if (isLoading) {
+    return <div className={styles.loading}>데이터를 불러오는 중입니다...</div>;
+  }
+
+  if (!hasData) {
+    return (
+      <div className={styles.noDataContainer}>
+        <div className={styles.noDataMessage}>
+          <p>후원 내역이 없습니다.</p>
+          <p>첫 번째 후원을 통해 의미 있는 변화를 만들어보세요!</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.reportPageContainer}>
@@ -51,13 +104,13 @@ export default function DonationReportPage() {
         />
       </SectionBox>
 
-      {/* 두 번째 섹션 - 월별 후원 횟수 */}
-      <SectionBox subtitle='월별 후원 횟수' className={styles.reportSection}>
+      {/* 두 번째 섹션 - 주별 후원 횟수 */}
+      <SectionBox subtitle='주별 후원 횟수' className={styles.reportSection}>
         <BarChart
-          data={reportData.monthlyDonation}
+          data={reportData.weeklyDonation}
           unit='건'
-          highlightIndex={reportData.monthlyDonation.labels.length - 1}
-          description={`${reportData.username}님은 최근 5개월 동안 총 ${reportData.monthlyDonation.totalCount}회 후원하셨습니다.`}
+          highlightIndex={reportData.weeklyDonation.labels.length - 1}
+          description={`${reportData.username}님은 최근 5주 동안 총 ${reportData.weeklyDonation.totalCount}회 후원하셨습니다.`}
         />
       </SectionBox>
 

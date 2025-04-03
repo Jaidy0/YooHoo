@@ -1,8 +1,9 @@
 @use '@/assets/styles/abstracts/variables' as *;
 
 .dogCard {
-  width: 190px;
-  height: 190px;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1/1;
   border-radius: 10px;
   overflow: hidden;
   transition:
