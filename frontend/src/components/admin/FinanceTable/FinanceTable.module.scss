@@ -194,6 +194,22 @@
   max-width: 80px;
 }
 
+.clickable {
+  cursor: pointer;
+  transition:
+    transform 0.1s ease-in-out,
+    box-shadow 0.1s ease-in-out;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 @media (max-width: $breakpoint-lg) {
   .container {
     border-radius: $border-radius-sm;
@@ -261,5 +277,66 @@
     & .receipt {
       order: 7;
     }
+  }
+}
+/* 기존 FinanceTable.module.scss 파일에 다음 스타일을 추가합니다 */
+
+.modalContent {
+  padding: $spacing-md 0;
+}
+
+.modalBadgeContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: $spacing-md;
+}
+
+.modalBadge {
+  font-size: $font-size-md;
+  padding: $spacing-xs $spacing-md;
+}
+
+.modalGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+  margin: $spacing-lg 0;
+}
+
+.modalGridItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalLabel {
+  font-size: $font-size-sm;
+  color: $text-777;
+  margin-bottom: $spacing-xs;
+}
+
+.modalValue {
+  font-size: $font-size-md;
+  color: $text-333;
+  font-weight: $font-weight-medium;
+}
+
+.modalButtonGroup {
+  display: flex;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
+  justify-content: center;
+}
+
+.modalActions {
+  margin-top: $spacing-xl;
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid $color-border;
+  padding-top: $spacing-md;
+}
+
+.badge {
+  &:hover {
+    cursor: pointer;
   }
 }
