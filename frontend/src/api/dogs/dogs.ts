@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { Dog, DogResponse, DogUpdateDto } from '@/types/dog';
-import { useAuthStore } from '@/store/authStore';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
@@ -97,7 +96,6 @@ export const getDogById = async (dogId: number) => {
     throw error;
   }
 };
-
 /**
  * 강아지 등록 데이터 인터페이스
  */
@@ -105,7 +103,7 @@ export interface DogRegisterData {
   name: string;
   age: number;
   weight: number;
-  gender: string;
+  gender: number;
   breed: string;
   energetic: number;
   familiarity: number;
@@ -113,39 +111,25 @@ export interface DogRegisterData {
   isNeutered: boolean;
   status: number;
   health?: string;
-  shelterId?: string;
 }
 
 /**
- * 강아지 등록록 API
+ * 강아지 등록 API
  */
 export const registerDog = async (
   dogData: DogRegisterData,
   dogImage: File | null
 ): Promise<Dog | null> => {
   try {
-    // 현재 로그인한 유저 정보에서 shelterId 가져오기
-    const { user } = useAuthStore.getState(); // getState()를 사용하여 현재 상태 가져오기
-
-    if (!user?.isAdmin || !user?.shelterId) {
-      throw new Error('보호소 정보가 없거나 관리자 권한이 없습니다.');
-    }
-
     const formData = new FormData();
 
-    // gender를 숫자로 변환 (M -> 1, F -> 0)과 shelterId 추가
-    const apiData = {
-      ...dogData,
-      gender: dogData.gender === 'M' ? 1 : 0,
-      shelterId: user.shelterId, // 여기에 shelterId 추가
-    };
-
-    // 'dog'라는 키로 전송
+    // dog 객체를 JSON 문자열로 변환하여 추가
     formData.append(
       'dog',
-      new Blob([JSON.stringify(apiData)], { type: 'application/json' })
+      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
     );
 
+    // 이미지 파일 추가
     if (dogImage) {
       formData.append('file', dogImage);
     }
@@ -154,14 +138,11 @@ export const registerDog = async (
       `${API_BASE_URL}/api/dogs/register`,
       formData,
       {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: {},
         withCredentials: true,
       }
     );
 
-    // 응답이 없는 경우 체크
     if (!response || !response.data) {
       console.warn('서버에서 응답이 없거나 비어있습니다.');
       return null;
