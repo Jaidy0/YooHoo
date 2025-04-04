@@ -9,6 +9,15 @@ import 'react-datepicker/dist/react-datepicker.css';
 import DateRangePicker from '@/components/profile/DateRangePicker/DateRangePicker';
 import { useAuthGuard } from '@/components/auth/AuthGuard/AuthGuard';
 import { useDonationsByDateRange } from '@/hooks/donations/useDonationHistory';
+import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
+
+interface DonationHistory {
+  donationId: number;
+  donationDate: string;
+  donationAmount: number;
+  shelterName: string;
+  dogName?: string; // 강아지 후원인 경우에만 존재
+}
 
 export default function DonationHistoryPage() {
   const isAuthenticated = useAuthGuard();
@@ -29,8 +38,12 @@ export default function DonationHistoryPage() {
     }
   }, [startDate, endDate, getDonationsByDateRange]);
 
+  if (isLoading) {
+    return <LoadingSpinner />; // 로딩 상태 표시
+  }
+
   if (!isAuthenticated) {
-    return null; // 또는 로딩 컴포넌트
+    return null;
   }
 
   // 날짜 변경 후 API 호출
@@ -53,7 +66,7 @@ export default function DonationHistoryPage() {
   };
 
   // subText 포맷팅 함수
-  const formatSubText = (donation: any) => {
+  const formatSubText = (donation: DonationHistory) => {
     if (donation.dogName) {
       // 강아지 후원인 경우 "보호소명(강아지명)" 형식으로 표시
       return `${donation.shelterName}(${donation.dogName})`;

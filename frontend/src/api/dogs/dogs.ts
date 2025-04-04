@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Dog, DogResponse, DogUpdateDto } from '@/types/dog';
+import { useAuthStore } from '@/store/authStore';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
@@ -111,19 +112,31 @@ export interface DogRegisterData {
   isNeutered: boolean;
   status: number;
   health?: string;
+  shelterId?: string;
 }
 
+/**
+ * 강아지 등록록 API
+ */
 export const registerDog = async (
   dogData: DogRegisterData,
   dogImage: File | null
 ): Promise<Dog | null> => {
   try {
+    // 현재 로그인한 유저 정보에서 shelterId 가져오기
+    const { user } = useAuthStore.getState(); // getState()를 사용하여 현재 상태 가져오기
+
+    if (!user?.isAdmin || !user?.shelterId) {
+      throw new Error('보호소 정보가 없거나 관리자 권한이 없습니다.');
+    }
+
     const formData = new FormData();
 
-    // gender를 숫자로 변환 (M -> 1, F -> 0)
+    // gender를 숫자로 변환 (M -> 1, F -> 0)과 shelterId 추가
     const apiData = {
       ...dogData,
       gender: dogData.gender === 'M' ? 1 : 0,
+      shelterId: user.shelterId, // 여기에 shelterId 추가
     };
 
     // 'dog'라는 키로 전송
@@ -161,14 +174,37 @@ export const registerDog = async (
 };
 
 /**
- * 강아지 정보 수정 API (백엔드 준비 시 활성화)
+ * 강아지 정보 수정 API
+ * @param dogId - 수정할 강아지 ID
+ * @param dogData - 수정할 강아지 데이터
+ * @returns - 응답 데이터
  */
-export const updateDog = async (dogId: number, dogData: DogUpdateDto) => {
+export const updateDog = async (
+  dogId: number,
+  dogData: DogUpdateDto,
+  dogImage?: File | null
+) => {
   try {
-    const response = await axios.put(
+    const formData = new FormData();
+
+    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
+    formData.append(
+      'dog',
+      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
+    );
+
+    // 이미지가 있으면 추가
+    if (dogImage) {
+      formData.append('file', dogImage);
+    }
+
+    const response = await axios.patch(
       `${API_BASE_URL}/api/dogs/${dogId}`,
-      dogData,
+      formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         withCredentials: true,
       }
     );
