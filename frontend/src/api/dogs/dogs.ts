@@ -112,7 +112,7 @@ export interface DogRegisterData {
   isNeutered: boolean;
   status: number;
   health?: string;
-  shelterId: string;
+  shelterId?: string;
 }
 
 /**
