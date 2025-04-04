@@ -111,10 +111,10 @@ public class WithdrawalService {
         return "Unknown Merchant";
     }
 
-    // private String getMerchantCategory(Long merchantId) {
-    //     MerchantCategory merchantCategory = merchantCategoryRepository.findByMerchantId(merchantId);
-    //     return merchantCategory != null ? merchantCategory.getCategory() : "Unknown";
-    // }
+    private String getMerchantCategory(Long merchantId) {
+        MerchantCategory merchantCategory = merchantCategoryRepository.findByMerchantId(merchantId);
+        return merchantCategory != null ? merchantCategory.getCategory() : "Unknown";
+    }
 
     private String getMerchantIndustryAndNameByMerchantId(Long merchantId) {
         MerchantCategory category = merchantCategoryRepository.findByMerchantId(merchantId);
