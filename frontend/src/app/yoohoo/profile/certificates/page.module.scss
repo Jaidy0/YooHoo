@@ -1,0 +1,43 @@
+.certificatePage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  max-width: 500px;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+}
+
+.pageTitle {
+  display: flex;
+  align-self: flex-start;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.certificateContainer {
+  width: 100%;
+  max-width: 380px;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.shareButton,
+.downloadButton {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+}

@@ -17,6 +17,7 @@
     "axios": "^1.8.3",
     "chart.js": "^4.4.8",
     "date-fns": "^4.1.0",
+    "html2canvas": "^1.4.1",
     "next": "15.2.2",
     "react": "^19.0.0",
     "react-datepicker": "^8.2.1",
