@@ -86,6 +86,20 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     loadMore();
   }
 
+  // 단체 후원하기 버튼 클릭 핸들러
+  function handleShelterDonation() {
+    router.push(`/yoohoo/donate?shelterId=${groupId}`);
+  }
+
+  // 강아지 지정 후원하기 버튼 클릭 핸들러
+  function handleDogDonation() {
+    if (selectedDog) {
+      router.push(
+        `/yoohoo/donate?shelterId=${groupId}&dogId=${selectedDog.dogId}`
+      );
+    }
+  }
+
   // 로딩 상태 체크
   if (isShelterLoading || isDogLoading) {
     return (
@@ -114,10 +128,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   return (
     <div className={styles.contentContainer}>
       <div className={styles.buttonWrapper}>
-        <Button
-          className={styles.yellowButton}
-          onClick={() => router.push('/yoohoo/donate')}
-        >
+        <Button className={styles.yellowButton} onClick={handleShelterDonation}>
           이 단체 후원하기
         </Button>
       </div>
@@ -181,7 +192,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             <Button
               width='100%'
               className={styles.yellowButton}
-              onClick={() => router.push('/yoohoo/donate')}
+              onClick={handleDogDonation}
             >
               이 강아지 지정 후원하기
             </Button>
