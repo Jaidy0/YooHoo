@@ -113,9 +113,6 @@ export interface DogRegisterData {
   health?: string;
 }
 
-/**
- * 강아지 등록 API
- */
 export const registerDog = async (
   dogData: DogRegisterData,
   dogImage: File | null
@@ -123,13 +120,20 @@ export const registerDog = async (
   try {
     const formData = new FormData();
 
+    // gender를 숫자로 변환 (M -> 1, F -> 0)
+    const apiData = {
+      ...dogData,
+      gender: dogData.gender === 'M' ? 1 : 0,
+    };
+
+    // 'dog'라는 키로 전송
     formData.append(
-      'dogRequestDTO',
-      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
+      'dog',
+      new Blob([JSON.stringify(apiData)], { type: 'application/json' })
     );
 
     if (dogImage) {
-      formData.append('dogImage', dogImage);
+      formData.append('file', dogImage);
     }
 
     const response = await axios.post(
