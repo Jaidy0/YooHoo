@@ -21,7 +21,7 @@ interface DonationStats {
   dogCount: number;
 }
 
-export const useDonationStats = () => {
+export const useDonationStats = (forceFetch = false) => {
   const pathname = usePathname();
   const [donations, setDonations] = useState<Donation[]>([]);
   const [stats, setStats] = useState<DonationStats>({
@@ -35,8 +35,10 @@ export const useDonationStats = () => {
 
   useEffect(() => {
     const fetchDonations = async () => {
-      // 메인 프로필 페이지에서만 API 호출
-      if (pathname !== '/yoohoo/profile' && pathname !== '/yoohoo/profile/') {
+      // 기본적으로는 마이프로필 페이지에서만 호출
+      const isProfilePage =
+        pathname === '/yoohoo/profile' || pathname === '/yoohoo/profile/';
+      if (!forceFetch && !isProfilePage) {
         setIsLoading(false);
         return;
       }
@@ -87,7 +89,7 @@ export const useDonationStats = () => {
     };
 
     fetchDonations();
-  }, [pathname]);
+  }, [pathname, forceFetch]);
 
   return { donations, stats, isLoading, error };
 };
