@@ -36,6 +36,11 @@ export interface TabMenuProps {
   defaultActiveIndex?: number;
 
   /**
+   * 외부에서 제어할 활성 인덱스 (controlled component)
+   */
+  activeIndex?: number;
+
+  /**
    * 메뉴 아이템 클릭 시 실행될 핸들러
    */
   onMenuItemClick?: (item: TabMenuItem, index: number) => void;
@@ -61,17 +66,28 @@ export interface TabMenuProps {
 export default function TabMenu({
   menuItems = [],
   defaultActiveIndex = 0,
+  activeIndex, // 새로 추가된 prop
   onMenuItemClick,
   fullWidth = false,
   size = 'md',
   className = '',
   ...props
 }: TabMenuProps) {
-  const [activeIndex, setActiveIndex] = useState<number>(defaultActiveIndex);
+  const [internalActiveIndex, setInternalActiveIndex] =
+    useState<number>(defaultActiveIndex);
   const pathname = usePathname();
 
-  // 경로가 변경될 때마다 활성 탭 인덱스 업데이트
+  // activeIndex prop이 제공되면 내부 상태를 업데이트
   useEffect(() => {
+    if (activeIndex !== undefined) {
+      setInternalActiveIndex(activeIndex);
+    }
+  }, [activeIndex]);
+
+  // 경로가 변경될 때마다 활성 탭 인덱스 업데이트 (uncontrolled 모드에서만)
+  useEffect(() => {
+    // activeIndex가 제공된 경우 pathname 기반 자동 활성화 비활성화
+    if (activeIndex !== undefined) return;
     if (!pathname) return; // pathname이 null이면 실행하지 않음
 
     const index = menuItems.findIndex(
@@ -81,13 +97,20 @@ export default function TabMenu({
     );
 
     if (index !== -1) {
-      setActiveIndex(index);
+      setInternalActiveIndex(index);
     }
-  }, [pathname, menuItems]);
+  }, [pathname, menuItems, activeIndex]);
 
-  // 나머지 코드는 그대로 유지
+  // 실제 사용할 활성 인덱스
+  const currentActiveIndex =
+    activeIndex !== undefined ? activeIndex : internalActiveIndex;
+
+  // 나머지 코드는 거의 그대로 유지
   const handleItemClick = (item: TabMenuItem, index: number) => {
-    setActiveIndex(index);
+    // 내부 상태는 컨트롤드 모드가 아닐 때만 업데이트
+    if (activeIndex === undefined) {
+      setInternalActiveIndex(index);
+    }
     onMenuItemClick?.(item, index);
   };
 
@@ -104,7 +127,7 @@ export default function TabMenu({
     <nav className={tabMenuClasses} {...props}>
       <ul className={styles.menuList}>
         {menuItems.map((item, index) => {
-          const isActive = index === activeIndex;
+          const isActive = index === currentActiveIndex;
           const itemClasses = [
             styles.menuItem,
             isActive ? styles['menuItem--active'] : '',

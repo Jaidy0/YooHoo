@@ -54,8 +54,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       <div className={styles.tabMenuWrapper}>
         <TabMenu
           menuItems={profileTabs}
-          defaultActiveIndex={activeTabIndex}
+          activeIndex={activeTabIndex}
           onMenuItemClick={handleTabClick}
+          size='sm'
           fullWidth
         />
       </div>

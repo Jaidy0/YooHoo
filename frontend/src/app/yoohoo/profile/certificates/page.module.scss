@@ -1,0 +1,50 @@
+.certificatePage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  margin: 0 auto;
+
+  @media (min-width: 768px) {
+    padding: 3rem 2rem;
+  }
+}
+
+.pageTitle {
+  display: flex;
+  align-self: flex-start;
+  font-size: $font-size-xl;
+  font-weight: 700;
+  color: $text-333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.certificateContainer {
+  width: 100%;
+  max-width: 410px;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+// 캡처 품질을 위한 추가 래퍼
+.certificateWrapper {
+  background-color: white;
+  // 가로 세로 비율 유지를 위한 스타일
+  width: 100%;
+  height: 100%;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 380px;
+}
+
+.shareButton,
+.downloadButton {
+  flex: 1;
+  height: 48px;
+  border-radius: 8px;
+}
