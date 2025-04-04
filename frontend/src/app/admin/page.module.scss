@@ -379,3 +379,92 @@
     align-self: flex-end;
   }
 }
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.questionButton {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
+  position: absolute;
+  right: 0;
+  cursor: pointer; /* 클릭 가능함을 나타내는 커서 추가 */
+
+  &:hover {
+    background: darken($yh-yellow, 5%);
+  }
+}
+
+.tooltip {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  width: 300px;
+  background-color: $yh-beige;
+  border: 1px solid $text-333;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  box-shadow: $shadow-md;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+
+  /* 화살표 추가 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 12px; /* QuestionButton 중앙에 맞춤 */
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid $yh-beige;
+    z-index: 1;
+  }
+
+  h4 {
+    margin: $spacing-sm 0 $spacing-xs 0;
+    font-size: $font-size-md;
+    color: $yh-brown;
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: $spacing-xs 0;
+    font-size: $font-size-sm;
+    color: $text-555;
+    line-height: 1.5;
+  }
+
+  ul {
+    margin: $spacing-xs 0 $spacing-md 0;
+    padding-left: $spacing-md;
+
+    li {
+      margin: $spacing-xs 0;
+      font-size: $font-size-sm;
+      color: $text-555;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

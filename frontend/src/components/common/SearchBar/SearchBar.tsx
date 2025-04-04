@@ -29,8 +29,8 @@ export default function SearchBar({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (onSearch && searchTerm.trim()) {
-      onSearch(searchTerm);
+    if (onSearch) {
+      onSearch(searchTerm); // 검색어가 빈 문자열이어도 onSearch 호출
     }
     // 모바일에서 검색 후 키보드 닫기
     inputRef.current?.blur();

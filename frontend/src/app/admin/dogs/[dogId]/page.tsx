@@ -76,6 +76,8 @@ export default function DogDetailPage() {
     );
   }
 
+  console.log('dogData : ', dogData);
+
   return (
     <div className={styles.dogsDetailPage}>
       <section className={styles.adminCard}>
