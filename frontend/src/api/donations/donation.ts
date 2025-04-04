@@ -116,8 +116,9 @@ export const fetchShelterDonations = async (
  */
 export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
   try {
+    // !!!수정필요
     const response = await axios.get<WithdrawalItem[]>(
-      `${API_BASE_URL}/api/withdrawal/all`
+      `${API_BASE_URL}/api/withdrawal/shelter/${5}/all`
     );
     return response.data;
   } catch (error) {
