@@ -25,15 +25,24 @@ export default function MyCertificatesPage() {
 
     try {
       setIsDownloading(true);
+
+      // html2canvas 설정 개선
       const canvas = await html2canvas(certificateRef.current, {
-        scale: 2, // Higher quality
-        backgroundColor: null,
+        scale: 3, // 더 높은 품질
+        useCORS: true, // 교차 출처 이미지 허용
+        allowTaint: true, // 교차 출처 이미지 허용 (taint 허용)
+        backgroundColor: '#ffffff',
         logging: false,
+        onclone: (document, element) => {
+          // 복제된 DOM에서 특정 스타일 조정이 필요하면 여기서 처리
+          const clone = element as HTMLElement;
+          // 필요시 클론에 추가 스타일 적용
+        },
       });
 
       const link = document.createElement('a');
       link.download = `유후_후원증서_${user?.nickname || '후원자'}_${currentDate.getTime()}.png`;
-      link.href = canvas.toDataURL('image/png');
+      link.href = canvas.toDataURL('image/png', 1.0); // 최대 품질로 설정
       link.click();
     } catch (error) {
       console.error('Failed to download certificate:', error);
@@ -49,15 +58,21 @@ export default function MyCertificatesPage() {
     try {
       setIsDownloading(true);
       const canvas = await html2canvas(certificateRef.current, {
-        scale: 2,
-        backgroundColor: null,
+        scale: 3,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
         logging: false,
       });
 
       const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          if (blob) resolve(blob);
-        }, 'image/png');
+        canvas.toBlob(
+          (blob) => {
+            if (blob) resolve(blob);
+          },
+          'image/png',
+          1.0
+        ); // 최대 품질로 설정
       });
 
       if (navigator.share) {
@@ -87,8 +102,7 @@ export default function MyCertificatesPage() {
       <h1 className={styles.pageTitle}>마이 후원증서</h1>
 
       <div className={styles.certificateContainer}>
-        {/* Using the DonationCertificate component with ref for download/share */}
-        <div ref={certificateRef}>
+        <div ref={certificateRef} className={styles.certificateWrapper}>
           <DonationCertificate
             username={user?.nickname || '후원자'}
             amount={stats.totalAmount || 0}

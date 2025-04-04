@@ -3,7 +3,6 @@
   flex-direction: column;
   align-items: center;
   padding: 2rem 1rem;
-  max-width: 500px;
   margin: 0 auto;
 
   @media (min-width: 768px) {
@@ -23,9 +22,17 @@
 
 .certificateContainer {
   width: 100%;
-  max-width: 380px;
+  max-width: 410px;
   margin-bottom: 2rem;
   position: relative;
+}
+
+// 캡처 품질을 위한 추가 래퍼
+.certificateWrapper {
+  background-color: white;
+  // 가로 세로 비율 유지를 위한 스타일
+  width: 100%;
+  height: 100%;
 }
 
 .buttonGroup {

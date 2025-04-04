@@ -2,67 +2,74 @@
   width: 100%;
   background-color: white;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  padding: 2.5rem 1.5rem 2rem;
+  box-shadow: 0 0 7px 7px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem 2rem 2rem;
   position: relative;
   overflow: hidden;
-  border: 1px solid #ffdcdc;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 6px;
-    background-color: $yh-orange;
-    border-radius: 16px 16px 0 0;
-  }
+  border: none;
 }
 
-.ribbon {
+// 내부 테두리를 실제 요소로 구현
+.innerBorder {
   position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 60px;
-  background-color: #d64848;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  border: 1px solid $yh-orange;
+  border-radius: 10px;
+  pointer-events: none;
   z-index: 1;
 }
 
-.medal {
+.medalContainer {
   position: absolute;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 60px;
-  background-color: #ffcb45;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 0;
+  left: 10%;
   z-index: 2;
+}
 
-  .medalIcon {
-    width: 40px;
-    height: 40px;
-    color: #6e4525;
-  }
+.medalImage {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.backgroundDogCertificate {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  width: 40%;
+  height: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
 }
 
 .certificateTitle {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #6e4525;
+  color: $yh-brown;
   text-align: center;
-  margin-top: 4rem;
+  margin-top: 1.5rem;
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .certificateContent {
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .infoRow {
@@ -88,15 +95,18 @@
 .divider {
   height: 1px;
   background-color: #e5e5e5;
-  margin: 0.5rem 0;
+  margin: 0.25rem 0;
 }
 
 .certificateMessage {
-  text-align: center;
-  color: #555;
-  font-size: 0.8rem;
+  text-align: left;
+  color: black;
+  font-weight: $font-weight-medium;
+  font-size: 0.65rem;
   line-height: 1.5;
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
 
   p {
     margin-bottom: 0.5rem;
@@ -112,6 +122,8 @@
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
+  position: relative;
+  z-index: 2;
 }
 
 .date {
@@ -120,20 +132,19 @@
   color: #333;
 }
 
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ff6b6b;
+  color: $yh-orange;
 }
 
-.backgroundPaw {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 150px;
-  height: 150px;
-  opacity: 0.05;
-  z-index: -1;
-  transform: rotate(-15deg);
-  color: #000;
+.logoIcon {
+  width: 24px;
+  height: 24px;
 }
