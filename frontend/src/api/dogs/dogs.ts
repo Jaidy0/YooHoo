@@ -74,6 +74,7 @@ export const getDogList = async (
       totalPages: Math.ceil(response.data.length / (params.size || 20)),
     };
 
+    console.log('***************wrappedResponse : ', wrappedResponse);
     return wrappedResponse;
   } catch (error) {
     console.error(`보호소 ID ${shelterId}의 강아지 리스트 조회 실패:`, error);
