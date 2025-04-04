@@ -7,10 +7,10 @@ import ImageUpload from '@/components/common/ImageUpload/ImageUpload';
 import Input from '@/components/common/Input/Input';
 import Button from '@/components/common/buttons/Button/Button';
 import RatingScale from '@/components/common/RatingScale/RatingScale';
-import { DogStatus, Gender } from '@/types/dog';
+import { DogStatus, Gender, DogUpdateDto } from '@/types/dog';
 import styles from './page.module.scss';
 import { useDog } from '@/hooks/useDog';
-// import { updateDog } from '@/api/dogs/dogs'; // 백엔드 API 완성 시 주석 해제
+import { useDogUpdate } from '@/hooks/useDogUpdate'; // 새로운 훅 import
 
 export default function DogsEditPage() {
   const router = useRouter();
@@ -19,6 +19,9 @@ export default function DogsEditPage() {
 
   // useDog 훅을 사용하여 강아지 데이터 조회
   const { dog, isLoading: isLoadingDog, error: dogError } = useDog(dogId);
+
+  // useDogUpdate 훅 사용
+  const { updateDogInfo, isUpdating, updateError } = useDogUpdate();
 
   // 강아지 정보 상태
   const [name, setName] = useState('');
@@ -37,9 +40,8 @@ export default function DogsEditPage() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
 
-  // 에러 및 제출 상태
+  // 에러 상태
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // 강아지 데이터를 상태에 반영
   useEffect(() => {
@@ -60,6 +62,13 @@ export default function DogsEditPage() {
       }
     }
   }, [dog]);
+
+  // updateError가 변경되면 에러 상태 업데이트
+  useEffect(() => {
+    if (updateError) {
+      setErrors((prev) => ({ ...prev, general: updateError }));
+    }
+  }, [updateError]);
 
   // ISO 날짜 문자열을 input date 형식으로 변환
   const formatDateForInput = (dateString: string): string => {
@@ -131,7 +140,7 @@ export default function DogsEditPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // 폼 제출 핸들러
+  // 폼 제출 핸들러 - 수정된 부분
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
@@ -139,11 +148,9 @@ export default function DogsEditPage() {
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
       // 폼 데이터 준비
-      const formData = {
+      const formData: DogUpdateDto = {
         name,
         status,
         gender,
@@ -157,29 +164,20 @@ export default function DogsEditPage() {
         admissionDate: new Date(admissionDate).toISOString(),
       };
 
-      // TODO: 백엔드 API 완성 시 아래 코드 주석 해제
-      // await updateDog(parseInt(dogId), formData);
+      // 훅을 사용하여 강아지 정보 업데이트
+      await updateDogInfo(parseInt(dogId), formData, imageFile);
 
-      // 백엔드 API 미완성 상태에서 임시 처리
-      console.log('수정할 강아지 데이터:', formData);
-
-      // 이미지 업로드 출력
+      // 이미지 업로드는 아직 처리되지 않음
       if (imageFile) {
         console.log('업로드할 이미지:', imageFile);
+        // 이미지 업로드 API 연동 시 추가해야함
       }
 
-      // 목업 성공 처리
-      setTimeout(() => {
-        alert('강아지 정보가 수정되었습니다. (API 연동 예정)');
-        router.push(`/admin/dogs/${dogId}`);
-        setIsSubmitting(false);
-      }, 1000);
+      alert('강아지 정보가 수정되었습니다.');
+      router.push(`/admin/dogs/${dogId}`);
     } catch (error) {
       console.error('강아지 정보 수정 실패:', error);
-      setErrors({
-        general: '강아지 정보 수정에 실패했습니다. 다시 시도해주세요.',
-      });
-      setIsSubmitting(false);
+      // 에러는 이미 updateError에 설정되고 useEffect에서 처리됨
     }
   };
 
@@ -360,6 +358,7 @@ export default function DogsEditPage() {
             </div>
 
             <div className={styles.formFields}>
+              {/* 폼 필드 부분 - 변경 없음 */}
               <Input
                 title='이름'
                 placeHolder='이름을 입력해주세요.'
@@ -459,12 +458,12 @@ export default function DogsEditPage() {
               variant='outline'
               onClick={handleCancel}
               type='button'
-              disabled={isSubmitting}
+              disabled={isUpdating}
             >
               취소하기
             </Button>
-            <Button variant='primary' type='submit' disabled={isSubmitting}>
-              {isSubmitting ? '처리 중...' : '수정완료'}
+            <Button variant='primary' type='submit' disabled={isUpdating}>
+              {isUpdating ? '처리 중...' : '수정완료'}
             </Button>
           </div>
         </form>
