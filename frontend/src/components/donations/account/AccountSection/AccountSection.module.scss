@@ -97,6 +97,7 @@
     .dropdownItemContent {
       display: flex;
       align-items: center;
+      margin-bottom: 6px;
 
       .iconWrapper {
         margin-right: 12px;
@@ -120,5 +121,16 @@
         margin-left: 12px;
       }
     }
+  }
+
+  // 선택된 계좌 잔액 표시 (드롭다운 닫힘 상태)
+  .selectedAccountBalance {
+    display: flex;
+    justify-content: flex-end;
+    padding: 8px 12px;
+    margin-top: 4px;
+    margin-right: 16px;
+    font-size: 13px;
+    color: #555;
   }
 }
