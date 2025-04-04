@@ -125,35 +125,29 @@ export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
     throw error;
   }
 };
-
 /**
  * 카드와 통장 출금 정보를 동시에 저장하는 함수
- * @param withdrawalData 출금 요청 데이터
+ * @param withdrawalData 출금 요청 데이터 (shelterId만 필요)
  * @returns 카드 및 통장 출금 응답 데이터
  */
-export const saveWithdrawalToBoth = async (
-  withdrawalData: WithdrawalRequest
-): Promise<{
+export const saveWithdrawalToBoth = async (withdrawalData: {
+  shelterId: number;
+}): Promise<{
   cardResponse: WithdrawalResponse;
   bankbookResponse: WithdrawalResponse;
 }> => {
   try {
-    // 두 API 요청을 병렬로 실행
-    const [cardResponse, bankbookResponse] = await Promise.all([
-      axios.post<WithdrawalResponse>(
-        `${API_BASE_URL}/api/card/saveWithdrawal`,
-        withdrawalData
-      ),
-      axios.post<WithdrawalResponse>(
-        `${API_BASE_URL}/api/bankbook/saveWithdrawal`,
-        withdrawalData
-      ),
-    ]);
+    const response = await axios.post<WithdrawalResponse>(
+      `${API_BASE_URL}/api/withdrawal/sync`,
+      withdrawalData
+    );
 
     console.log('출금 정보 업데이트 성공');
+
+    // 백엔드에서 받은 단일 응답을 기존 형태로 변환
     return {
-      cardResponse: cardResponse.data,
-      bankbookResponse: bankbookResponse.data,
+      cardResponse: response.data,
+      bankbookResponse: response.data,
     };
   } catch (error) {
     console.error('출금 정보 업데이트 실패:', error);
@@ -213,4 +207,3 @@ export type {
   WithdrawalRequest,
   WithdrawalResponse,
 };
-
