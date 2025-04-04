@@ -77,6 +77,11 @@ export default function AccountSection({
     validateForm();
   };
 
+  // 금액 포맷팅 함수 (1000 -> 1,000원)
+  const formatBalance = (balance: string) => {
+    return Number(balance).toLocaleString() + '원';
+  };
+
   // 폼 유효성 검사 및 완료 상태 업데이트
   const validateForm = () => {
     const isValid = !!accountName && selectedAccountIdx !== null;
@@ -168,6 +173,14 @@ export default function AccountSection({
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* 선택된 계좌의 잔액 표시 */}
+              {selectedAccountIdx !== null && !isDropdownOpen && (
+                <div className={styles.selectedAccountBalance}>
+                  잔액:{' '}
+                  {formatBalance(accounts[selectedAccountIdx].accountBalance)}
                 </div>
               )}
             </div>
