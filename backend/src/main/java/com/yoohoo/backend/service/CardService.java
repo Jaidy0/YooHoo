@@ -128,4 +128,41 @@ public class CardService {
 
         return uniqueTransactionNo; // 고유한 거래 번호 반환
     }
+
+
+    public CardResponseDTO inquireCreditCardTransactionsDirect(String userKey, String cardNo, String cvc) {
+        String apiUrl = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/creditCard/inquireCreditCardTransactionList";
+    
+        LocalDateTime now = LocalDateTime.now();
+        CardRequestDTO.Header header = new CardRequestDTO.Header();
+        header.setApiName("inquireCreditCardTransactionList");
+        header.setTransmissionDate(now.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        header.setTransmissionTime(now.format(DateTimeFormatter.ofPattern("HHmmss")));
+        header.setInstitutionCode("00100");
+        header.setFintechAppNo("001");
+        header.setApiServiceCode("inquireCreditCardTransactionList");
+        header.setInstitutionTransactionUniqueNo(generateUniqueTransactionNo(now));
+        header.setApiKey("54cc585638ea49a5b13f7ec7887c7c1b");
+        header.setUserKey(userKey);
+    
+        CardRequestDTO requestDTO = new CardRequestDTO();
+        requestDTO.setHeader(header);
+        requestDTO.setCardNo(cardNo);
+        requestDTO.setCvc(cvc);
+        requestDTO.setStartDate("20250101");
+        requestDTO.setEndDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<CardRequestDTO> entity = new HttpEntity<>(requestDTO, headers);
+    
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<CardResponseDTO> response = restTemplate.postForEntity(apiUrl, entity, CardResponseDTO.class);
+            return response.getStatusCode().is2xxSuccessful() ? response.getBody() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
 }

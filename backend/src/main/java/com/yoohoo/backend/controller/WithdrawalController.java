@@ -2,8 +2,12 @@ package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.service.WithdrawalService;
 import com.yoohoo.backend.entity.Withdrawal;
+import com.yoohoo.backend.service.BankbookService;
+import com.yoohoo.backend.service.CardService;
+import com.yoohoo.backend.service.ReliabilityCalculatorService;
 import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.repository.WithdrawalRepository;
+import com.yoohoo.backend.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,11 +18,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.yoohoo.backend.dto.BankbookResponseDTO;
+import com.yoohoo.backend.dto.CardResponseDTO;
 import com.yoohoo.backend.entity.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/api/withdrawal")
@@ -36,6 +43,19 @@ public class WithdrawalController {
     @Autowired
     private WithdrawalRepository withdrawalRepository;
     
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private ReliabilityCalculatorService reliabilityCalculatorService;
+
+    @Autowired
+    private BankbookService bankbookService;
+
+    @Autowired
+    private CardService cardService;
+
+
     @Value("${app.domain}")
     private String domain;
 
@@ -55,10 +75,33 @@ public class WithdrawalController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Map<String, Object>>> getAllWithdrawals() {
-        List<Map<String, Object>> withdrawals = withdrawalService.getAllWithdrawals();
+    public ResponseEntity<List<Map<String, Object>>> getAllWithdrawals(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        
+        Long shelterId = userService.getShelterIdByUserId(userId);
+        List<Map<String, Object>> withdrawals = withdrawalService.getWithdrawalsByShelterId(shelterId);
         return ResponseEntity.ok(withdrawals);
     }
+
+    @PostMapping("/sync")
+    public ResponseEntity<String> syncAllWithdrawals(@RequestBody ShelterRequest request) {
+        Long shelterId = request.getShelterId();
+
+        BankbookResponseDTO bankbookResponse = bankbookService.inquireTransactionHistory(shelterId);
+        CardResponseDTO cardResponse = cardService.inquireCreditCardTransactions(shelterId);
+
+        withdrawalService.syncAllWithdrawals(shelterId, bankbookResponse, cardResponse);
+
+        return ResponseEntity.ok("출금 정보 동기화 및 신뢰도 갱신 완료");
+    }
+
+    public static class ShelterRequest {
+        private Long shelterId;
+        public Long getShelterId() { return shelterId; }
+        public void setShelterId(Long shelterId) { this.shelterId = shelterId; }
+    }
+
 
     @GetMapping("/dog/{dogId}")
     public ResponseEntity<List<Map<String, Object>>> getWithdrawalsByDogId(@PathVariable Long dogId) {
@@ -128,7 +171,7 @@ public class WithdrawalController {
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
             
             ResponseEntity<String> response = RestTemplate.exchange(
-                domain + "/s3/upload",
+                domain + "/api/s3/upload",
                 HttpMethod.POST,
                 requestEntity,
                 String.class
@@ -142,6 +185,8 @@ public class WithdrawalController {
                             .orElseThrow(() -> new RuntimeException("해당 withdrawalId를 찾을 수 없습니다."));
                             withdrawal.setFile(savedFile);
                             withdrawalRepository.save(withdrawal);
+                            reliabilityCalculatorService.updateShelterReliability(withdrawal.getShelterId());
+
 
             return ResponseEntity.ok("업로드 완료: " + fileUrl);
 

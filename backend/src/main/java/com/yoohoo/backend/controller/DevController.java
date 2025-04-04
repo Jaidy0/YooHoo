@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ import com.yoohoo.backend.entity.Donation;
 import com.yoohoo.backend.entity.Shelter;
 import com.yoohoo.backend.entity.User;
 import com.yoohoo.backend.service.BankbookService;
+import com.yoohoo.backend.service.CardService;
 import com.yoohoo.backend.service.DevService;
 import com.yoohoo.backend.service.DogService;
 import com.yoohoo.backend.service.DonationService;
@@ -50,6 +52,14 @@ public class DevController {
     private final DonationService donationService;
     private final DevService devService;
     private final WithdrawalService withdrawalService;
+
+    
+    @Autowired
+    private BankbookService bankbookService;
+
+    @Autowired
+    private CardService cardService;
+
 
     @PostMapping("/transfer")
     public ResponseEntity<String> handleTransfer(@RequestParam Long userId, @RequestParam String userKey, @RequestBody TransferRequestDTO transferRequest) {
@@ -140,6 +150,23 @@ public class DevController {
         // 20자리 문자열 생성
         return transmissionDate + transmissionTime + randomNumber; // 총 20자리
     }
+
+    @PostMapping("/sync")
+    public ResponseEntity<String> syncAllWithdrawals(@RequestBody ShelterRequest request) {
+        // 입력된 request 객체에서 값 직접 사용
+        BankbookResponseDTO bankbookResponse = bankbookService.inquireTransactionHistoryDirect(
+            request.getUserKey(), request.getAccountNo()
+        );
+    
+        CardResponseDTO cardResponse = cardService.inquireCreditCardTransactionsDirect(
+            request.getUserKey(), request.getCardNo(), request.getCvc()
+        );
+    
+        withdrawalService.syncAllWithdrawals(request.getShelterId(), bankbookResponse, cardResponse);
+    
+        return ResponseEntity.ok("출금 정보 동기화 및 신뢰도 갱신 완료 (Dev)");
+    }
+    
 
     @PostMapping("/bank/saveWithdrawal")
     public ResponseEntity<BankbookResponseDTO> saveAndReturnTransactionHistory(@RequestBody ShelterRequest shelterRequest) {

@@ -88,4 +88,38 @@ public class BankbookService {
         return uniqueTransactionNo; // 고유한 거래 번호 반환
     }
 
+    public BankbookResponseDTO inquireTransactionHistoryDirect(String userKey, String accountNo) {
+        String apiUrl = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/inquireTransactionHistoryList";
+    
+        LocalDateTime now = LocalDateTime.now();
+        BankbookRequestDTO.Header header = new BankbookRequestDTO.Header();
+        header.setTransmissionDate(now.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        header.setTransmissionTime(now.format(DateTimeFormatter.ofPattern("HHmmss")));
+        header.setInstitutionTransactionUniqueNo(generateUniqueTransactionNo(now));
+        header.setUserKey(userKey);
+    
+        BankbookRequestDTO requestDTO = new BankbookRequestDTO();
+        requestDTO.setHeader(header);
+        requestDTO.setAccountNo(accountNo);
+        requestDTO.setStartDate("20250301");
+        requestDTO.setEndDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+        requestDTO.setTransactionType("D");
+        requestDTO.setOrderByType("ASC");
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<BankbookRequestDTO> entity = new HttpEntity<>(requestDTO, headers);
+    
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<BankbookResponseDTO> response = restTemplate.postForEntity(apiUrl, entity, BankbookResponseDTO.class);
+            return response.getStatusCode().is2xxSuccessful() ? response.getBody() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    
+    
+
 }

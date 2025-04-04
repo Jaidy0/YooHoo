@@ -7,6 +7,10 @@ import com.yoohoo.backend.entity.MerchantCategory;
 import com.yoohoo.backend.entity.Dog;
 import com.yoohoo.backend.entity.File;
 import com.yoohoo.backend.repository.WithdrawalRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 import com.yoohoo.backend.repository.MerchantCategoryRepository;
 import com.yoohoo.backend.repository.DogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,7 @@ import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
 
 @Service
+@RequiredArgsConstructor
 public class WithdrawalService {
 
     @Autowired
@@ -36,6 +41,10 @@ public class WithdrawalService {
     @Autowired
     private DogRepository dogRepository;
 
+    @Autowired
+    private ReliabilityCalculatorService reliabilityCalculatorService;
+
+    @Transactional
     public void saveWithdrawal(BankbookResponseDTO response, Long shelterId) {
         BankbookResponseDTO.Transaction transaction = response.getRec().getList().get(0);
 
@@ -54,7 +63,7 @@ public class WithdrawalService {
             withdrawalRepository.save(withdrawal);
         }
     }
-
+    @Transactional
     public void saveCardTransactions(CardResponseDTO response, Long shelterId) {
         for (CardResponseDTO.Transaction transaction : response.getRec().getTransactionList()) {
             String merchantName = getMerchantNameByCategoryId(transaction.getCategoryId());
@@ -223,5 +232,40 @@ public class WithdrawalService {
         result.put("Prediction", prediction);
 
         return result;
+    }
+
+    public List<Map<String, Object>> getWithdrawalsByShelterId(Long shelterId) {
+        List<Withdrawal> withdrawals = withdrawalRepository.findByShelterId(shelterId);
+        return withdrawals.stream().map(withdrawal -> {
+            Map<String, Object> response = new HashMap<>();
+            response.put("withdrawalId", withdrawal.getWithdrawalId());
+            response.put("category", withdrawal.getCategory());
+            response.put("transactionBalance", withdrawal.getTransactionBalance());
+            response.put("date", withdrawal.getDate());
+            response.put("merchantId", withdrawal.getMerchantId());
+            response.put("shelterId", withdrawal.getShelterId());
+            response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+
+            if (withdrawal.getDogId() == null) {
+                response.put("name", "단체");
+            } else {
+                Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
+                response.put("name", optionalDog.map(Dog::getName).orElse("Unknown"));
+            }
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+    @Transactional
+    public void syncAllWithdrawals(Long shelterId, BankbookResponseDTO bankbookResponse, CardResponseDTO cardResponse) {
+        if (bankbookResponse != null && !bankbookResponse.getRec().getList().isEmpty()) {
+            saveWithdrawal(bankbookResponse, shelterId); // 기존 로직 재사용
+        }
+
+        if (cardResponse != null && !cardResponse.getRec().getTransactionList().isEmpty()) {
+            saveCardTransactions(cardResponse, shelterId); // 기존 로직 재사용
+        }
+
+        reliabilityCalculatorService.updateShelterReliability(shelterId);
     }
 }
