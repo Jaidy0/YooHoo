@@ -308,7 +308,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }, [checkAuthStatus]);
 
   // shelterId를 user 객체에서 가져옴
-  const shelterIdFromUser = user?.shelterId || 0;
+  const shelterIdFromUser = user?.shelterId || 1;
 
   // 경로에 따른 탭 인덱스 업데이트
   useEffect(() => {
