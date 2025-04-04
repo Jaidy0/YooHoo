@@ -2,6 +2,7 @@ package com.yoohoo.backend.service;
 
 import com.yoohoo.backend.dto.BankbookResponseDTO;
 import com.yoohoo.backend.dto.CardResponseDTO;
+import com.yoohoo.backend.dto.WithdrawalProjectionDTO;
 import com.yoohoo.backend.entity.Withdrawal;
 import com.yoohoo.backend.entity.MerchantCategory;
 import com.yoohoo.backend.entity.Dog;
@@ -255,27 +256,35 @@ public class WithdrawalService {
     }
 
     public List<Map<String, Object>> getWithdrawalsByShelterId(Long shelterId) {
-        List<Withdrawal> withdrawals = withdrawalRepository.findByShelterId(shelterId);
-        return withdrawals.stream().map(withdrawal -> {
-            Map<String, Object> response = new HashMap<>();
-            response.put("withdrawalId", withdrawal.getWithdrawalId());
-            response.put("category", withdrawal.getCategory());
-            response.put("transactionBalance", withdrawal.getTransactionBalance());
-            response.put("date", withdrawal.getDate());
-            response.put("merchantId", withdrawal.getMerchantId());
-            response.put("shelterId", withdrawal.getShelterId());
-            response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+        List<WithdrawalProjectionDTO> projections = withdrawalRepository.findAllByShelterIdWithProjection(shelterId);
 
-            if (withdrawal.getDogId() == null) {
-                response.put("name", "단체");
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (WithdrawalProjectionDTO w : projections) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("withdrawalId", w.getWithdrawalId());
+            map.put("category", w.getCategory());
+            map.put("transactionBalance", w.getTransactionBalance());
+            map.put("date", w.getDate());
+            map.put("merchantId", w.getMerchantId());
+            map.put("shelterId", w.getShelterId());
+            map.put("transactionUniqueNo", w.getTransactionUniqueNo());
+            map.put("file_id", w.getFileId()); // ✅ file 전체 로딩 없이 ID만 추출
+
+            if (w.getDogId() == null) {
+                map.put("name", "단체");
             } else {
-                Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
-                response.put("name", optionalDog.map(Dog::getName).orElse("Unknown"));
+                String dogName = dogRepository.findById(w.getDogId())
+                        .map(d -> d.getName())
+                        .orElse("Unknown");
+                map.put("name", dogName);
             }
 
-            return response;
-        }).collect(Collectors.toList());
+            result.add(map);
+        }
+
+        return result;
     }
+
     @Transactional
     public void syncAllWithdrawals(Long shelterId, BankbookResponseDTO bankbookResponse, CardResponseDTO cardResponse) {
         if (bankbookResponse != null && !bankbookResponse.getRec().getList().isEmpty()) {

@@ -1,5 +1,6 @@
 package com.yoohoo.backend.repository;
 
+import com.yoohoo.backend.dto.WithdrawalProjectionDTO;
 import com.yoohoo.backend.entity.Withdrawal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -45,6 +46,16 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
     """)
     Map<String, Long> countFilesByShelterId(@Param("shelterId") Long shelterId);
     
+    @Query("SELECT w.withdrawalId AS withdrawalId, " +
+    "w.category AS category, " +
+    "w.transactionBalance AS transactionBalance, " +
+    "w.date AS date, " +
+    "w.merchantId AS merchantId, " +
+    "w.shelterId AS shelterId, " +
+    "w.transactionUniqueNo AS transactionUniqueNo, " +
+    "w.dogId AS dogId, " +
+    "w.file.fileId AS fileId " +  // 💡 alias 꼭 맞춰야 함
+    "FROM Withdrawal w WHERE w.shelterId = :shelterId")
+List<WithdrawalProjectionDTO> findAllByShelterIdWithProjection(@Param("shelterId") Long shelterId);
 
-    
 }

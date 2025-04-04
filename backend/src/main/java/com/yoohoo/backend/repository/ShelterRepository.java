@@ -17,9 +17,9 @@ import java.util.Optional;
 public interface ShelterRepository extends JpaRepository<Shelter, Long> {
 
     @Query("SELECT new com.yoohoo.backend.dto.ShelterListDTO(" +
-           "s.shelterId, s.name, s.content, COUNT(d), s.reliability) " +
+           "s.shelterId, s.name, s.foundationDate, s.content, COUNT(d), s.reliability) " +
            "FROM Shelter s LEFT JOIN s.dogs d " +
-           "GROUP BY s.shelterId, s.name, s.content, s.reliability")
+           "GROUP BY s.shelterId, s.name, s.foundationDate, s.content, s.reliability")
     List<ShelterListDTO> findAllWithDogCount();
 
     // 특정 shelterId의 상세 정보 조회 (강아지 목록 제외)

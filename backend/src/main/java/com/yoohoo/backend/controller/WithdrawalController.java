@@ -74,14 +74,10 @@ public class WithdrawalController {
         }
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Map<String, Object>>> getAllWithdrawals(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        
-        Long shelterId = userService.getShelterIdByUserId(userId);
-        List<Map<String, Object>> withdrawals = withdrawalService.getWithdrawalsByShelterId(shelterId);
-        return ResponseEntity.ok(withdrawals);
+    @GetMapping("/shelter/{shelterId}/all")
+    public ResponseEntity<List<Map<String, Object>>> getAllWithdrawals(@PathVariable Long shelterId) {
+        List<Map<String, Object>> result = withdrawalService.getWithdrawalsByShelterId(shelterId);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/sync")
