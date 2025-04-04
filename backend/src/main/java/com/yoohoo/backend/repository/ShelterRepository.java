@@ -2,7 +2,11 @@ package com.yoohoo.backend.repository;
 
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.entity.Shelter;
+
+import io.lettuce.core.dynamic.annotation.Param;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +24,9 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
 
     // 특정 shelterId의 상세 정보 조회 (강아지 목록 제외)
     Optional<Shelter> findByShelterId(Long shelterId);
+
+
+    @Modifying
+    @Query("UPDATE Shelter s SET s.reliability = :reliability WHERE s.shelterId = :shelterId")
+    void updateReliability(@Param("shelterId") Long shelterId, @Param("reliability") int reliability);
 }

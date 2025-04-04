@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Map;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Repository
@@ -21,4 +23,28 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
     // 특정 날짜 범위의 지출 내역 조회
     @Query("SELECT w FROM Withdrawal w WHERE w.date BETWEEN :startDate AND :endDate")
     List<Withdrawal> findByDateBetween(@Param("startDate") String startDate, @Param("endDate") String endDate);
+
+    // WithdrawalRepository.java
+    @Query("""
+        SELECT new map(
+            SUM(CASE WHEN w.category IN ('물품구매', '의료비') THEN CAST(w.transactionBalance AS bigdecimal) ELSE 0 END) as dog_cost,
+            SUM(CAST(w.transactionBalance AS bigdecimal)) as total_cost
+        )
+        FROM Withdrawal w
+        WHERE w.shelterId = :shelterId
+    """)
+    Map<String, BigDecimal> sumCostsByShelterId(@Param("shelterId") Long shelterId);
+    
+    @Query("""
+        SELECT new map(
+            COUNT(w) as total,
+            SUM(CASE WHEN w.file IS NOT NULL THEN 1 ELSE 0 END) as with_file
+        )
+        FROM Withdrawal w
+        WHERE w.shelterId = :shelterId
+    """)
+    Map<String, Long> countFilesByShelterId(@Param("shelterId") Long shelterId);
+    
+
+    
 }

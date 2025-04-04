@@ -53,7 +53,7 @@ public class BankbookService {
         requestDTO.setAccountNo(accountNo);
         requestDTO.setStartDate("20250301");
         requestDTO.setEndDate(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        requestDTO.setTransactionType("A");
+        requestDTO.setTransactionType("D");
         requestDTO.setOrderByType("ASC");
 
         // HTTP 요청 헤더 설정
