@@ -23,7 +23,12 @@ const BottomNav: React.FC<BottomNavProps> = ({ items }) => {
     <nav className={styles.bottomNav}>
       <ul className={styles.navList}>
         {items.map((item, index) => {
-          const isActive = pathname === item.href;
+          // 홈 제외하고 하위페이지에서도 활성화
+          const isActive =
+            item.href === '/yoohoo'
+              ? pathname === '/yoohoo'
+              : pathname.startsWith(item.href);
+
           return (
             <li key={index} className={styles.navItem}>
               <Link
@@ -38,7 +43,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ items }) => {
                   />
                 </div>
                 <span
-                  className={`${styles.label} ${isActive && styles.active}`}
+                  className={`${styles.label} ${isActive ? styles.active : ''}`}
                 >
                   {item.label}
                 </span>
