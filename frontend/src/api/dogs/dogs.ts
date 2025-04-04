@@ -115,21 +115,24 @@ export interface DogRegisterData {
 
 /**
  * 강아지 등록 API
+ * @param dogData - 등록할 강아지 데이터
+ * @param dogImage - 등록할 강아지 이미지 파일
+ * @returns - 등록된 강아지 정보
  */
 export const registerDog = async (
   dogData: DogRegisterData,
-  dogImage: File | null
+  dogImage?: File | null
 ): Promise<Dog | null> => {
   try {
     const formData = new FormData();
 
-    // dog 객체를 JSON 문자열로 변환하여 추가
+    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
     formData.append(
       'dog',
       new Blob([JSON.stringify(dogData)], { type: 'application/json' })
     );
 
-    // 이미지 파일 추가
+    // 이미지가 있으면 추가
     if (dogImage) {
       formData.append('file', dogImage);
     }
@@ -138,7 +141,9 @@ export const registerDog = async (
       `${API_BASE_URL}/api/dogs/register`,
       formData,
       {
-        headers: {},
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         withCredentials: true,
       }
     );
