@@ -170,3 +170,40 @@
     color: $text-555;
   }
 }
+
+.donationStatus {
+  background-color: white;
+  border-radius: 12px;
+}
+
+.donationHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background-color: #eee;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.donationAmount {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+
+  .currentAmount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $chart-orange;
+  }
+}
+
+.donationLabel,
+.historyLabel {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}

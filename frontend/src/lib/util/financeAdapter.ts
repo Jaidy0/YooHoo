@@ -1,5 +1,4 @@
-// src/utils/financeAdapter.ts
-
+// lib/util/financeAdapter.ts
 import { DonationItem, WithdrawalItem } from '@/api/donations/donation';
 
 // FinanceTable 컴포넌트에서 사용하는 입금 데이터 형식
@@ -13,13 +12,14 @@ export interface DepositTableItem {
 
 // FinanceTable 컴포넌트에서 사용하는 출금 데이터 형식
 export interface WithdrawTableItem {
+  withdrawalId: number; // 추가: 출금 ID
   type: string;
   category: string;
   content: string;
   amount: number;
   date: string;
-  isEvidence: boolean;
   isReceipt: boolean;
+  transactionUniqueNo: number; // 추가: 거래 고유 번호
 }
 
 /**
@@ -57,13 +57,17 @@ export const adaptWithdrawalsToWithdrawTable = (
     const date = item.date.replace(/(\d{4})(\d{2})(\d{2})/, '$1.$2.$3');
 
     return {
+      withdrawalId: item.withdrawalId, // 추가: 출금 ID 포함
       type,
       category: item.category,
-      content: `${item.category} 지출`, // 명확한 컨텐츠 정보가 없는 경우 카테고리로 대체
-      amount: parseInt(item.transactionBalance, 10),
+      content: item.content || `${item.category} 지출`, // content가 있으면 사용, 없으면 카테고리로 대체
+      amount:
+        item.amount !== undefined
+          ? item.amount
+          : parseInt(item.transactionBalance, 10),
       date,
-      isEvidence: false, // 임시로 모두 true 처리 (API에서 해당 정보가 없음)
-      isReceipt: false, // 임시로 모두 true 처리 (API에서 해당 정보가 없음)
+      isReceipt: item.isReceipt || false,
+      transactionUniqueNo: parseInt(item.transactionUniqueNo, 10), // 추가: 거래 고유 번호 (문자열을 숫자로 변환)
     };
   });
 };

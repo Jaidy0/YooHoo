@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Dog } from '@/types/dog';
+import { Dog, DogStatus } from '@/types/dog';
 import { getDogList, DogQueryParams } from '@/api/dogs/dogs';
 
 interface UseInfiniteDogDataParams {
@@ -24,6 +24,11 @@ export function useInfiniteDogData({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
+
+  // DECEASED 상태 필터링 함수
+  const filterDeceasedDogs = useCallback((dogs: Dog[]) => {
+    return dogs.filter((dog) => dog.status !== DogStatus.DECEASED);
+  }, []);
 
   // status 파라미터 변환 함수
   const convertStatus = (
@@ -51,13 +56,16 @@ export function useInfiniteDogData({
       const response = await getDogList(shelterId, params);
       const dogs = response.data || [];
 
-      setAllDogs(dogs);
+      // 여기서 DECEASED 상태의 강아지를 필터링
+      const filteredDogs = filterDeceasedDogs(dogs);
+
+      setAllDogs(filteredDogs);
 
       // 첫 페이지만 보여주기
-      setDisplayedDogs(dogs.slice(0, pageSize));
+      setDisplayedDogs(filteredDogs.slice(0, pageSize));
 
       // 더 보여줄 데이터가 있는지 확인
-      setHasMore(dogs.length > pageSize);
+      setHasMore(filteredDogs.length > pageSize);
     } catch (err) {
       setError('데이터를 불러오는데 실패했습니다.');
       console.error(err);
@@ -102,9 +110,11 @@ export function useInfiniteDogData({
         const response = await getDogList(shelterId, params);
         const dogs = response.data || [];
 
-        setAllDogs(dogs);
-        setDisplayedDogs(dogs.slice(0, pageSize));
-        setHasMore(dogs.length > pageSize);
+        // DECEASED 상태의 강아지 필터링
+        const filteredDogs = filterDeceasedDogs(dogs);
+        setAllDogs(filteredDogs);
+        setDisplayedDogs(filteredDogs.slice(0, pageSize));
+        setHasMore(filteredDogs.length > pageSize);
       } catch (err) {
         setError('데이터를 불러오는데 실패했습니다.');
         console.error(err);

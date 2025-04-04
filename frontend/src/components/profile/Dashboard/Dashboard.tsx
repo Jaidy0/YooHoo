@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './Dashboard.module.scss';
 import MySummaryCard from '@/components/profile/MySummaryCard/MySummaryCard';
@@ -19,42 +19,51 @@ export default function Dashboard({ className = '' }: DashboardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 실제 후원 통계 데이터 가져오기
-  const { stats, isLoading: isLoadingStats } = useDonationStats();
+  const { stats } = useDonationStats();
 
   // 가입일로부터 현재까지의 일수 계산
   const calculateDaysSinceJoin = () => {
     if (!user?.createdAt) return 1; // 정보가 없으면 기본값 1일
 
+    // 가입일 날짜 파싱 (ISO 형식 지원)
+    const createDate = new Date(user.createdAt);
+
+    // createDate가 유효한지 확인
+    if (isNaN(createDate.getTime())) {
+      return 1; // 유효하지 않은 날짜면 기본값 반환
+    }
+
     // 가입일 날짜만 추출 (시간 제외)
-    const createDate = new Date(user.createdAt.split('T')[0]);
+    const createDateOnly = new Date(
+      createDate.getFullYear(),
+      createDate.getMonth(),
+      createDate.getDate()
+    );
 
     // 오늘 날짜 (시간 제외)
     const today = new Date();
-    const todayWithoutTime = new Date(
+    const todayOnly = new Date(
       today.getFullYear(),
       today.getMonth(),
       today.getDate()
     );
 
-    // 날짜 차이 계산 (밀리초 단위)
-    const timeDiff = todayWithoutTime.getTime() - createDate.getTime();
+    console.log('Create date (no time):', createDateOnly);
+    console.log('Today (no time):', todayOnly);
 
-    // 일수로 변환
+    // 날짜 차이 계산 (밀리초 단위)
+    const timeDiff = todayOnly.getTime() - createDateOnly.getTime();
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
-    // 당일은 1일, 하루 전은 2일로 계산
-    return daysDiff + 1;
-  };
+    console.log('Days difference:', daysDiff);
 
+    // 당일은 1일, 하루 전은 2일로 계산
+    return Math.max(daysDiff + 1, 1); // 최소 1일로 보장
+  };
   const daysSinceJoin = calculateDaysSinceJoin();
 
   const handleMoveToReportPage = () => {
     router.push('/yoohoo/profile/donation-report');
-  };
-
-  const handleSaveNickname = (newNickname: string) => {
-    // 닉네임 변경 로직은 별도 API 필요
-    setIsModalOpen(false);
   };
 
   const handleMoveToShelterManage = () => {
@@ -113,11 +122,11 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         <MySummaryCard title='후원 강아지 수' value={stats.dogCount} />
       </div>
 
+      {/* 닉네임 수정 모달 */}
       {isModalOpen && (
         <NicknameModal
           initialValue={user?.nickname || ''}
           onClose={() => setIsModalOpen(false)}
-          onSave={handleSaveNickname}
         />
       )}
     </div>

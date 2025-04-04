@@ -1,4 +1,3 @@
-// api/dogs/dogs.ts
 import axios from 'axios';
 import { Dog, DogResponse, DogUpdateDto } from '@/types/dog';
 
@@ -13,6 +12,21 @@ export interface DogQueryParams {
   size?: number;
   sort?: string;
 }
+
+/**
+ * 강아지 이름 목록 조회 API
+ */
+export const getDogNames = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/dogs/names`, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('강아지 이름 목록 조회 실패:', error);
+    throw error;
+  }
+};
 
 /**
  * 보호소별 강아지 목록 조회 API

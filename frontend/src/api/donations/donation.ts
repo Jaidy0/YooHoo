@@ -162,6 +162,31 @@ export const saveWithdrawalToBoth = async (
 };
 
 /**
+ * 출금 내역에 강아지 ID 할당 API
+ * @param withdrawalId 출금 내역 ID
+ * @param newDogId 새로 할당할 강아지 ID
+ * @returns 강아지 정보 (이름 등)
+ */
+export const assignDogToWithdrawal = async (
+  withdrawalId: number,
+  newDogId: number
+) => {
+  try {
+    const response = await axios.put(
+      `${API_BASE_URL}/api/withdrawal/${withdrawalId}/dogId`,
+      { newDogId },
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`출금 내역 ID ${withdrawalId}에 강아지 할당 실패:`, error);
+    throw error;
+  }
+};
+
+/**
  * 보호소의 재정 정보를 초기화하는 API (응답은 무시)
  * @param shelterId 보호소 ID
  */
@@ -188,3 +213,4 @@ export type {
   WithdrawalRequest,
   WithdrawalResponse,
 };
+
