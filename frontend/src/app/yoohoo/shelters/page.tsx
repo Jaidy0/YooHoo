@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './page.module.scss';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
@@ -92,7 +92,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 
 // 정렬 옵션
 const sortOptions = [
-  { value: 'popular', label: '인기순' },
+  { value: 'popular', label: '인기도순' },
   { value: 'newest', label: '최신순' },
   { value: 'oldest', label: '오래된순' },
 ];
@@ -102,11 +102,16 @@ export default function Shelters() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSort, setSelectedSort] = useState(sortOptions[0].value);
   const { shelters, isLoading } = useShelterList();
-  const [shelterItems, setShelterItems] = useState(shelters);
+  const [filteredShelters, setFilteredShelters] = useState<Shelter[]>([]);
 
-  // 검색과 정렬을 모두 적용하는 함수
+  // shelters가 변경될 때마다 filteredShelters 초기화
+  useEffect(() => {
+    setFilteredShelters(shelters);
+  }, [shelters]);
+
+  // 검색어나 정렬이 변경될 때마다 필터링 적용
   const applyFilters = (query: string, sortValue: string) => {
-    let filteredItems = [...shelterItems];
+    let filteredItems = [...shelters];
 
     // 검색어가 있으면 필터링
     if (query.trim() !== '') {
@@ -120,11 +125,9 @@ export default function Shelters() {
     // 정렬 적용
     switch (sortValue) {
       case 'popular':
-        // 좋아요 수 기준 내림차순 정렬
         filteredItems.sort((a, b) => b.reliability - a.reliability);
         break;
       case 'newest':
-        // 등록일 기준 최신순 정렬
         filteredItems.sort(
           (a, b) =>
             new Date(b.reliability).getTime() -
@@ -132,7 +135,6 @@ export default function Shelters() {
         );
         break;
       case 'oldest':
-        // 등록일 기준 오래된순 정렬
         filteredItems.sort(
           (a, b) =>
             new Date(a.reliability).getTime() -
@@ -143,7 +145,7 @@ export default function Shelters() {
         break;
     }
 
-    setShelterItems(filteredItems);
+    setFilteredShelters(filteredItems);
   };
 
   const handleSearch = (query: string) => {
@@ -186,7 +188,7 @@ export default function Shelters() {
             {isLoading ? (
               <LoadingSpinner size='large' />
             ) : (
-              shelters.map((shelter: Shelter) => (
+              filteredShelters.map((shelter: Shelter) => (
                 <ShelterCard
                   className={styles.shelterCard}
                   key={shelter.shelterId}
