@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { useShelterData } from '@/hooks/useShetlerData';
 import { useInfiniteDogData } from '@/hooks/useInfiniteDogData';
+import { useDog } from '@/hooks/useDog';
 
 interface GroupDetailClientProps {
   groupId: string;
@@ -41,17 +42,22 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     initialSearch: '',
   });
 
+  // 상태 관리
+  const [activeTab, setActiveTab] = useState(0);
+  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
+  const [selectedDogId, setSelectedDogId] = useState<number | null>(null);
+
+  // 선택된 강아지의 상세 정보를 가져오기 위한 useDog 훅
+  const { dog: dogDetails, isLoading: isDogDetailsLoading } = useDog(
+    selectedDogId || 0
+  );
+
   // 탭 메뉴 아이템
   const tabMenuItems = [
     { name: '소개' },
     { name: '보호 중인 강아지' },
     { name: '후원금 운용 내역' },
   ];
-
-  // 상태 관리
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
-  const [dogDetails, setDogDetails] = useState<Dog | null>(null);
 
   // TabMenuItem 인터페이스 정의
   interface TabMenuItem {
@@ -69,16 +75,17 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   // 강아지 카드 클릭 핸들러
   function handleDogClick(dogId: number) {
     const dog = dogs.find((dog) => dog.dogId === dogId);
+
     if (dog) {
       setSelectedDog(dog);
-      setDogDetails(dog);
+      setSelectedDogId(dogId);
     }
   }
 
   // 상세 정보 닫기 핸들러
   function handleCloseDetail() {
     setSelectedDog(null);
-    setDogDetails(null);
+    setSelectedDogId(null);
   }
 
   // 더보기 버튼 클릭 핸들러
@@ -182,20 +189,32 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
           </div>
         )}
 
-        {activeTab === 1 && selectedDog && dogDetails && (
+        {activeTab === 1 && selectedDog && (
           <div className={styles.details}>
-            <DogDetailView
-              selectedDog={selectedDog}
-              dogDetails={dogDetails}
-              onClose={handleCloseDetail}
-            />
-            <Button
-              width='100%'
-              className={styles.yellowButton}
-              onClick={handleDogDonation}
-            >
-              이 강아지 지정 후원하기
-            </Button>
+            {isDogDetailsLoading ? (
+              <div className={styles.loadingContainer}>
+                <LoadingSpinner />
+              </div>
+            ) : dogDetails ? (
+              <>
+                <DogDetailView
+                  selectedDog={selectedDog}
+                  dogDetails={dogDetails}
+                  onClose={handleCloseDetail}
+                />
+                <Button
+                  width='100%'
+                  className={styles.yellowButton}
+                  onClick={handleDogDonation}
+                >
+                  이 강아지 지정 후원하기
+                </Button>
+              </>
+            ) : (
+              <div className={styles.errorContainer}>
+                <p>강아지 정보를 불러오는데 실패했습니다.</p>
+              </div>
+            )}
           </div>
         )}
 

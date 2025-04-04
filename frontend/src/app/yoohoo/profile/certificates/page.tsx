@@ -12,7 +12,7 @@ import styles from './page.module.scss';
 export default function MyCertificatesPage() {
   const certificateRef = useRef<HTMLDivElement>(null);
   const { user } = useAuthStore();
-  const { stats } = useDonationStats();
+  const { stats } = useDonationStats(true);
   const [isDownloading, setIsDownloading] = useState(false);
 
   // Get current date for the certificate

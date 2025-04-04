@@ -35,9 +35,8 @@ export default function DogDetailView({
     String(dogDetails.dogId)
     // String(306)
   );
-
   console.log('### dogDetails : ', dogDetails);
-  console.log('depositData : ', depositData);
+  console.log('******************depositData************** : ', depositData);
 
   // 총 후원금액 계산
   const totalDonation = depositData.reduce((sum, item) => sum + item.amount, 0);

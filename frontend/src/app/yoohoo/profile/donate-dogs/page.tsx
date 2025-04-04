@@ -26,8 +26,11 @@ export default function MyDonateDogPage() {
     return (
       <div className={styles.container}>
         <h1 className={styles.title}>내가 후원한 강아지</h1>
-        <div className={styles.errorContainer}>
-          <p className={styles.errorText}>{error}</p>
+        <div className={styles.emptyContainer}>
+          <p className={styles.emptyTitle}>후원한 강아지가 없습니다</p>
+          <p className={styles.emptySubtitle}>
+            강아지 후원을 통해 작은 변화를 만들어보세요!
+          </p>
         </div>
       </div>
     );

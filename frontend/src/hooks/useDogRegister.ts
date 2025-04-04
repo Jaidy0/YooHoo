@@ -35,9 +35,9 @@ interface UseRegisterResult {
   validateForm: () => boolean;
 }
 
-const getGenderCode = (gender: string): string => {
+const getGenderCode = (gender: string): number => {
   const maleTerms = ['남', '남아', '수컷', 'male', 'm'];
-  return maleTerms.includes(gender.toLowerCase()) ? 'M' : 'F';
+  return maleTerms.includes(gender.toLowerCase()) ? 1 : 0;
 };
 
 const getStatusCode = (status: string): number => {
@@ -195,8 +195,12 @@ export const useDogRegister = (): UseRegisterResult => {
       };
 
       // API 호출
-      await registerDog(dogData, dogImage);
-      return true;
+      const result = await registerDog(dogData, dogImage);
+      if (result) {
+        console.log('강아지 등록 성공:', result);
+        return true;
+      }
+      return false;
     } catch (error) {
       console.error('강아지 등록 중 오류 발생:', error);
       return false;
