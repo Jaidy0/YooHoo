@@ -174,14 +174,37 @@ export const registerDog = async (
 };
 
 /**
- * 강아지 정보 수정 API (백엔드 준비 시 활성화)
+ * 강아지 정보 수정 API
+ * @param dogId - 수정할 강아지 ID
+ * @param dogData - 수정할 강아지 데이터
+ * @returns - 응답 데이터
  */
-export const updateDog = async (dogId: number, dogData: DogUpdateDto) => {
+export const updateDog = async (
+  dogId: number,
+  dogData: DogUpdateDto,
+  dogImage?: File | null
+) => {
   try {
-    const response = await axios.put(
+    const formData = new FormData();
+
+    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
+    formData.append(
+      'dog',
+      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
+    );
+
+    // 이미지가 있으면 추가
+    if (dogImage) {
+      formData.append('file', dogImage);
+    }
+
+    const response = await axios.patch(
       `${API_BASE_URL}/api/dogs/${dogId}`,
-      dogData,
+      formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         withCredentials: true,
       }
     );

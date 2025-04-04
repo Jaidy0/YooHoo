@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import styles from './page.module.scss';
 import Image from 'next/image';
 import IconBox from '@/components/common/IconBox/IconBox';
@@ -8,6 +9,8 @@ import { useShelterData } from '@/hooks/useShetlerData';
 
 export default function AdminPage() {
   const router = useRouter();
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const tooltipRef = useRef<HTMLDivElement>(null);
 
   // 임시 보호소 ID (향후 사용자 정보에서 가져올 예정)
   const shelterId = 5;
@@ -15,6 +18,30 @@ export default function AdminPage() {
   // 커스텀 훅을 사용하여 보호소 데이터 가져오기
   const { shelter, isLoading, error, refreshData, dogCount } =
     useShelterData(shelterId);
+
+  // 툴팁 토글 및 닫기 함수
+  const toggleTooltip = () => setIsTooltipOpen((prev) => !prev);
+  const closeTooltip = () => setIsTooltipOpen(false);
+
+  // 외부 클릭 시 툴팁 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
+      ) {
+        closeTooltip();
+      }
+    };
+
+    if (isTooltipOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isTooltipOpen]);
 
   // 실제 표시할 데이터 (API에서 불러오거나 로딩 중이면 더미 데이터 사용)
   const displayData = {
@@ -106,8 +133,31 @@ export default function AdminPage() {
           <div className={styles.trustContent}>
             <div className={styles.trustHeader}>
               <div className={styles.adminTitle}>단체 신뢰 지수</div>
-              <div className={styles.questionButton}>
-                <IconBox name='zoom' size={24}></IconBox>
+              <div className={styles.tooltipContainer}>
+                <div className={styles.questionButton} onClick={toggleTooltip}>
+                  <IconBox name='zoom' size={24}></IconBox>
+                </div>
+
+                {isTooltipOpen && (
+                  <div className={styles.tooltip} ref={tooltipRef}>
+                    <h4>신뢰 지수란?</h4>
+                    <p>
+                      단체 신뢰 지수는 보호소의 투명성과 신뢰성을 나타내는
+                      지표입니다.
+                    </p>
+
+                    <h4>산정 기준</h4>
+                    <ul>
+                      <li>정기적인 활동 보고서 공개 여부</li>
+                      <li>영수증 첨부 내역</li>
+                    </ul>
+
+                    <p>
+                      신뢰 지수는 정기적으로 갱신되며, 보호소의 활동 내역에 따라
+                      변동될 수 있습니다.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
             {/* API에서 받아온 신뢰도 표시 */}
