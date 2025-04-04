@@ -39,14 +39,20 @@ function createAuthStore() {
           return { isAuthenticated: false, isAdmin: false };
         }
 
-        // 2. 상태 업데이트
+        // 2. nickname이 null인 경우 '후원자'로 설정
+        const processedUserData = {
+          ...userData,
+          nickname: userData.nickname || '후원자',
+        };
+
+        // 3 상태 업데이트
         set({
-          user: userData,
+          user: processedUserData,
           isAuthenticated: true,
           isLoading: false,
         });
 
-        // 3. 상태 업데이트 완료 대기
+        // 4. 상태 업데이트 완료 대기
         await new Promise<void>((resolve) => {
           set((state) => {
             resolve();

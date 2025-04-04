@@ -75,7 +75,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
       {/* 사용자 정보 헤더 */}
       <div className={styles.userHeader}>
         <h2 className={styles.userText}>
-          {user?.nickname || '사용자'}님, <br />
+          {user?.nickname || '후원자'}님, <br />
           <span className={styles.accentText}>유후</span>와 함께한지{' '}
           <span className={styles.accentText}>{daysSinceJoin}일</span>
           째예요!

@@ -18,6 +18,8 @@ import Button from '@/components/common/buttons/Button/Button';
 import { DonationFormData } from '@/types/donation';
 import { useDonationSubmit } from '@/hooks/donations/useDonationSubmit';
 import { useShelterAccount } from '@/hooks/donations/useShelterAccount';
+import { useShelterData } from '@/hooks/useShetlerData';
+import { useDog } from '@/hooks/useDog';
 
 type DonationFormProps = {
   initialShelterId?: number;
@@ -31,17 +33,28 @@ export default function DonationForm({
   const router = useRouter();
   const { submitDonation, isLoading, error, isSuccess } = useDonationSubmit();
 
-  // 단체 계좌 정보 가져오기
-  const [shelterAccountNumber, setShelterAccountNumber] = useState<string>('');
+  // 강아지 ID가 있으면 일시후원 및 강아지 후원으로 기본값 설정
+  const initialDonationType: DonationType = initialDogId ? 1 : 0; // 강아지 ID가 있으면 일시후원(1)
+  const initialTargetType: TargetType = initialDogId ? 'dog' : 'shelter'; // 강아지 ID가 있으면 강아지 후원
+
+  // 단체 정보 가져오기
+  const { shelter, isLoading: isShelterLoading } = initialShelterId
+    ? useShelterData(initialShelterId)
+    : { shelter: null, isLoading: false };
+
+  // 강아지 정보 가져오기
+  const { dog, isLoading: isDogLoading } = initialDogId
+    ? useDog(initialDogId)
+    : { dog: null, isLoading: false };
 
   // 폼 데이터 상태
   const [formData, setFormData] = useState<DonationFormData>({
     shelterId: initialShelterId ?? 0,
     shelterName: '',
     shelterAccountNumber: '',
-    donationType: 0, // 0: 정기후원 기본값
+    donationType: initialDonationType, // 강아지 ID가 있으면 일시후원으로 설정
     paymentDay: 0,
-    targetType: 'shelter', // 단체후원 기본값
+    targetType: initialTargetType, // 강아지 ID가 있으면 강아지 후원으로 설정
     dogId: initialDogId ?? 0,
     dogName: '',
     accountName: '',
@@ -63,13 +76,31 @@ export default function DonationForm({
     }
   }, [shelterAccount]);
 
+  // 단체 정보가 로드되면 폼 데이터 업데이트
+  useEffect(() => {
+    if (shelter) {
+      updateFormData({
+        shelterName: shelter.name || '',
+      });
+    }
+  }, [shelter]);
+
+  // 강아지 정보가 로드되면 폼 데이터 업데이트
+  useEffect(() => {
+    if (dog) {
+      updateFormData({
+        dogName: dog.name || '',
+      });
+    }
+  }, [dog]);
+
   // 각 단계 완료 상태
   const [stepsCompleted, setStepsCompleted] = useState({
     shelter: !!initialShelterId,
-    donationType: true,
+    donationType: true, // 항상 선택되어 있음 (기본값이 있기 때문)
     paymentDetails: false,
-    targetSelection: true,
-    dogSelection: !!initialDogId,
+    targetSelection: true, // 항상 선택되어 있음 (기본값이 있기 때문)
+    dogSelection: !!initialDogId, // 강아지 ID가 있으면 이미 선택된 것으로 간주
     accountInfo: false,
     amount: false,
   });
@@ -166,9 +197,10 @@ export default function DonationForm({
               completeStep('paymentDetails', false);
             } else {
               // 일시후원 선택 시 타겟 타입 초기화
-              updateFormData({ targetType: 'shelter' });
+              // 강아지 ID가 있으면 강아지 후원 유지, 그렇지 않으면 기본값으로 설정
+              updateFormData({ targetType: initialDogId ? 'dog' : 'shelter' });
               completeStep('targetSelection', true);
-              completeStep('dogSelection', false);
+              completeStep('dogSelection', !!initialDogId);
             }
           }}
         />
@@ -201,7 +233,10 @@ export default function DonationForm({
 
               // 강아지 선택 시 강아지 선택 단계 초기화
               if (value === 'dog') {
-                completeStep('dogSelection', false);
+                completeStep('dogSelection', !!initialDogId);
+              } else {
+                // 단체 선택 시 강아지 선택 단계는 이미 완료된 것으로 간주
+                completeStep('dogSelection', true);
               }
             }}
           />
@@ -246,29 +281,37 @@ export default function DonationForm({
 
       {/* 후원 요약 및 완료 버튼 */}
       <div className={styles.donationSummary}>
-        {formData.donationType === 0 ? (
-          <p>
-            매월 {formData.paymentDay}일 {formData.amount.toLocaleString()}원을
-            후원합니다.
-          </p>
+        {!formData.shelterId ? (
+          <p>후원할 단체를 선택해주세요.</p>
+        ) : formData.donationType === 0 ? (
+          !formData.paymentDay ? (
+            <p>결제일을 선택해주세요.</p>
+          ) : formData.amount <= 0 ? (
+            <p>후원 금액을 입력해주세요.</p>
+          ) : (
+            <p>
+              매월 {formData.paymentDay}일 {formData.amount.toLocaleString()}
+              원을 후원합니다.
+            </p>
+          )
         ) : formData.targetType === 'dog' ? (
-          !formData.shelterId ? (
-            <p>후원할 단체를 선택해주세요.</p>
-          ) : !formData.dogName ? (
+          !formData.dogName ? (
             <p>후원할 강아지를 선택해주세요.</p>
+          ) : formData.amount <= 0 ? (
+            <p>후원 금액을 입력해주세요.</p>
           ) : (
             <p>
               {formData.dogName}에게 {formData.amount.toLocaleString()}원을
               후원합니다.
             </p>
           )
-        ) : formData.shelterName ? (
+        ) : formData.amount <= 0 ? (
+          <p>후원 금액을 입력해주세요.</p>
+        ) : (
           <p>
             {formData.shelterName}에 {formData.amount.toLocaleString()}원을
             후원합니다.
           </p>
-        ) : (
-          <p>후원할 단체를 선택해주세요.</p>
         )}
       </div>
 
