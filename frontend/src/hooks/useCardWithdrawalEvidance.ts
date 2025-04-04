@@ -40,10 +40,11 @@ export const useCardWithdrawal = ({
       const response = await fetchCardWithdrawal({ shelterId });
       setData(response);
 
-      if (transactionUniqueNo && response.data) {
-        const matchingTransaction = response.data.find(
+      if (transactionUniqueNo && response.REC && response.REC.transactionList) {
+        const matchingTransaction = response.REC.transactionList.find(
           (transaction) =>
-            transaction.transactionUniqueNo === transactionUniqueNo
+            String(transaction.transactionUniqueNo) ===
+            String(transactionUniqueNo)
         );
         setFilteredTransaction(matchingTransaction || null);
       }
