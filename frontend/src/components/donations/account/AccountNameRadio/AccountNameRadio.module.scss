@@ -16,6 +16,10 @@
     position: relative;
     padding-left: 24px;
 
+    &:hover {
+      font-weight: 500;
+    }
+
     input[type='radio'] {
       position: absolute;
       opacity: 0;

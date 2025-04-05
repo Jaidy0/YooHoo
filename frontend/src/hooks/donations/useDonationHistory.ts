@@ -31,6 +31,14 @@ export const useDonationsByDateRange = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // 공통 정렬 함수
+  const sortByDateDesc = (data: DonationHistory[]) => {
+    return data.sort(
+      (a, b) =>
+        new Date(b.donationDate).getTime() - new Date(a.donationDate).getTime()
+    );
+  };
+
   const getDonationsByDateRange = useCallback(
     async (startDate: Date | null, endDate: Date | null) => {
       setIsLoading(true);
@@ -40,6 +48,7 @@ export const useDonationsByDateRange = () => {
         // 날짜 설정이 없으면 전체 후원 내역 조회
         if (!startDate && !endDate) {
           const response = await getUserDonations();
+          const sorted = sortByDateDesc(response);
           setDonations(response);
           return response;
         }
@@ -52,8 +61,9 @@ export const useDonationsByDateRange = () => {
           };
 
           const response = await fetchDonations(params);
-          setDonations(response);
-          return response;
+          const sorted = sortByDateDesc(response);
+          setDonations(sorted);
+          return sorted;
         }
 
         // 한쪽 날짜만 있는 경우
