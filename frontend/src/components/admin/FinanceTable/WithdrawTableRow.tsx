@@ -149,7 +149,7 @@ export default function WithdrawTableRow({
         isOpen={isEvidenceModalOpen}
         onClose={closeEvidenceModal}
         transactionUniqueNo={transactionUniqueNo}
-        type={content === '인건비'}
+        type={type === '인건비'}
       />
 
       {/* 영수증 모달 - file_id가 null이 아닐 때 표시 */}
