@@ -7,7 +7,7 @@ import {
   fetchWithdrawalWeeklySums,
   fetchShelterDonations,
   fetchAllWithdrawals,
-  saveWithdrawalToBoth,
+  initializeAndSaveWithdrawal,
   // 타입 import
   type DonationItem,
   type WithdrawalItem,
@@ -115,9 +115,27 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
       setWeeklyDonationData(donationWeeklyResponse);
       setWeeklyWithdrawalData(withdrawalWeeklyResponse);
 
-      // 3. 입출금 내역 데이터 저장
-      setDonationItems(shelterDonationsResponse);
-      setWithdrawalItems(allWithdrawalsResponse);
+      // 3. 입출금 내역 데이터 저장 (최신순 정렬)
+      const sortedDonations = [...shelterDonationsResponse].sort((a, b) => {
+        // 날짜가 undefined인 경우 처리
+        const dateA = a.donationDate ? new Date(a.donationDate).getTime() : 0;
+        const dateB = b.donationDate ? new Date(b.donationDate).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      const sortedWithdrawals = [...allWithdrawalsResponse].sort((a, b) => {
+        // 날짜가 undefined인 경우 처리
+        const dateA = a.withdrawalDate
+          ? new Date(a.withdrawalDate).getTime()
+          : 0;
+        const dateB = b.withdrawalDate
+          ? new Date(b.withdrawalDate).getTime()
+          : 0;
+        return dateB - dateA;
+      });
+
+      setDonationItems(sortedDonations);
+      setWithdrawalItems(sortedWithdrawals);
     } catch (err) {
       setError(
         err instanceof Error
@@ -140,7 +158,7 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
 
       try {
         const request: WithdrawalRequest = withdrawalData ?? { shelterId };
-        const result = await saveWithdrawalToBoth(request);
+        const result = await initializeAndSaveWithdrawal(request);
 
         // 저장에 성공하면 데이터를 다시 불러옴
         await fetchData();

@@ -96,6 +96,7 @@ export const getDogById = async (dogId: number) => {
     throw error;
   }
 };
+
 /**
  * 강아지 등록 데이터 인터페이스
  */
@@ -126,11 +127,8 @@ export const registerDog = async (
   try {
     const formData = new FormData();
 
-    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
-    formData.append(
-      'dog',
-      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
-    );
+    // JSON 데이터를 FormData에 추가할 때 key 이름을 'dog'로 설정
+    formData.append('dog', JSON.stringify(dogData));
 
     // 이미지가 있으면 추가
     if (dogImage) {
@@ -155,7 +153,15 @@ export const registerDog = async (
 
     return response.data;
   } catch (error) {
-    console.error('강아지 등록 실패:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error(
+        '강아지 등록 실패 응답:',
+        error.response.status,
+        error.response.data
+      );
+    } else {
+      console.error('강아지 등록 실패:', error);
+    }
     throw error;
   }
 };
