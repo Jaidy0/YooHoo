@@ -127,8 +127,11 @@ export const registerDog = async (
   try {
     const formData = new FormData();
 
-    // JSON 데이터를 FormData에 추가할 때 key 이름을 'dog'로 설정
-    formData.append('dog', JSON.stringify(dogData));
+    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
+    formData.append(
+      'dog',
+      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
+    );
 
     // 이미지가 있으면 추가
     if (dogImage) {
