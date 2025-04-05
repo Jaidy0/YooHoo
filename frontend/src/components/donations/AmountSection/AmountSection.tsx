@@ -43,7 +43,21 @@ export default function AmountSection({
       <StepTitle number={stepNumber} title='후원 금액 설정' />
 
       <div className={styles.amountInputContainer}>
-        <h3>후원 금액 입력</h3>
+        <div className={styles.amountInputHeader}>
+          <h3>후원 금액 입력</h3>
+          <button
+            type='button'
+            className={styles.resetButton}
+            onClick={() => {
+              setAmount(0);
+              updateFormData({ amount: 0 });
+              completeStep('amount', false);
+            }}
+          >
+            초기화
+          </button>
+        </div>
+
         <div className={styles.inputWrapper}>
           <input
             type='text'
@@ -62,8 +76,7 @@ export default function AmountSection({
             className={styles.amountButton}
             onClick={() => handleAmountIncrease(buttonAmount)}
           >
-            <span>+</span>
-            {buttonAmount.toLocaleString()}
+            +{buttonAmount.toLocaleString()}
           </button>
         ))}
       </div>
