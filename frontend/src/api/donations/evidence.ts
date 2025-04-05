@@ -114,7 +114,7 @@ export const fetchCardWithdrawal = async (
   params: CardWithdrawalRequest
 ): Promise<CardWithdrawalResponse> => {
   const response = await axios.post<CardWithdrawalResponse>(
-    `${API_BASE_URL}/api/withdrawal/card`,
+    `${API_BASE_URL}/api/card/withdrawal`,
     params
   );
 
