@@ -11,10 +11,59 @@ import { useRouter } from 'next/navigation';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { useShelterData } from '@/hooks/useShetlerData';
 import { useInfiniteDogData } from '@/hooks/useInfiniteDogData';
+import { useDog } from '@/hooks/useDog';
+import DonationUsageChart from '@/components/shelters/DonationUsageChart/DonationUsageChart';
+import ReliabilityChart from '@/components/shelters/ReliabilityChart/ReliabilityChart';
 
 interface GroupDetailClientProps {
   groupId: string;
 }
+
+// Mock 데이터 추가
+const mockDonationData = {
+  categories: [
+    {
+      name: '인건비',
+      color: '#f57c17',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '시설 유지비',
+      color: '#f2b2d1',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '사료비',
+      color: '#ee417c',
+      actualPercentage: 30,
+      averagePercentage: 50,
+    },
+    {
+      name: '물품 구매',
+      color: '#f4b616',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '의료비',
+      color: '#1bb9b3',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '기타',
+      color: '#7a91e0',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+  ],
+  totalIncome: 34000400,
+  totalExpense: 28930400,
+  year: 2025,
+  month: 2,
+};
 
 export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   const router = useRouter();
@@ -41,17 +90,22 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     initialSearch: '',
   });
 
+  // 상태 관리
+  const [activeTab, setActiveTab] = useState(0);
+  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
+  const [selectedDogId, setSelectedDogId] = useState<number | null>(null);
+
+  // 선택된 강아지의 상세 정보를 가져오기 위한 useDog 훅
+  const { dog: dogDetails, isLoading: isDogDetailsLoading } = useDog(
+    selectedDogId || 0
+  );
+
   // 탭 메뉴 아이템
   const tabMenuItems = [
     { name: '소개' },
     { name: '보호 중인 강아지' },
     { name: '후원금 운용 내역' },
   ];
-
-  // 상태 관리
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
-  const [dogDetails, setDogDetails] = useState<Dog | null>(null);
 
   // TabMenuItem 인터페이스 정의
   interface TabMenuItem {
@@ -69,16 +123,17 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   // 강아지 카드 클릭 핸들러
   function handleDogClick(dogId: number) {
     const dog = dogs.find((dog) => dog.dogId === dogId);
+
     if (dog) {
       setSelectedDog(dog);
-      setDogDetails(dog);
+      setSelectedDogId(dogId);
     }
   }
 
   // 상세 정보 닫기 핸들러
   function handleCloseDetail() {
     setSelectedDog(null);
-    setDogDetails(null);
+    setSelectedDogId(null);
   }
 
   // 더보기 버튼 클릭 핸들러
@@ -182,30 +237,49 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
           </div>
         )}
 
-        {activeTab === 1 && selectedDog && dogDetails && (
+        {activeTab === 1 && selectedDog && (
           <div className={styles.details}>
-            <DogDetailView
-              selectedDog={selectedDog}
-              dogDetails={dogDetails}
-              onClose={handleCloseDetail}
-            />
-            <Button
-              width='100%'
-              className={styles.yellowButton}
-              onClick={handleDogDonation}
-            >
-              이 강아지 지정 후원하기
-            </Button>
+            {isDogDetailsLoading ? (
+              <div className={styles.loadingContainer}>
+                <LoadingSpinner />
+              </div>
+            ) : dogDetails ? (
+              <>
+                <DogDetailView
+                  selectedDog={selectedDog}
+                  dogDetails={dogDetails}
+                  onClose={handleCloseDetail}
+                />
+                <Button
+                  width='100%'
+                  className={styles.yellowButton}
+                  onClick={handleDogDonation}
+                >
+                  이 강아지 지정 후원하기
+                </Button>
+              </>
+            ) : (
+              <div className={styles.errorContainer}>
+                <p>강아지 정보를 불러오는데 실패했습니다.</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 2 && (
           <div className={styles.fundsContent}>
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>신뢰도</span>
-              <span className={styles.statValue}>{shelter?.reliability}%</span>
-            </div>
-            <p>후원금 운용 내역입니다.</p>
+            <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
+            <ReliabilityChart
+              reliability={shelter?.reliability || 0}
+              reliabilityPercentage={shelter?.reliabilityPercentage || 70}
+            />
+            <DonationUsageChart
+              categories={mockDonationData.categories}
+              totalIncome={mockDonationData.totalIncome}
+              totalExpense={mockDonationData.totalExpense}
+              year={mockDonationData.year}
+              month={mockDonationData.month}
+            />
           </div>
         )}
       </div>

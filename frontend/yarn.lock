@@ -4977,6 +4977,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chartjs-plugin-datalabels@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "chartjs-plugin-datalabels@npm:2.2.0"
+  peerDependencies:
+    chart.js: ">=3.0.0"
+  checksum: 10c0/de4855a795e4eef34869a16db1a8a0f905b6dfed0258c733338f472625361eb56fb899214b18651c1c1064cd343a78285ba576576693a40ec51285a84f022ea0
+  languageName: node
+  linkType: hard
+
 "check-error@npm:^2.1.1":
   version: 2.1.1
   resolution: "check-error@npm:2.1.1"
@@ -6906,6 +6915,7 @@ __metadata:
     "@vitest/coverage-v8": "npm:^3.0.8"
     axios: "npm:^1.8.3"
     chart.js: "npm:^4.4.8"
+    chartjs-plugin-datalabels: "npm:^2.2.0"
     date-fns: "npm:^4.1.0"
     eslint: "npm:^9.22.0"
     eslint-config-airbnb: "npm:^19.0.4"
@@ -6923,6 +6933,7 @@ __metadata:
     playwright: "npm:^1.51.0"
     prettier: "npm:^3.5.3"
     react: "npm:^19.0.0"
+    react-chartjs-2: "npm:^5.3.0"
     react-datepicker: "npm:^8.2.1"
     react-dom: "npm:^19.0.0"
     sass: "npm:^1.85.1"
@@ -9605,6 +9616,16 @@ __metadata:
   version: 1.2.1
   resolution: "range-parser@npm:1.2.1"
   checksum: 10c0/96c032ac2475c8027b7a4e9fe22dc0dfe0f6d90b85e496e0f016fbdb99d6d066de0112e680805075bd989905e2123b3b3d002765149294dce0c1f7f01fcc2ea0
+  languageName: node
+  linkType: hard
+
+"react-chartjs-2@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "react-chartjs-2@npm:5.3.0"
+  peerDependencies:
+    chart.js: ^4.1.1
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+  checksum: 10c0/4415d40217c084a49f9a936fbd30f67e0e705148e6f8359bec65601033d1076f31085c45793839fc29ec833e6c427b0bf9861a0c54c432c08d35bc9590ffa41a
   languageName: node
   linkType: hard
 
