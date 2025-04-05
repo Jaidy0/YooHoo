@@ -181,7 +181,12 @@ export const updateDog = async (
     if (dogImage) {
       formData.append('file', dogImage);
     }
-
+    console.log('이미지 파일 정보:', {
+      name: dogImage?.name,
+      type: dogImage?.type,
+      size: dogImage?.size,
+      lastModified: dogImage?.lastModified,
+    });
     const response = await axios.patch(
       `${API_BASE_URL}/api/dogs/${dogId}`,
       formData,
