@@ -18,7 +18,7 @@ export interface WithdrawTableItem {
   content: string;
   amount: number;
   date: string;
-  isReceipt: boolean;
+  file_id: string;
   transactionUniqueNo: number; // 추가: 거래 고유 번호
 }
 
@@ -60,13 +60,13 @@ export const adaptWithdrawalsToWithdrawTable = (
       withdrawalId: item.withdrawalId, // 추가: 출금 ID 포함
       type,
       category: item.category,
+      file_id: item.file_id,
       content: item.content || `${item.category} 지출`, // content가 있으면 사용, 없으면 카테고리로 대체
       amount:
         item.amount !== undefined
           ? item.amount
           : parseInt(item.transactionBalance, 10),
       date,
-      isReceipt: item.isReceipt || false,
       transactionUniqueNo: parseInt(item.transactionUniqueNo, 10), // 추가: 거래 고유 번호 (문자열을 숫자로 변환)
     };
   });

@@ -100,7 +100,7 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
         fetchDonationWeeklySums(),
         fetchWithdrawalWeeklySums(),
         fetchShelterDonations(shelterId),
-        fetchAllWithdrawals(),
+        fetchAllWithdrawals(shelterId),
       ]);
 
       // 1. 총액 데이터 처리
