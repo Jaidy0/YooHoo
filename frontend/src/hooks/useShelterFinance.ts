@@ -7,7 +7,7 @@ import {
   fetchWithdrawalWeeklySums,
   fetchShelterDonations,
   fetchAllWithdrawals,
-  saveWithdrawalToBoth,
+  initializeAndSaveWithdrawal,
   // 타입 import
   type DonationItem,
   type WithdrawalItem,
@@ -140,7 +140,7 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
 
       try {
         const request: WithdrawalRequest = withdrawalData ?? { shelterId };
-        const result = await saveWithdrawalToBoth(request);
+        const result = await initializeAndSaveWithdrawal(request);
 
         // 저장에 성공하면 데이터를 다시 불러옴
         await fetchData();
