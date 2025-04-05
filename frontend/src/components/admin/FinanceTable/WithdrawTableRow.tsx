@@ -15,8 +15,8 @@ export interface WithdrawTableRowProps {
   content?: string;
   amount: number;
   date: string;
-  isReceipt: boolean;
   transactionUniqueNo: number;
+  file_id: string | null;
   onReceiptChange?: () => void; // 영수증 변경 시 호출할 콜백
 }
 
@@ -32,13 +32,10 @@ export default function WithdrawTableRow({
   content = '-',
   amount,
   date,
-  isReceipt,
   transactionUniqueNo,
   onReceiptChange,
+  file_id,
 }: WithdrawTableRowProps) {
-  // 상태 관리
-  const [localIsReceipt, setLocalIsReceipt] = useState(isReceipt);
-
   // 모달 상태 관리
   const [isDogSelectModalOpen, setIsDogSelectModalOpen] = useState(false);
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
@@ -46,11 +43,11 @@ export default function WithdrawTableRow({
   const [isReceiptUploadModalOpen, setIsReceiptUploadModalOpen] =
     useState(false);
 
+  // 영수증 존재 여부 - file_id를 기준으로 판단
+  const hasReceipt = file_id !== null;
+
   // 영수증 변경 처리
   const handleReceiptChange = useCallback(() => {
-    // 로컬 상태 갱신
-    setLocalIsReceipt(true);
-
     // 부모 컴포넌트에 변경 알림
     onReceiptChange?.();
   }, [onReceiptChange]);
@@ -87,9 +84,9 @@ export default function WithdrawTableRow({
     setIsReceiptUploadModalOpen(false);
   };
 
-  // 영수증 버튼 클릭 핸들러
+  // 영수증 버튼 클릭 핸들러 - file_id 기준으로 변경
   const handleReceiptButtonClick = () => {
-    if (localIsReceipt) {
+    if (hasReceipt) {
       openReceiptModal();
     } else {
       openReceiptUploadModal();
@@ -130,10 +127,10 @@ export default function WithdrawTableRow({
           </div>
           <div className={styles.receipt}>
             <RoundButton
-              variant={localIsReceipt ? 'primary' : 'secondary'}
+              variant={hasReceipt ? 'primary' : 'secondary'}
               onClick={handleReceiptButtonClick}
             >
-              {localIsReceipt ? '영수증보기' : '추가하기'}
+              {hasReceipt ? '영수증보기' : '추가하기'}
             </RoundButton>
           </div>
         </div>
@@ -155,8 +152,8 @@ export default function WithdrawTableRow({
         type={content === '인건비'}
       />
 
-      {/* 영수증 모달 - 영수증이 있을 때 표시 */}
-      {localIsReceipt && (
+      {/* 영수증 모달 - file_id가 null이 아닐 때 표시 */}
+      {hasReceipt && (
         <ReceiptModal
           isOpen={isReceiptModalOpen}
           onClose={closeReceiptModal}
@@ -164,8 +161,8 @@ export default function WithdrawTableRow({
         />
       )}
 
-      {/* 영수증 업로드 모달 - 영수증이 없을 때 표시 */}
-      {!localIsReceipt && (
+      {/* 영수증 업로드 모달 - file_id가 null일 때 표시 */}
+      {!hasReceipt && (
         <ReceiptUploadModal
           isOpen={isReceiptUploadModalOpen}
           onClose={closeReceiptUploadModal}

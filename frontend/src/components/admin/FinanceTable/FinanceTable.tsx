@@ -110,7 +110,7 @@ export default function FinanceTable({
               content=''
               amount={0}
               date=''
-              isReceipt={false}
+              file_id=''
               transactionUniqueNo={0}
             />
 
