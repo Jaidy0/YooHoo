@@ -10,6 +10,7 @@ import { DonationFormData } from '@/types/donation';
 import { useAccounts } from '@/hooks/donations/useAccount';
 import { useShelterAccount } from '@/hooks/donations/useShelterAccount';
 import { IconBox } from '@/components/common/IconBox/IconBox';
+import { useAuthStore } from '@/store/authStore';
 
 type AccountSectionProps = {
   stepNumber: number;
@@ -26,6 +27,7 @@ export default function AccountSection({
   completeStep,
   donationType,
 }: AccountSectionProps) {
+  const nickname = useAuthStore((state) => state.user?.nickname || '후원자');
   const [accountName, setAccountName] = useState(formData.accountName || '');
   const [selectedAccountIdx, setSelectedAccountIdx] = useState<number | null>(
     null
@@ -214,7 +216,7 @@ export default function AccountSection({
         <AccountNameRadio
           value={accountName}
           onChange={handleAccountNameChange}
-          nickname='닉네임' // 추후 불러올 데이터
+          nickname={nickname}
         />
       </div>
 
