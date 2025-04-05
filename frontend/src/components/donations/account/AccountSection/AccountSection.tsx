@@ -84,9 +84,13 @@ export default function AccountSection({
     return Number(balance).toLocaleString() + '원';
   };
 
+  useEffect(() => {
+    validateForm();
+  }, [formData.accountNumber, accountName]);
+
   // 폼 유효성 검사 및 완료 상태 업데이트
   const validateForm = () => {
-    const isValid = !!accountName && selectedAccountIdx !== null;
+    const isValid = !!formData.accountNumber && !!accountName.trim();
     completeStep('accountInfo', isValid);
   };
 

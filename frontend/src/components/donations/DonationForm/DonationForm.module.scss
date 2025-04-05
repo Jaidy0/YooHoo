@@ -3,6 +3,26 @@
   margin-top: 0;
 }
 
+.description {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-self: center;
+  margin: 1rem 0;
+  font-size: $font-size-sm;
+
+  strong {
+    margin-right: 0.5rem;
+    color: $chart-yellow;
+    font-size: $font-size-md;
+  }
+
+  p {
+    margin: 0.5rem 0;
+  }
+}
+
 .progressBarContainer {
   position: sticky;
   top: 0;
