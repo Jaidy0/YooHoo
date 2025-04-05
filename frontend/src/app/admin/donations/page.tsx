@@ -5,6 +5,8 @@ import DonationTracker from '@/components/admin/DonationTracker/DonationTracker'
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useShelterFinance } from '@/hooks/useShelterFinance';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
 import {
   adaptDonationsToDepositTable,
   adaptWithdrawalsToWithdrawTable,
@@ -16,10 +18,22 @@ interface StatItem {
 }
 
 export default function DonationsPage() {
-  // 5번 보호소 기준으로 데이터 로드 (필요시 동적으로 변경할 수 있습니다)
-  const shelterId = 5;
+  // useAuthStore에서 사용자 정보 가져오기
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
 
-  // useShelterFinance 훅 사용
+  // 유저 정보에서 shelterId 가져오기
+  const shelterId = user?.shelterId;
+
+  // 사용자 인증 상태에 따라 데이터 로드 여부 결정
+  const [, setShouldLoadData] = useState(false);
+
+  useEffect(() => {
+    // 사용자가 인증되고 shelterId가 존재할 때만 데이터 로드
+    if (isAuthenticated && shelterId) {
+      setShouldLoadData(true);
+    }
+  }, [isAuthenticated, shelterId]);
+
   const {
     totalDonation,
     totalWithdrawal,
@@ -27,10 +41,24 @@ export default function DonationsPage() {
     weeklyWithdrawalData,
     donationItems,
     withdrawalItems,
-    isLoading,
+    isLoading: financeLoading,
     error,
     refetch,
-  } = useShelterFinance(shelterId);
+  } = useShelterFinance(shelterId || 5);
+
+  // 로딩 상태 처리 (인증 로딩 또는 재무 데이터 로딩)
+  const isLoading = authLoading || financeLoading;
+
+  // 인증 실패 또는 shelterId가 없는 경우 처리
+  if (!authLoading && (!isAuthenticated || !shelterId)) {
+    return (
+      <div className={styles.donationsPage}>
+        <div className={styles.errorState}>
+          <p>보호소 정보가 없거나 접근 권한이 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
 
   // API 응답에서 주간 통계 데이터 구성
   const donationStats: StatItem[] = [
