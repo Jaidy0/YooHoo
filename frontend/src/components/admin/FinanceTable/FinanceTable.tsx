@@ -7,7 +7,6 @@ import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 
 export interface FinanceTableProps {
   depositData: Omit<DepositTableRowProps, 'variant'>[];
-  // 출금 데이터 타입을 WithdrawTableRow에서 필요로 하는 속성에 맞게 수정
   withdrawData: Omit<WithdrawTableRowProps, 'variant' | 'onReceiptChange'>[];
   className?: string;
 }
@@ -111,7 +110,7 @@ export default function FinanceTable({
               content=''
               amount={0}
               date=''
-              isReceipt={false}
+              file_id=''
               transactionUniqueNo={0}
             />
 

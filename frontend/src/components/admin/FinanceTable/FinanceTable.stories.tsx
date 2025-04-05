@@ -102,8 +102,9 @@ const withdrawData = [
     content: '월 정기 후원',
     amount: 50000,
     date: '2025-03-20',
-    isReceipt: true,
+
     transactionUniqueNo: 10001,
+    file_id: '',
   },
   {
     withdrawalId: 2,
@@ -112,7 +113,7 @@ const withdrawData = [
     content: '일시 후원',
     amount: 100000,
     date: '2025-03-18',
-    isReceipt: false,
+    file_id: '',
     transactionUniqueNo: 10002,
   },
   {
@@ -122,7 +123,7 @@ const withdrawData = [
     content: '단체 기부',
     amount: 300000,
     date: '2025-03-15',
-    isReceipt: true,
+    file_id: '',
     transactionUniqueNo: 10003,
   },
   {
@@ -132,7 +133,7 @@ const withdrawData = [
     content: '월 정기 후원',
     amount: 30000,
     date: '2025-03-10',
-    isReceipt: false,
+    file_id: '',
     transactionUniqueNo: 10004,
   },
   {
@@ -142,7 +143,7 @@ const withdrawData = [
     content: '행사 수익금',
     amount: 450000,
     date: '2025-03-05',
-    isReceipt: true,
+    file_id: '',
     transactionUniqueNo: 10005,
   },
   {
@@ -152,7 +153,7 @@ const withdrawData = [
     content: '일시 후원',
     amount: 25000,
     date: '2025-03-01',
-    isReceipt: false,
+    file_id: '',
     transactionUniqueNo: 10006,
   },
   {
@@ -162,7 +163,7 @@ const withdrawData = [
     content: '바자회 수익금',
     amount: 560000,
     date: '2025-02-28',
-    isReceipt: true,
+    file_id: '',
     transactionUniqueNo: 10007,
   },
   {
@@ -172,7 +173,7 @@ const withdrawData = [
     content: '월 정기 후원',
     amount: 50000,
     date: '2025-02-25',
-    isReceipt: true,
+    file_id: '',
     transactionUniqueNo: 10008,
   },
   {
@@ -182,7 +183,7 @@ const withdrawData = [
     content: '일시 후원',
     amount: 75000,
     date: '2025-02-20',
-    isReceipt: false,
+    file_id: '',
     transactionUniqueNo: 10009,
   },
   {
@@ -192,7 +193,7 @@ const withdrawData = [
     content: '기업 후원',
     amount: 1000000,
     date: '2025-02-15',
-    isReceipt: true,
+    file_id: '',
     transactionUniqueNo: 10010,
   },
   {
@@ -202,7 +203,7 @@ const withdrawData = [
     content: '월 정기 후원',
     amount: 30000,
     date: '2025-02-10',
-    isReceipt: false,
+    file_id: '',
     transactionUniqueNo: 10011,
   },
   {
@@ -212,7 +213,7 @@ const withdrawData = [
     content: '개인 기부',
     amount: 200000,
     date: '2025-02-05',
-    isReceipt: true,
+    file_id: '',
     transactionUniqueNo: 10012,
   },
 ];

@@ -76,7 +76,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
       date: new Date(item.withdrawalDate || item.date).toLocaleDateString(
         'ko-KR'
       ),
-      isReceipt: item.isReceipt || false,
+      file_id: item.file_id,
       transactionUniqueNo: parseInt(item.transactionUniqueNo || '0', 10), // 추가: transactionUniqueNo 포함 (문자열을 숫자로 변환)
     })
   );

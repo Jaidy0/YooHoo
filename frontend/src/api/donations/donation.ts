@@ -114,11 +114,12 @@ export const fetchShelterDonations = async (
  * 후원금 출금 전체 조회 API
  * @returns 출금 내역 목록
  */
-export const fetchAllWithdrawals = async (): Promise<WithdrawalItem[]> => {
+export const fetchAllWithdrawals = async (
+  shelterId: number
+): Promise<WithdrawalItem[]> => {
   try {
-    // !!!수정필요
     const response = await axios.get<WithdrawalItem[]>(
-      `${API_BASE_URL}/api/withdrawal/shelter/${5}/all`
+      `${API_BASE_URL}/api/withdrawal/shelter/${shelterId}/all`
     );
     return response.data;
   } catch (error) {

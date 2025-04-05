@@ -41,8 +41,8 @@ export default function AdminAuthGuard({
     initialAuthCheck();
   }, [isAuthenticated, isLoading, checkAuthStatus]);
 
-  // shelterId 보정: undefined나 null이면 0으로 설정
-  const effectiveShelterId = shelterId || 0;
+  // shelterId 보정: undefined나 null이면 5로 설정
+  const effectiveShelterId = shelterId || 5;
 
   // 인증 및 관리자 권한 확인
   useEffect(() => {
@@ -141,28 +141,44 @@ export default function AdminAuthGuard({
   );
 
   // 로딩 또는 권한 확인 중
+  // AdminAuthGuard.tsx의 로딩 상태 부분 수정
   if (isLoading || !authChecked) {
     return (
       <div className='admin-loading'>
         <p>관리자 인증 확인 중...</p>
         <div className='loading-indicator'></div>
-        {process.env.NODE_ENV === 'development' && (
-          <div style={{ fontSize: '12px', marginTop: '10px', color: '#777' }}>
-            <div>인증 상태: {isAuthenticated ? '인증됨' : '인증안됨'}</div>
-            <div>로딩 상태: {isLoading ? '로딩중' : '로딩완료'}</div>
-            <div>권한 확인: {authChecked ? '완료' : '진행중'}</div>
-            <div>
-              관리자 권한:{' '}
-              {isAdmin === true
-                ? '있음'
-                : isAdmin === false
-                  ? '없음'
-                  : '확인중'}
-            </div>
-            <div>shelterId: {effectiveShelterId}</div>
-            {user && <div>사용자: {JSON.stringify(user)}</div>}
+
+        {/* 서버에서도 표시될 디버깅 정보 */}
+        <div style={{ fontSize: '12px', marginTop: '10px', color: '#777' }}>
+          <div>인증 상태: {isAuthenticated ? '인증됨' : '인증안됨'}</div>
+          <div>로딩 상태: {isLoading ? '로딩중' : '로딩완료'}</div>
+          <div>권한 확인: {authChecked ? '완료' : '진행중'}</div>
+          <div>
+            관리자 권한:{' '}
+            {isAdmin === true ? '있음' : isAdmin === false ? '없음' : '확인중'}
           </div>
-        )}
+          <div>shelterId: {effectiveShelterId}</div>
+
+          {/* 디버깅용 버튼 */}
+          <div style={{ marginTop: '10px' }}>
+            <button
+              onClick={() => {
+                const key = `adminDataInitialized_${effectiveShelterId}`;
+                sessionStorage.removeItem(key);
+                alert(`세션 스토리지 키 ${key} 삭제됨`);
+              }}
+              style={{ marginRight: '10px', padding: '5px' }}
+            >
+              세션 초기화
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              style={{ padding: '5px' }}
+            >
+              페이지 새로고침
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
