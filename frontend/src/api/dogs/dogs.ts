@@ -127,11 +127,8 @@ export const registerDog = async (
   try {
     const formData = new FormData();
 
-    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
-    formData.append(
-      'dog',
-      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
-    );
+    // JSON 문자열을 직접 추가 (Blob 없이)
+    formData.append('dog', JSON.stringify(dogData));
 
     // 이미지가 있으면 추가
     if (dogImage) {
@@ -149,19 +146,10 @@ export const registerDog = async (
       }
     );
 
-    if (!response || !response.data) {
-      console.warn('서버에서 응답이 없거나 비어있습니다.');
-      return null;
-    }
-
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
-      console.error(
-        '강아지 등록 실패 응답:',
-        error.response.status,
-        error.response.data
-      );
+      console.error('강아지 등록 실패:', error.response.data);
     } else {
       console.error('강아지 등록 실패:', error);
     }
