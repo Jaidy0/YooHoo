@@ -133,19 +133,30 @@ export default function AccountSection({
                 className={styles.dropdownHeader}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                {selectedAccountIdx !== null ? (
-                  <AccountInfoCard
-                    bankName={accounts[selectedAccountIdx].bankName}
-                    accountNumber={accounts[selectedAccountIdx].accountNo}
-                    isSelected={true}
-                  />
-                ) : (
-                  <div className={styles.placeholderContainer}>
+                <div className={styles.selectedAccountBox}>
+                  {selectedAccountIdx !== null ? (
+                    <div className={styles.selectedAccountContent}>
+                      <div className={styles.iconWrapper}>
+                        <IconBox name='account' size={24} />
+                      </div>
+                      <div className={styles.accountDetails}>
+                        <p className={styles.bankName}>
+                          {accounts[selectedAccountIdx].bankName}
+                        </p>
+                        <p className={styles.accountNumber}>
+                          {formatAccountNumber(
+                            accounts[selectedAccountIdx].accountNo
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
                     <span className={styles.placeholder}>
                       계좌를 선택해주세요
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
+
                 <div
                   className={`${styles.chevronIcon} ${isDropdownOpen ? styles.rotated : ''}`}
                 >
