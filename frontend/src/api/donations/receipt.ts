@@ -30,7 +30,6 @@ export const uploadReceipt = async (
 
   return response.data;
 };
-
 /**
  * 영수증 이미지 URL 조회 API
  * @param withdrawId 출금 ID
@@ -38,13 +37,12 @@ export const uploadReceipt = async (
 export const getReceiptFileUrl = async (
   withdrawId: number
 ): Promise<string> => {
-  const response = await axios.get<string>(
+  const response = await axios.get<{ fileUrl: string }>(
     `${API_BASE_URL}/api/withdrawal/${withdrawId}/fileUrl`
   );
 
-  return response.data;
+  return response.data.fileUrl;
 };
-
 /**
  * 영수증 삭제 API
  * @param withdrawId 출금 ID
