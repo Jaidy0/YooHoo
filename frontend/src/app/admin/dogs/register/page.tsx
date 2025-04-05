@@ -24,7 +24,7 @@ export default function DogsRegisterPage() {
     age: '',
     weight: '',
     breed: '',
-    health: '',
+
     energetic: 3,
     familiarity: 1,
     isNeutered: '미완',
@@ -122,7 +122,7 @@ export default function DogsRegisterPage() {
       age: '',
       weight: '',
       breed: '',
-      health: '',
+
       energetic: 3,
       familiarity: 1,
       isNeutered: '미완',
@@ -164,7 +164,7 @@ export default function DogsRegisterPage() {
         age,
         weight,
         breed,
-        health,
+
         energetic,
         familiarity,
         isNeutered,
@@ -183,7 +183,6 @@ export default function DogsRegisterPage() {
         isVaccination: getCompletionStatus(isVaccinated),
         isNeutered: getCompletionStatus(isNeutered),
         status: getStatusCode(status),
-        health: health || undefined,
       };
 
       // API 호출
@@ -306,13 +305,6 @@ export default function DogsRegisterPage() {
                 onChange={(e) => handleInputChange('weight', e.target.value)}
                 hasError={!!errors.weight}
                 errorMessage={errors.weight}
-              />
-
-              <Input
-                title='건강'
-                placeHolder='해당되는 건강을 입력해주세요.'
-                value={formState.health}
-                onChange={(e) => handleInputChange('health', e.target.value)}
               />
 
               <div className={styles.formGroup}>

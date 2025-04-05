@@ -111,7 +111,6 @@ export interface DogRegisterData {
   isVaccination: boolean;
   isNeutered: boolean;
   status: number;
-  health?: string;
 }
 
 /**
