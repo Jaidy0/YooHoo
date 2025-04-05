@@ -42,6 +42,8 @@ export default function ReceiptModal({
     fetchReceiptUrl();
   }, [isOpen, withdrawId]);
 
+  console.log(receiptUrl);
+
   return (
     <Modal
       isOpen={isOpen}
