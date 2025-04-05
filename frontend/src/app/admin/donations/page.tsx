@@ -128,6 +128,8 @@ export default function DonationsPage() {
     return value.toFixed(0);
   };
 
+  const total = (totalDonation || 0) - (totalWithdrawal || 0);
+
   return (
     <div className={styles.donationsPage}>
       {/* 후원금 총액 요약 */}
@@ -141,7 +143,7 @@ export default function DonationsPage() {
             {/* 왼쪽에 총액 표시 */}
             <DonationTracker
               variant='total'
-              amount={totalDonation || 0}
+              amount={total || 0}
               compareDeposit={totalDonation || 0}
               compareWithdraw={totalWithdrawal || 0}
             />
