@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useShelterFinance } from '@/hooks/useShelterFinance';
-import { initializeShelterFinInfo } from '@/api/donations/donation';
+import { initializeAndSaveWithdrawal } from '@/api/donations/donation';
 
 interface UseAdminDataInitializerResult {
   isInitialized: boolean;
@@ -23,7 +23,7 @@ export function useAdminDataInitializer(
   const [finInfoError, setFinInfoError] = useState<Error | null>(null);
 
   // shelterId가 정의되지 않은 경우 0으로 설정
-  const safeShelterId = shelterId ?? 0;
+  const safeShelterId = shelterId ?? 5;
 
   console.log(
     '[디버깅] useAdminDataInitializer 호출됨, shelterId:',
@@ -96,11 +96,11 @@ export function useAdminDataInitializer(
 
         // 2. 재정 정보 초기화 요청
         console.log(
-          '[디버깅] initializeShelterFinInfo 호출 전, shelterId:',
+          '[디버깅] initializeAndSaveWithdrawal 호출 전, shelterId:',
           safeShelterId
         );
-        await initializeShelterFinInfo(safeShelterId);
-        console.log('[디버깅] initializeShelterFinInfo 완료');
+        await initializeAndSaveWithdrawal({ shelterId: safeShelterId });
+        console.log('[디버깅] initializeAndSaveWithdrawal 완료');
 
         // 두 작업이 모두 성공하면 초기화 완료로 표시
         sessionStorage.setItem(storageKey, 'true');
