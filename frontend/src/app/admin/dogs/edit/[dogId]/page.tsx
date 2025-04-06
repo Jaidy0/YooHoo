@@ -173,7 +173,6 @@ export default function DogsEditPage() {
         // 이미지 업로드 API 연동 시 추가해야함
       }
 
-      alert('강아지 정보가 수정되었습니다.');
       router.push(`/admin/dogs/${dogId}`);
     } catch (error) {
       console.error('강아지 정보 수정 실패:', error);

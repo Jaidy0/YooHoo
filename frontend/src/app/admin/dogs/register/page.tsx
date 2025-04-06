@@ -187,7 +187,6 @@ export default function DogsRegisterPage() {
 
       // API 호출
       await registerDogInfo(dogData, dogImage);
-      alert('강아지 정보가 성공적으로 등록되었습니다.');
       router.push('/admin/dogs/success');
     } catch (error) {
       console.error(error);

@@ -4,6 +4,7 @@ import styles from './page.module.scss';
 import DonationTracker from '@/components/admin/DonationTracker/DonationTracker';
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 import IconBox from '@/components/common/IconBox/IconBox';
+import DonationChart from '@/components/admin/DonationChart/DonationChart';
 import { useShelterFinance } from '@/hooks/useShelterFinance';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
@@ -104,29 +105,7 @@ export default function DonationsPage() {
     );
   }
 
-  // 차트 데이터에서 최대 값을 구하여 차트 높이 비율 계산
-  const getMaxValue = (items: StatItem[]) => {
-    return Math.max(...items.map((item) => item.value || 0));
-  };
-
-  const maxDonationValue = getMaxValue(donationStats);
-  const maxWithdrawalValue = getMaxValue(withdrawalStats);
-
-  // 차트 스케일 계산 (최대 높이 200px 기준)
-  const getBarHeight = (value: number, maxValue: number) => {
-    if (maxValue === 0) return 0;
-    return Math.max((value / maxValue) * 200, 5); // 최소 높이 5px
-  };
-
-  // 숫자 포맷팅 함수
-  const formatNumber = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
-    } else if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K`;
-    }
-    return value.toFixed(0);
-  };
+  const total = (totalDonation || 0) - (totalWithdrawal || 0);
 
   return (
     <div className={styles.donationsPage}>
@@ -141,7 +120,7 @@ export default function DonationsPage() {
             {/* 왼쪽에 총액 표시 */}
             <DonationTracker
               variant='total'
-              amount={totalDonation || 0}
+              amount={total || 0}
               compareDeposit={totalDonation || 0}
               compareWithdraw={totalWithdrawal || 0}
             />
@@ -162,56 +141,12 @@ export default function DonationsPage() {
             <IconBox name='zoom' />
           </div>
         </div>
-        <div className={styles.chartsContainer}>
-          {/* 수입 차트 */}
-          <div className={styles.chartCard}>
-            <div className={styles.chartTitle}>수입</div>
-            <div className={styles.barChart}>
-              {donationStats.map((item, index) => (
-                <div key={index} className={styles.barChartItem}>
-                  <div className={styles.barValue}>
-                    {formatNumber(item.value)}
-                  </div>
-                  <div
-                    className={`${styles.bar} ${
-                      index === 6 ? styles.barHighlight : ''
-                    }`}
-                    style={{
-                      height: `${getBarHeight(item.value, maxDonationValue)}px`,
-                    }}
-                  ></div>
-                  <div className={styles.barLabel}>{item.month}</div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* 지출 차트 */}
-          <div className={styles.chartCard}>
-            <div className={styles.chartTitle}>지출</div>
-            <div className={styles.barChart}>
-              {withdrawalStats.map((item, index) => (
-                <div key={index} className={styles.barChartItem}>
-                  <div className={styles.barValue}>
-                    {formatNumber(item.value)}
-                  </div>
-                  <div
-                    className={`${styles.bar} ${
-                      index === 6 ? styles.barHighlight : ''
-                    }`}
-                    style={{
-                      height: `${getBarHeight(
-                        item.value,
-                        maxWithdrawalValue
-                      )}px`,
-                    }}
-                  ></div>
-                  <div className={styles.barLabel}>{item.month}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* 기존 차트를 새로운 DonationChart 컴포넌트로 대체 */}
+        <DonationChart
+          donationStats={donationStats}
+          withdrawalStats={withdrawalStats}
+        />
       </section>
 
       {/* 후원금 입출금 내역 */}
