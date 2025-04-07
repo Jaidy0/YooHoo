@@ -54,65 +54,76 @@ export default function EvidanceModal({
               <div className={styles.errorMessage}>
                 데이터를 불러오는 중 오류가 발생했습니다.
               </div>
-            ) : bankbookData.data ? (
+            ) : bankbookData.filteredTransaction ? (
               <div className={styles.bankbookData}>
                 <h3 className={styles.sectionTitle}>통장 출금 내역</h3>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래일시:</span>
                   <span className={styles.value}>
-                    {formatDate(bankbookData.data.REC.transactionDate)}{' '}
-                    {formatTime(bankbookData.data.REC.transactionTime)}
+                    {formatDate(
+                      bankbookData.filteredTransaction.transactionDate
+                    )}{' '}
+                    {formatTime(
+                      bankbookData.filteredTransaction.transactionTime
+                    )}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래유형:</span>
                   <span className={styles.value}>
-                    {bankbookData.data.REC.transactionTypeName}
+                    {bankbookData.filteredTransaction.transactionTypeName}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>계좌번호:</span>
                   <span className={styles.value}>
-                    {bankbookData.data.REC.transactionAccountNo}
+                    {bankbookData.filteredTransaction.transactionAccountNo}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래금액:</span>
                   <span className={styles.value}>
-                    {formatCurrency(bankbookData.data.REC.transactionBalance)}
+                    {formatCurrency(
+                      Number(
+                        bankbookData.filteredTransaction.transactionBalance
+                      )
+                    )}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래 후 잔액:</span>
                   <span className={styles.value}>
                     {formatCurrency(
-                      Number(bankbookData.data.REC.transactionAfterBalance)
+                      Number(
+                        bankbookData.filteredTransaction.transactionAfterBalance
+                      )
                     )}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래요약:</span>
                   <span className={styles.value}>
-                    {bankbookData.data.REC.transactionSummary}
+                    {bankbookData.filteredTransaction.transactionSummary}
                   </span>
                 </div>
-                {bankbookData.data.REC.transactionMemo && (
+                {bankbookData.filteredTransaction.transactionMemo && (
                   <div className={styles.dataRow}>
                     <span className={styles.label}>메모:</span>
                     <span className={styles.value}>
-                      {bankbookData.data.REC.transactionMemo}
+                      {bankbookData.filteredTransaction.transactionMemo}
                     </span>
                   </div>
                 )}
               </div>
             ) : (
-              <div className={styles.noDataMessage}>거래 정보가 없습니다.</div>
+              <div className={styles.noDataMessage}>
+                해당 거래번호의 거래 정보가 없습니다.
+              </div>
             )}
           </>
         ) : (
-          // 카드 증빙 (type이 false일 때)
+          // 카드 증빙 (type이 false일 때) - 변경 없음
           <>
-            {/* 카드 증빙 부분 수정 */}
             {cardData.isLoading ? (
               <div className={styles.loadingMessage}>
                 데이터를 불러오는 중입니다...
@@ -157,7 +168,6 @@ export default function EvidanceModal({
                     {cardData.data?.REC.cardName ?? ''}
                   </span>
                 </div>
-                {/* approvalCode가 응답에 없으므로 대체 정보 표시 */}
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래상태:</span>
                   <span className={styles.value}>
