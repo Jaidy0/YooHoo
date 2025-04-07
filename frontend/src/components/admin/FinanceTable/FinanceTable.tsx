@@ -54,17 +54,9 @@ export default function FinanceTable({
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
   // 안내 메시지 닫기
   const handleCloseInfoMessage = () => {
     setShowInfoMessage(false);
-  };
-
-  // 영수증 상태 변경 핸들러 함수 (출금 데이터를 위한 콜백)
-  const handleReceiptChange = () => {
-    // 필요한 경우 상태 업데이트 또는 부모 컴포넌트에 알림
-    console.log('Receipt status changed');
-    // 추가 로직이 필요한 경우 여기에 작성
   };
 
   return (
@@ -174,7 +166,6 @@ export default function FinanceTable({
                 <WithdrawTableRow
                   key={index}
                   {...(item as Omit<WithdrawTableRowProps, 'variant'>)}
-                  onReceiptChange={handleReceiptChange}
                 />
               ))
             ) : (
