@@ -189,7 +189,7 @@
   justify-content: center;
 }
 
-.yellowButton {
+.moreBtn {
   width: 100%;
   background-color: $yh-yellow !important;
   color: $text-333 !important;
@@ -219,4 +219,11 @@
     max-width: 768px;
     margin: 0 auto;
   }
+}
+
+.moreBtn > span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }

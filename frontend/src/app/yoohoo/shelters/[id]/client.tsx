@@ -14,6 +14,7 @@ import { useInfiniteDogData } from '@/hooks/useInfiniteDogData';
 import { useDog } from '@/hooks/useDog';
 import DonationUsageChart from '@/components/shelters/DonationUsageChart/DonationUsageChart';
 import ReliabilityChart from '@/components/shelters/ReliabilityChart/ReliabilityChart';
+import DonationUseHistoryList from '@/components/shelters/DonationUseHistoryList/DonationUseHistoryList';
 
 interface GroupDetailClientProps {
   groupId: string;
@@ -63,6 +64,36 @@ const mockDonationData = {
   totalExpense: 28930400,
   year: 2025,
   month: 2,
+  histories: [
+    {
+      id: 1,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: true,
+    },
+    {
+      id: 2,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: false,
+    },
+    {
+      id: 3,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: true,
+    },
+    {
+      id: 4,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: true,
+    },
+  ],
 };
 
 export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
@@ -227,7 +258,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               <div className={styles.loadMoreContainer}>
                 <Button
                   width='100%'
-                  className={styles.yellowButton}
+                  className={styles.moreBtn}
                   onClick={handleLoadMore}
                 >
                   + 더보기
@@ -280,6 +311,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               year={mockDonationData.year}
               month={mockDonationData.month}
             />
+            <DonationUseHistoryList histories={mockDonationData.histories} />
           </div>
         )}
       </div>

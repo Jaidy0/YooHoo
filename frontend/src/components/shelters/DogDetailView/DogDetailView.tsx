@@ -31,6 +31,7 @@ export default function DogDetailView({
 
   // 총 후원금액 계산
   const totalDonation = depositData.reduce((sum, item) => sum + item.amount, 0);
+  const formattedTotalDonation = `${totalDonation.toLocaleString()}원`;
 
   // admissionDate가 존재할 때만 날짜 포맷팅을 처리
   const formattedAdmissionDate = dogDetails.admissionDate
@@ -171,7 +172,9 @@ export default function DogDetailView({
             <div className={styles.donationStatus}>
               <div className={styles.donationAmount}>
                 <span className={styles.donationLabel}>현재 모금액</span>
-                <span className={styles.currentAmount}>{totalDonation}</span>
+                <span className={styles.currentAmount}>
+                  {formattedTotalDonation}
+                </span>
               </div>
               <div>
                 <span className={styles.historyLabel}>최근 후원 내역</span>
