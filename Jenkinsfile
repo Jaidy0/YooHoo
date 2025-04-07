@@ -84,43 +84,43 @@ pipeline {
             }
         }
         stage('Build & Push Images') {
-            parallel {
-                stage('Build Backend') {
-                    agent { label 'backend-dev' }
-                    steps {
-                        script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                dir("backend") {
-                                    sh """
-                                        docker build -t ${BACKEND_IMAGE}:${CANARY_TAG} .
-                                        docker push ${BACKEND_IMAGE}:${CANARY_TAG}
-                                    """
-                                }
-                            }
-                        }
-                    }
-                }
-                stage('Build Frontend') {
-                    agent { label 'frontend-dev' }
-                    steps {
-                        script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                dir("frontend") {
-                                    sh """
-                                        docker build \\
-                                            --build-arg NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \\
-                                            --build-arg NEXT_PUBLIC_KAKAO_CLIENT_ID=${NEXT_PUBLIC_KAKAO_CLIENT_ID} \\
-                                            --build-arg NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI} \\
-                                            -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
-                                        docker push ${FRONTEND_IMAGE}:${CANARY_TAG}
-                                    """
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+                     parallel {
+                         stage('Build Backend') {
+                             agent { label 'backend-dev' }
+                             steps {
+                                 script {
+                                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                         dir("backend") {
+                                             sh """
+                                                 docker build -t ${BACKEND_IMAGE}:${CANARY_TAG} .
+                                                 docker push ${BACKEND_IMAGE}:${CANARY_TAG}
+                                             """
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                         stage('Build Frontend') {
+                             agent { label 'frontend-dev' }
+                             steps {
+                                 script {
+                                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+                                         dir("frontend") {
+                                             sh """
+                                                 docker build \\
+                                                     --build-arg NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \\
+                                                     --build-arg NEXT_PUBLIC_KAKAO_CLIENT_ID=${NEXT_PUBLIC_KAKAO_CLIENT_ID} \\
+                                                     --build-arg NEXT_PUBLIC_KAKAO_REDIRECT_URI=${NEXT_PUBLIC_KAKAO_REDIRECT_URI} \\
+                                                     -t ${FRONTEND_IMAGE}:${CANARY_TAG} .
+                                                 docker push ${FRONTEND_IMAGE}:${CANARY_TAG}
+                                             """
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                 }
         stage('Deploy Canary') {
             agent { label 'public-dev' }
             steps {

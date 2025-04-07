@@ -63,6 +63,8 @@ http {
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
 
+        client_max_body_size 20m;
+
         # Next.js 서버로 프록시
         location / {
             proxy_pass http://$frontend_group;

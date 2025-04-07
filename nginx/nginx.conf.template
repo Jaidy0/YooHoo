@@ -63,6 +63,8 @@ http {
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers HIGH:!aNULL:!MD5;
 
+        client_max_body_size 20m;
+
         # Next.js 서버로 프록시
         location / {
             proxy_pass http://$frontend_group;
@@ -86,6 +88,31 @@ http {
             proxy_pass http://$frontend_group;
             proxy_cache_valid 200 1h;
             proxy_set_header Cache-Control "public, max-age=31536000, immutable";
+        }
+
+        # /images/ 경로 fallback 설정
+        location /images/ {
+            proxy_intercept_errors on;
+            proxy_pass http://frontend_stable;
+            error_page 404 = @canary_images;
+        }
+
+        location @canary_images {
+            proxy_pass http://frontend_canary;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            # 만약 stable 버전에 파일이 없으면 error_page를 통해 @canary로 요청 전달
+            error_page 404 = @canary;
+        }
+
+        location @canary {
+            proxy_pass http://frontend_canary;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
         }
 
         # API 요청은 백엔드 그룹으로 전달

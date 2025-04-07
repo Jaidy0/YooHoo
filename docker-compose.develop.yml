@@ -1,4 +1,4 @@
-#docker-compose.infra.yml
+#docker-compose.develop.yml
 services:
   mysql:
     image: mysql:latest
