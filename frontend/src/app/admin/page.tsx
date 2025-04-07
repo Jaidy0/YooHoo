@@ -74,9 +74,9 @@ export default function AdminPage() {
         </div>
         <div className={styles.shelterText}>
           <div className={styles.shelterTitle}>{displayData.name}</div>
-          <div className={styles.settingButton}>
+          {/* <div className={styles.settingButton}>
             <IconBox name='gear' size={24}></IconBox>
-          </div>
+          </div> */}
           <div className={styles.shelterInfoText}>
             {/* 설립연도 */}
             <div className={styles.shelterInfoItem}>
