@@ -25,8 +25,7 @@ export interface WithdrawalItem {
   content?: string;
   amount?: number;
   withdrawalDate?: string;
-  isEvidence?: boolean;
-  isReceipt?: boolean;
+  file_id: string;
   dogId?: number;
   dogName?: string;
   type?: 'SHELTER' | 'DOG'; // 'SHELTER': 단체, 'DOG': 지정(강아지)
@@ -77,12 +76,12 @@ export interface FormattedDepositItem {
 
 // FinanceTable 컴포넌트에서 사용하는 출금 내역 형식
 export interface FormattedWithdrawalItem {
+  date: string;
   withdrawalId: number; // 추가: 출금 ID
+  transactionUniqueNo: number;
+  file_id: string;
   type: string;
   category: string;
   content: string;
   amount: number;
-  date: string;
-  isReceipt: boolean;
-  transactionUniqueNo: number; // 추가: 거래 고유 번호
 }

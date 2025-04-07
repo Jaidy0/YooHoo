@@ -4,7 +4,10 @@ import styles from './page.module.scss';
 import DonationTracker from '@/components/admin/DonationTracker/DonationTracker';
 import FinanceTable from '@/components/admin/FinanceTable/FinanceTable';
 import IconBox from '@/components/common/IconBox/IconBox';
+import DonationChart from '@/components/admin/DonationChart/DonationChart';
 import { useShelterFinance } from '@/hooks/useShelterFinance';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '@/store/authStore';
 import {
   adaptDonationsToDepositTable,
   adaptWithdrawalsToWithdrawTable,
@@ -16,10 +19,22 @@ interface StatItem {
 }
 
 export default function DonationsPage() {
-  // 5번 보호소 기준으로 데이터 로드 (필요시 동적으로 변경할 수 있습니다)
-  const shelterId = 5;
+  // useAuthStore에서 사용자 정보 가져오기
+  const { user, isAuthenticated, isLoading: authLoading } = useAuthStore();
 
-  // useShelterFinance 훅 사용
+  // 유저 정보에서 shelterId 가져오기
+  const shelterId = user?.shelterId;
+
+  // 사용자 인증 상태에 따라 데이터 로드 여부 결정
+  const [, setShouldLoadData] = useState(false);
+
+  useEffect(() => {
+    // 사용자가 인증되고 shelterId가 존재할 때만 데이터 로드
+    if (isAuthenticated && shelterId) {
+      setShouldLoadData(true);
+    }
+  }, [isAuthenticated, shelterId]);
+
   const {
     totalDonation,
     totalWithdrawal,
@@ -27,10 +42,24 @@ export default function DonationsPage() {
     weeklyWithdrawalData,
     donationItems,
     withdrawalItems,
-    isLoading,
+    isLoading: financeLoading,
     error,
     refetch,
-  } = useShelterFinance(shelterId);
+  } = useShelterFinance(shelterId || 5);
+
+  // 로딩 상태 처리 (인증 로딩 또는 재무 데이터 로딩)
+  const isLoading = authLoading || financeLoading;
+
+  // 인증 실패 또는 shelterId가 없는 경우 처리
+  if (!authLoading && (!isAuthenticated || !shelterId)) {
+    return (
+      <div className={styles.donationsPage}>
+        <div className={styles.errorState}>
+          <p>보호소 정보가 없거나 접근 권한이 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
 
   // API 응답에서 주간 통계 데이터 구성
   const donationStats: StatItem[] = [
@@ -76,29 +105,7 @@ export default function DonationsPage() {
     );
   }
 
-  // 차트 데이터에서 최대 값을 구하여 차트 높이 비율 계산
-  const getMaxValue = (items: StatItem[]) => {
-    return Math.max(...items.map((item) => item.value || 0));
-  };
-
-  const maxDonationValue = getMaxValue(donationStats);
-  const maxWithdrawalValue = getMaxValue(withdrawalStats);
-
-  // 차트 스케일 계산 (최대 높이 200px 기준)
-  const getBarHeight = (value: number, maxValue: number) => {
-    if (maxValue === 0) return 0;
-    return Math.max((value / maxValue) * 200, 5); // 최소 높이 5px
-  };
-
-  // 숫자 포맷팅 함수
-  const formatNumber = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`;
-    } else if (value >= 1000) {
-      return `${(value / 1000).toFixed(0)}K`;
-    }
-    return value.toFixed(0);
-  };
+  const total = (totalDonation || 0) - (totalWithdrawal || 0);
 
   return (
     <div className={styles.donationsPage}>
@@ -113,7 +120,7 @@ export default function DonationsPage() {
             {/* 왼쪽에 총액 표시 */}
             <DonationTracker
               variant='total'
-              amount={totalDonation || 0}
+              amount={total || 0}
               compareDeposit={totalDonation || 0}
               compareWithdraw={totalWithdrawal || 0}
             />
@@ -134,56 +141,12 @@ export default function DonationsPage() {
             <IconBox name='zoom' />
           </div>
         </div>
-        <div className={styles.chartsContainer}>
-          {/* 수입 차트 */}
-          <div className={styles.chartCard}>
-            <div className={styles.chartTitle}>수입</div>
-            <div className={styles.barChart}>
-              {donationStats.map((item, index) => (
-                <div key={index} className={styles.barChartItem}>
-                  <div className={styles.barValue}>
-                    {formatNumber(item.value)}
-                  </div>
-                  <div
-                    className={`${styles.bar} ${
-                      index === 6 ? styles.barHighlight : ''
-                    }`}
-                    style={{
-                      height: `${getBarHeight(item.value, maxDonationValue)}px`,
-                    }}
-                  ></div>
-                  <div className={styles.barLabel}>{item.month}</div>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* 지출 차트 */}
-          <div className={styles.chartCard}>
-            <div className={styles.chartTitle}>지출</div>
-            <div className={styles.barChart}>
-              {withdrawalStats.map((item, index) => (
-                <div key={index} className={styles.barChartItem}>
-                  <div className={styles.barValue}>
-                    {formatNumber(item.value)}
-                  </div>
-                  <div
-                    className={`${styles.bar} ${
-                      index === 6 ? styles.barHighlight : ''
-                    }`}
-                    style={{
-                      height: `${getBarHeight(
-                        item.value,
-                        maxWithdrawalValue
-                      )}px`,
-                    }}
-                  ></div>
-                  <div className={styles.barLabel}>{item.month}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* 기존 차트를 새로운 DonationChart 컴포넌트로 대체 */}
+        <DonationChart
+          donationStats={donationStats}
+          withdrawalStats={withdrawalStats}
+        />
       </section>
 
       {/* 후원금 입출금 내역 */}

@@ -74,6 +74,7 @@ export const getDogList = async (
       totalPages: Math.ceil(response.data.length / (params.size || 20)),
     };
 
+    console.log('***************wrappedResponse : ', wrappedResponse);
     return wrappedResponse;
   } catch (error) {
     console.error(`보호소 ID ${shelterId}의 강아지 리스트 조회 실패:`, error);
@@ -103,7 +104,7 @@ export interface DogRegisterData {
   name: string;
   age: number;
   weight: number;
-  gender: string;
+  gender: number;
   breed: string;
   energetic: number;
   familiarity: number;
@@ -115,21 +116,23 @@ export interface DogRegisterData {
 
 /**
  * 강아지 등록 API
+ * @param dogData - 등록할 강아지 데이터
+ * @param dogImage - 등록할 강아지 이미지 파일
+ * @returns - 등록된 강아지 정보
  */
 export const registerDog = async (
   dogData: DogRegisterData,
-  dogImage: File | null
+  dogImage?: File | null
 ): Promise<Dog | null> => {
   try {
     const formData = new FormData();
 
-    formData.append(
-      'dogRequestDTO',
-      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
-    );
+    // JSON 데이터를 FormData에 추가할 때 key 이름을 'dog'로 설정
+    formData.append('dog', JSON.stringify(dogData));
 
+    // 이미지가 있으면 추가
     if (dogImage) {
-      formData.append('dogImage', dogImage);
+      formData.append('file', dogImage);
     }
 
     const response = await axios.post(
@@ -143,7 +146,6 @@ export const registerDog = async (
       }
     );
 
-    // 응답이 없는 경우 체크
     if (!response || !response.data) {
       console.warn('서버에서 응답이 없거나 비어있습니다.');
       return null;
@@ -151,20 +153,51 @@ export const registerDog = async (
 
     return response.data;
   } catch (error) {
-    console.error('강아지 등록 실패:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      console.error(
+        '강아지 등록 실패 응답:',
+        error.response.status,
+        error.response.data
+      );
+    } else {
+      console.error('강아지 등록 실패:', error);
+    }
     throw error;
   }
 };
 
 /**
- * 강아지 정보 수정 API (백엔드 준비 시 활성화)
+ * 강아지 정보 수정 API
+ * @param dogId - 수정할 강아지 ID
+ * @param dogData - 수정할 강아지 데이터
+ * @returns - 응답 데이터
  */
-export const updateDog = async (dogId: number, dogData: DogUpdateDto) => {
+export const updateDog = async (
+  dogId: number,
+  dogData: DogUpdateDto,
+  dogImage?: File | null
+) => {
   try {
-    const response = await axios.put(
+    const formData = new FormData();
+
+    // JSON을 문자열로 변환하고 Blob으로 래핑한 후 FormData에 추가
+    formData.append(
+      'dog',
+      new Blob([JSON.stringify(dogData)], { type: 'application/json' })
+    );
+
+    // 이미지가 있으면 추가
+    if (dogImage) {
+      formData.append('file', dogImage);
+    }
+
+    const response = await axios.patch(
       `${API_BASE_URL}/api/dogs/${dogId}`,
-      dogData,
+      formData,
       {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
         withCredentials: true,
       }
     );

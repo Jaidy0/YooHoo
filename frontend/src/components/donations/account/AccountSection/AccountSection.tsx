@@ -10,6 +10,7 @@ import { DonationFormData } from '@/types/donation';
 import { useAccounts } from '@/hooks/donations/useAccount';
 import { useShelterAccount } from '@/hooks/donations/useShelterAccount';
 import { IconBox } from '@/components/common/IconBox/IconBox';
+import { useAuthStore } from '@/store/authStore';
 
 type AccountSectionProps = {
   stepNumber: number;
@@ -26,6 +27,7 @@ export default function AccountSection({
   completeStep,
   donationType,
 }: AccountSectionProps) {
+  const nickname = useAuthStore((state) => state.user?.nickname || '후원자');
   const [accountName, setAccountName] = useState(formData.accountName || '');
   const [selectedAccountIdx, setSelectedAccountIdx] = useState<number | null>(
     null
@@ -77,9 +79,18 @@ export default function AccountSection({
     validateForm();
   };
 
+  // 금액 포맷팅 함수 (1000 -> 1,000원)
+  const formatBalance = (balance: string) => {
+    return Number(balance).toLocaleString() + '원';
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [formData.accountNumber, accountName]);
+
   // 폼 유효성 검사 및 완료 상태 업데이트
   const validateForm = () => {
-    const isValid = !!accountName && selectedAccountIdx !== null;
+    const isValid = !!formData.accountNumber && !!accountName.trim();
     completeStep('accountInfo', isValid);
   };
 
@@ -122,19 +133,30 @@ export default function AccountSection({
                 className={styles.dropdownHeader}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                {selectedAccountIdx !== null ? (
-                  <AccountInfoCard
-                    bankName={accounts[selectedAccountIdx].bankName}
-                    accountNumber={accounts[selectedAccountIdx].accountNo}
-                    isSelected={true}
-                  />
-                ) : (
-                  <div className={styles.placeholderContainer}>
+                <div className={styles.selectedAccountBox}>
+                  {selectedAccountIdx !== null ? (
+                    <div className={styles.selectedAccountContent}>
+                      <div className={styles.iconWrapper}>
+                        <IconBox name='account' size={24} />
+                      </div>
+                      <div className={styles.accountDetails}>
+                        <p className={styles.bankName}>
+                          {accounts[selectedAccountIdx].bankName}
+                        </p>
+                        <p className={styles.accountNumber}>
+                          {formatAccountNumber(
+                            accounts[selectedAccountIdx].accountNo
+                          )}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
                     <span className={styles.placeholder}>
                       계좌를 선택해주세요
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
+
                 <div
                   className={`${styles.chevronIcon} ${isDropdownOpen ? styles.rotated : ''}`}
                 >
@@ -170,6 +192,14 @@ export default function AccountSection({
                   ))}
                 </div>
               )}
+
+              {/* 선택된 계좌의 잔액 표시 */}
+              {selectedAccountIdx !== null && !isDropdownOpen && (
+                <div className={styles.selectedAccountBalance}>
+                  잔액:{' '}
+                  {formatBalance(accounts[selectedAccountIdx].accountBalance)}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -201,7 +231,7 @@ export default function AccountSection({
         <AccountNameRadio
           value={accountName}
           onChange={handleAccountNameChange}
-          nickname='닉네임' // 추후 불러올 데이터
+          nickname={nickname}
         />
       </div>
 

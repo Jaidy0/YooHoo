@@ -9,6 +9,8 @@ import DonationHistoryItem from '@/components/donations/DonationHistoryItem/Dona
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { FormattedDepositItem } from '@/types/adminDonation';
 import { useDogFinance } from '@/hooks/useDogFinance';
+import RatingScale from '@/components/common/RatingScale/RatingScale';
+// import { useDog } from '@/hooks/useDog';
 
 interface DogDetailViewProps {
   selectedDog: Dog;
@@ -21,13 +23,20 @@ export default function DogDetailView({
   dogDetails,
   onClose,
 }: DogDetailViewProps) {
+  console.log('Dog Detail View First : ', dogDetails);
+  // const {
+  //   dog: dogData,
+  //   isLoading: isDogLoading,
+  //   error: dogError,
+  // } = useDog(String(dogDetails.dogId));
+
   // 후원 내역 데이터 가져오기
   const { depositData, isLoading, error } = useDogFinance(
-    // String(dogDetails.dogId)
-    String(306)
+    String(dogDetails.dogId)
+    // String(306)
   );
-
-  console.log(depositData);
+  console.log('### dogDetails : ', dogDetails);
+  console.log('******************depositData************** : ', depositData);
 
   // 총 후원금액 계산
   const totalDonation = depositData.reduce((sum, item) => sum + item.amount, 0);
@@ -119,25 +128,41 @@ export default function DogDetailView({
             <div className={styles.personalityContainer}>
               <div className={styles.personalityItem}>
                 <span className={styles.personalityLabel}>활발함</span>
-                <div className={styles.personalityBar}>
+                <span className={styles.detailValue}>
+                  <RatingScale
+                    value={dogDetails?.energetic || 1}
+                    onChange={() => {}} // 상세 페이지에서는 수정 불가능하므로 빈 함수
+                    maxRating={5}
+                    readOnly={true}
+                  />
+                </span>
+                {/* <div className={styles.personalityBar}>
                   {[1, 2, 3, 4, 5].map((level) => (
                     <div
                       key={level}
                       className={`${styles.personalityLevel} ${level <= (dogDetails.energetic ?? 0) ? styles.active : ''}`}
                     />
                   ))}
-                </div>
+                </div> */}
               </div>
               <div className={styles.personalityItem}>
                 <span className={styles.personalityLabel}>친화력</span>
-                <div className={styles.personalityBar}>
+                <span className={styles.detailValue}>
+                  <RatingScale
+                    value={dogDetails?.familiarity || 1}
+                    onChange={() => {}} // 상세 페이지에서는 수정 불가능하므로 빈 함수
+                    maxRating={5}
+                    readOnly={true}
+                  />
+                </span>
+                {/* <div className={styles.personalityBar}>
                   {[1, 2, 3, 4, 5].map((level) => (
                     <div
                       key={level}
                       className={`${styles.personalityLevel} ${level <= (dogDetails.familiarity ?? 0) ? styles.active : ''}`}
                     />
                   ))}
-                </div>
+                </div> */}
               </div>
             </div>
             <ul className={styles.tagList}>

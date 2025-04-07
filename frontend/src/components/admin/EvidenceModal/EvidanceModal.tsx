@@ -9,8 +9,6 @@ import {
   formatTime,
   formatCurrency,
   formatCardNumber,
-  getCardTypeName,
-  getTransactionStatusName,
 } from '@/lib/util/evidanceFormatter';
 
 interface EvidanceModalProps {
@@ -114,6 +112,7 @@ export default function EvidanceModal({
         ) : (
           // 카드 증빙 (type이 false일 때)
           <>
+            {/* 카드 증빙 부분 수정 */}
             {cardData.isLoading ? (
               <div className={styles.loadingMessage}>
                 데이터를 불러오는 중입니다...
@@ -132,7 +131,7 @@ export default function EvidanceModal({
                   </div>
                   <div className={styles.transactionAmount}>
                     {formatCurrency(
-                      Number(cardData.filteredTransaction.transactionAmount)
+                      Number(cardData.filteredTransaction.transactionBalance)
                     )}
                   </div>
                 </div>
@@ -147,33 +146,34 @@ export default function EvidanceModal({
                 <div className={styles.dataRow}>
                   <span className={styles.label}>카드번호:</span>
                   <span className={styles.value}>
-                    {formatCardNumber(cardData.filteredTransaction.cardNumber)}
+                    {cardData.data?.REC.cardNo
+                      ? formatCardNumber(cardData.data.REC.cardNo)
+                      : ''}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>카드종류:</span>
                   <span className={styles.value}>
-                    {getCardTypeName(cardData.filteredTransaction.cardType)}
+                    {cardData.data?.REC.cardName ?? ''}
                   </span>
                 </div>
+                {/* approvalCode가 응답에 없으므로 대체 정보 표시 */}
                 <div className={styles.dataRow}>
-                  <span className={styles.label}>승인번호:</span>
+                  <span className={styles.label}>거래상태:</span>
                   <span className={styles.value}>
-                    {cardData.filteredTransaction.approvalCode}
+                    {cardData.filteredTransaction.cardStatus}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
                   <span className={styles.label}>거래분류:</span>
                   <span className={styles.value}>
-                    {cardData.filteredTransaction.transactionCategory}
+                    {cardData.filteredTransaction.categoryName}
                   </span>
                 </div>
                 <div className={styles.dataRow}>
-                  <span className={styles.label}>상태:</span>
+                  <span className={styles.label}>결제상태:</span>
                   <span className={styles.value}>
-                    {getTransactionStatusName(
-                      cardData.filteredTransaction.transactionStatus
-                    )}
+                    {cardData.filteredTransaction.billStatementsStatus}
                   </span>
                 </div>
               </div>

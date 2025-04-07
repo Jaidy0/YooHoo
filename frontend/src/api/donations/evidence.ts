@@ -60,23 +60,49 @@ interface CardWithdrawalRequest {
   shelterId: number;
 }
 
+// 카드 거래 내역 인터페이스 수정
 export interface CardTransaction {
-  transactionUniqueNo: number;
-  cardNumber: string;
+  transactionUniqueNo: string;
+  categoryId: string;
+  categoryName: string;
+  merchantId: string;
+  merchantName: string;
   transactionDate: string;
   transactionTime: string;
-  merchantName: string;
-  transactionAmount: number;
-  approvalCode: string;
-  cardType: string;
-  transactionCategory: string;
-  transactionStatus: string;
+  transactionBalance: string;
+  cardStatus: string;
+  billStatementsYn: string;
+  billStatementsStatus: string;
 }
 
+// 카드 정보 인터페이스 추가
+export interface CardInfo {
+  cardIssuerCode: string;
+  cardIssuerName: string;
+  cardName: string;
+  cardNo: string;
+  cvc: string;
+  estimatedBalance: string;
+  transactionList: CardTransaction[];
+}
+
+// 응답 헤더 인터페이스 추가
+export interface ResponseHeader {
+  responseCode: string;
+  responseMessage: string;
+  apiName: string;
+  transmissionDate: string;
+  transmissionTime: string;
+  institutionCode: string;
+  apiKey: string;
+  apiServiceCode: string;
+  institutionTransactionUniqueNo: string;
+}
+
+// 전체 응답 구조 수정
 export interface CardWithdrawalResponse {
-  code: number;
-  message: string;
-  data: CardTransaction[];
+  Header: ResponseHeader;
+  REC: CardInfo;
 }
 
 /**
@@ -88,7 +114,7 @@ export const fetchCardWithdrawal = async (
   params: CardWithdrawalRequest
 ): Promise<CardWithdrawalResponse> => {
   const response = await axios.post<CardWithdrawalResponse>(
-    `${API_BASE_URL}/api/card/withdrawal`,
+    `${API_BASE_URL}/api/withdrawal/card`,
     params
   );
 
