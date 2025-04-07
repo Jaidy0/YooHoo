@@ -29,4 +29,7 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
     @Modifying
     @Query("UPDATE Shelter s SET s.reliability = :reliability WHERE s.shelterId = :shelterId")
     void updateReliability(@Param("shelterId") Long shelterId, @Param("reliability") int reliability);
+
+    @Query("SELECT s.reliability FROM Shelter s WHERE s.reliability IS NOT NULL")
+    List<Integer> findAllReliabilityScores();
 }

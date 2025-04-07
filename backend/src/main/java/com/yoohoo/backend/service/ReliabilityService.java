@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ReliabilityCalculatorService {
+public class ReliabilityService {
 
     private final WithdrawalRepository withdrawalRepository;
     private final ShelterRepository shelterRepository;

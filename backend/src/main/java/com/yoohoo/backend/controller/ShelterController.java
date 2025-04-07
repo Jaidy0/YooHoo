@@ -2,10 +2,12 @@ package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.dto.DogDTO;
 import com.yoohoo.backend.dto.DogListDTO;
+import com.yoohoo.backend.dto.ReliabilityResponseDto;
 import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.DogService;
+import com.yoohoo.backend.service.ReliabilityService;
 import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.service.ShelterFinanceService;
 
@@ -33,7 +35,9 @@ public class ShelterController {
     private final RestTemplate restTemplate;
 
     @Autowired
-    public ShelterController(ShelterService shelterService, DogService dogService, ShelterFinanceService shelterFinanceService, S3Service s3Service, RestTemplate restTemplate) {
+    public ShelterController(ShelterService shelterService, 
+    DogService dogService, ShelterFinanceService shelterFinanceService, 
+    S3Service s3Service, RestTemplate restTemplate) {
         this.shelterService = shelterService;
         this.dogService = dogService;
         this.shelterFinanceService = shelterFinanceService;
@@ -115,6 +119,14 @@ public class ShelterController {
         return ResponseEntity.ok(shelterFinanceService.getAccountAndCardFromRedis(shelterId));
     }
 
+    // Shelter-09
+    @GetMapping("/{shelterId}/reliability")
+    public ResponseEntity<ReliabilityResponseDto> getReliability(@PathVariable Long shelterId) {
+        ReliabilityResponseDto dto = shelterService.getReliability(shelterId);
+        return ResponseEntity.ok(dto);
+    }
+
+
     // 보호소 로고 이미지 업로드
     @PostMapping("/{shelterId}/imageupload")
     public ResponseEntity<?> uploadShelterLogo(
@@ -154,5 +166,6 @@ public class ShelterController {
 
         return ResponseEntity.ok("보호소 로고 업로드 성공: " + fileUrl);
     }
+
 
 }

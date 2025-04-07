@@ -43,7 +43,7 @@ public class WithdrawalService {
     private DogRepository dogRepository;
 
     @Autowired
-    private ReliabilityCalculatorService reliabilityCalculatorService;
+    private ReliabilityService reliabilityService;
 
     @Transactional
     public void saveWithdrawal(BankbookResponseDTO response, Long shelterId) {
@@ -295,6 +295,45 @@ public class WithdrawalService {
             saveCardTransactions(cardResponse, shelterId); // 기존 로직 재사용
         }
 
-        reliabilityCalculatorService.updateShelterReliability(shelterId);
+        reliabilityService.updateShelterReliability(shelterId);
+    }
+
+    public List<Map<String, Object>> getCategoryPercentagesByShelterId(Long shelterId) {
+        // 해당 shelter_id의 출금 내역 조회
+        List<Withdrawal> shelterWithdrawals = withdrawalRepository.findByShelterId(shelterId);
+        double shelterTotalBalance = shelterWithdrawals.stream()
+                .mapToDouble(withdrawal -> Double.parseDouble(withdrawal.getTransactionBalance()))
+                .sum();
+
+        // 전체 출금 내역 조회
+        List<Withdrawal> allWithdrawals = withdrawalRepository.findAll();
+        double overallTotalBalance = allWithdrawals.stream()
+                .mapToDouble(withdrawal -> Double.parseDouble(withdrawal.getTransactionBalance()))
+                .sum();
+
+        Map<String, Double> shelterCategorySums = new HashMap<>();
+        for (Withdrawal withdrawal : shelterWithdrawals) {
+            String category = withdrawal.getCategory().equals("Unknown") ? "기타" : withdrawal.getCategory();
+            shelterCategorySums.put(category, shelterCategorySums.getOrDefault(category, 0.0) + Double.parseDouble(withdrawal.getTransactionBalance()));
+        }
+
+        Map<String, Double> overallCategorySums = new HashMap<>();
+        for (Withdrawal withdrawal : allWithdrawals) {
+            String category = withdrawal.getCategory().equals("Unknown") ? "기타" : withdrawal.getCategory();
+            overallCategorySums.put(category, overallCategorySums.getOrDefault(category, 0.0) + Double.parseDouble(withdrawal.getTransactionBalance()));
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String category : List.of("인건비", "의료비", "물품구매", "시설 유지비", "기타")) {
+            double actualPercentage = shelterTotalBalance > 0 ? (shelterCategorySums.getOrDefault(category, 0.0) / shelterTotalBalance) * 100 : 0;
+            double averagePercentage = overallTotalBalance > 0 ? (overallCategorySums.getOrDefault(category, 0.0) / overallTotalBalance) * 100 : 0;
+
+            result.add(Map.of(
+                "name", category,
+                "actualPercentage", Math.round(actualPercentage * 100.0) / 100.0,
+                "averagePercentage", Math.round(averagePercentage * 100.0) / 100.0
+            ));
+        }
+        return result;
     }
 }

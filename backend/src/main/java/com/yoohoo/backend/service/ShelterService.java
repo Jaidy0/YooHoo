@@ -1,5 +1,6 @@
 package com.yoohoo.backend.service;
 
+import com.yoohoo.backend.dto.ReliabilityResponseDto;
 import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.entity.Shelter;
@@ -67,4 +68,27 @@ public class ShelterService {
         Optional<Shelter> shelter = shelterRepository.findById(shelterId);
         return shelter.orElse(null); // 보호소가 없으면 null 반환
     }
+
+    public ReliabilityResponseDto getReliability(Long shelterId) {
+        Shelter target = shelterRepository.findById(shelterId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 보호소를 찾을 수 없습니다."));
+    
+        Integer score = target.getReliability();
+        if (score == null) score = 0;
+    
+        final int finalScore = score;
+    
+        List<Integer> allScores = shelterRepository.findAllReliabilityScores();
+        if (allScores.isEmpty()) return new ReliabilityResponseDto(shelterId, 0, 0.0);
+    
+        long total = allScores.size();
+        long lowerCount = allScores.stream()
+                .filter(s -> s != null && s < finalScore)
+                .count();
+    
+        double percentile = ((double) lowerCount / total) * 100.0;
+    
+        return new ReliabilityResponseDto(shelterId, score, Math.round(percentile * 10) / 10.0); // 소수점 1자리
+    }
+    
 }

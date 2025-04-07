@@ -4,7 +4,7 @@ import com.yoohoo.backend.service.WithdrawalService;
 import com.yoohoo.backend.entity.Withdrawal;
 import com.yoohoo.backend.service.BankbookService;
 import com.yoohoo.backend.service.CardService;
-import com.yoohoo.backend.service.ReliabilityCalculatorService;
+import com.yoohoo.backend.service.ReliabilityService;
 import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.repository.WithdrawalRepository;
 import com.yoohoo.backend.service.UserService;
@@ -47,7 +47,7 @@ public class WithdrawalController {
     private UserService userService;
     
     @Autowired
-    private ReliabilityCalculatorService reliabilityCalculatorService;
+    private ReliabilityService reliabilityService;
 
     @Autowired
     private BankbookService bankbookService;
@@ -181,7 +181,7 @@ public class WithdrawalController {
                             .orElseThrow(() -> new RuntimeException("해당 withdrawalId를 찾을 수 없습니다."));
                             withdrawal.setFile(savedFile);
                             withdrawalRepository.save(withdrawal);
-                            reliabilityCalculatorService.updateShelterReliability(withdrawal.getShelterId());
+                            reliabilityService.updateShelterReliability(withdrawal.getShelterId());
 
 
             return ResponseEntity.ok("업로드 완료: " + fileUrl);
@@ -193,5 +193,18 @@ public class WithdrawalController {
             } catch (Exception e) {
                 throw new RuntimeException("이미지 업로드 중 예외 발생", e);
             }
-        }
     }
+
+
+    @PostMapping("/category-percentages")
+    public ResponseEntity<List<Map<String, Object>>> getCategoryPercentages(@RequestBody Map<String, Long> request) {
+        Long shelterId = request.get("shelterId");
+        if (shelterId == null) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    
+        List<Map<String, Object>> percentages = withdrawalService.getCategoryPercentagesByShelterId(shelterId);
+        return ResponseEntity.ok(percentages);
+    }
+
+}
