@@ -130,7 +130,7 @@ export default function WithdrawTableRow({
               variant={hasReceipt ? 'primary' : 'secondary'}
               onClick={handleReceiptButtonClick}
             >
-              {hasReceipt ? '영수증보기' : '추가하기'}
+              {hasReceipt ? '활동자료' : '추가하기'}
             </RoundButton>
           </div>
         </div>
