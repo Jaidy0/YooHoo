@@ -12,7 +12,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 2rem;
+  gap: 0.3rem;
   flex-wrap: wrap;
   width: 100%;
 }
@@ -40,6 +40,7 @@
   text-align: center;
   font-size: $font-size-xs;
   color: #333;
+  line-height: 1.4;
 }
 .descriptionWithLegend {
   display: flex;
@@ -77,6 +78,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-items: flex-end;
   gap: 0.5rem;
 }
 

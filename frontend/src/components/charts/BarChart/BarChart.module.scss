@@ -46,7 +46,7 @@
   width: 18%;
 
   span {
-    font-size: 0.813rem;
+    font-size: 0.7rem;
     color: $text-333;
     margin-bottom: 0.25rem;
   }
@@ -71,14 +71,14 @@
   font-size: 0.875rem;
 }
 
-@media (max-width: 576px) {
-  .legendItem {
-    span {
-      font-size: 0.75rem;
-    }
+// @media (max-width: 576px) {
+//   .legendItem {
+//     span {
+//       font-size: 0.75rem;
+//     }
 
-    strong {
-      font-size: 0.875rem;
-    }
-  }
-}
+//     strong {
+//       font-size: 0.875rem;
+//     }
+//   }
+// }
