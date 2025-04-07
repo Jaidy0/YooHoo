@@ -50,36 +50,44 @@ export default function AccountNameRadio({
 
   return (
     <div className={styles.accountNameRadio}>
-      <div className={styles.radioGroup}>
-        <label className={styles.radioLabel}>
-          <input
-            type='radio'
-            name='accountName'
-            checked={selectedOption === 'nickname'}
-            onChange={() => handleOptionChange('nickname')}
-          />
-          <span>닉네임</span>
-        </label>
+      <div className={styles.optionsContainer}>
+        <div className={styles.radioGroup}>
+          <label className={styles.radioLabel}>
+            <input
+              type='radio'
+              name='accountName'
+              checked={selectedOption === 'nickname'}
+              onChange={() => handleOptionChange('nickname')}
+            />
+            <span>닉네임</span>
+          </label>
 
-        <label className={styles.radioLabel}>
-          <input
-            type='radio'
-            name='accountName'
-            checked={selectedOption === 'unknown'}
-            onChange={() => handleOptionChange('unknown')}
-          />
-          <span>익명</span>
-        </label>
+          <label className={styles.radioLabel}>
+            <input
+              type='radio'
+              name='accountName'
+              checked={selectedOption === 'unknown'}
+              onChange={() => handleOptionChange('unknown')}
+            />
+            <span>익명</span>
+          </label>
 
-        <label className={styles.radioLabel}>
-          <input
-            type='radio'
-            name='accountName'
-            checked={selectedOption === 'input'}
-            onChange={() => handleOptionChange('input')}
-          />
-          <span>직접 입력</span>
-        </label>
+          <label className={styles.radioLabel}>
+            <input
+              type='radio'
+              name='accountName'
+              checked={selectedOption === 'input'}
+              onChange={() => handleOptionChange('input')}
+            />
+            <span>직접 입력</span>
+          </label>
+        </div>
+
+        {selectedOption === 'nickname' && (
+          <div className={styles.nicknameContainer}>
+            <span className={styles.nicknameDisplay}>{nickname}</span>
+          </div>
+        )}
       </div>
 
       {selectedOption === 'input' && (
