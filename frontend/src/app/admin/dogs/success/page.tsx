@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './page.module.scss';
 import Button from '@/components/common/buttons/Button/Button';
+import DonateComplete from '@/components/donations/DonateComplete';
 import { useEffect, useState } from 'react';
 
 export default function DogRegisterSuccessPage() {
@@ -34,7 +35,7 @@ export default function DogRegisterSuccessPage() {
         <div className={styles.titleWrapper}>
           <h1 className={styles.title}>강아지 등록 완료</h1>
           <Image
-            src='/images/pawPrint.svg'
+            src='/images/donatePaw.svg'
             alt='발자국'
             width={28}
             height={28}
@@ -48,13 +49,7 @@ export default function DogRegisterSuccessPage() {
         {/* 성공 이미지와 배경 */}
         <div className={styles.imageWrapper}>
           <div className={styles.imageBackground}>
-            <Image
-              src='/images/dog-success.svg'
-              alt='강아지 등록 성공'
-              width={200}
-              height={200}
-              className={styles.successImage}
-            />
+            <DonateComplete />
             <div className={styles.shadow}></div>
           </div>
         </div>
