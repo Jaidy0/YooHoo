@@ -7,6 +7,7 @@
     <list default="true" id="ec70ab62-bbb7-422b-a307-791072c1d4d3" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/yoohoo/backend/config/RedisConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/yoohoo/backend/config/RedisConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.develop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.develop.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/redis/redis.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/redis/redis.conf.template" afterDir="false" />
     </list>
@@ -82,7 +83,7 @@
       <workItem from="1742429842017" duration="2000" />
       <workItem from="1743147759989" duration="5386000" />
       <workItem from="1743468477036" duration="6840000" />
-      <workItem from="1743496820001" duration="38514000" />
+      <workItem from="1743496820001" duration="39581000" />
     </task>
     <servers />
   </component>
