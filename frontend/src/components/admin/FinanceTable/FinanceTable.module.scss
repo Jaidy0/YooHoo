@@ -194,6 +194,12 @@
   max-width: 80px;
 }
 
+.badge {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .clickable {
   cursor: pointer;
   transition:
@@ -279,7 +285,6 @@
     }
   }
 }
-/* 기존 FinanceTable.module.scss 파일에 다음 스타일을 추가합니다 */
 
 .modalContent {
   padding: $spacing-md 0;

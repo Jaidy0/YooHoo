@@ -6,6 +6,7 @@ import DogSelectModal from '@/components/admin/DogSelectModal/DogSelectModal';
 import EvidanceModal from '@/components/admin/EvidenceModal/EvidanceModal';
 import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
 import ReceiptUploadModal from '@/components/admin/ReceiptUploadModal/ReceiptUploadModal';
+import Tooltip from '@/components/common/Tooltip/Tooltip';
 
 export interface WithdrawTableRowProps {
   variant?: 'header' | 'row';
@@ -97,7 +98,12 @@ export default function WithdrawTableRow({
     <div className={styles.all}>
       {variant === 'header' ? (
         <div className={styles.header}>
-          <div className={styles.badgeWrapper}>구분</div>
+          <Tooltip
+            content='구분을 클릭하면 강아지 지정 출금 내역으로 설정할 수 있습니다.'
+            position='bottom'
+          >
+            <div className={styles.badgeWrapper}>구분</div>
+          </Tooltip>
           <div className={styles.category}>카테고리</div>
           <div className={styles.amount}>금액</div>
           <div className={styles.content}>내용</div>
@@ -108,13 +114,18 @@ export default function WithdrawTableRow({
       ) : (
         <div className={styles.row}>
           <div className={styles.badgeWrapper}>
-            <Badge
-              variant='negative'
-              className={styles.badge}
-              onClick={openDogSelectModal}
+            <Tooltip
+              content='클릭하여 강아지 지정 출금 내역으로 설정할 수 있습니다.'
+              position='bottom'
             >
-              {type}
-            </Badge>
+              <Badge
+                variant='negative'
+                className={styles.badge}
+                onClick={openDogSelectModal}
+              >
+                {type}
+              </Badge>
+            </Tooltip>
           </div>
           <div className={styles.category}>{category}</div>
           <div className={styles.amount}>{formatAmount(amount)}</div>
