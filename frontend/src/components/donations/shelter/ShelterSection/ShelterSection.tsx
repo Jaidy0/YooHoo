@@ -18,6 +18,7 @@ export default function ShelterSection({
 }: ShelterSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sort, setSort] = useState<'dogcount' | 'reliability'>('dogcount');
+  const [initialRender, setInitialRender] = useState(true);
   const [shouldScroll, setShouldScroll] = useState(false);
 
   // 선택된 요소에 대한 ref
@@ -53,7 +54,21 @@ export default function ShelterSection({
     return (bIsRecent ? 1 : 0) - (aIsRecent ? 1 : 0);
   });
 
-  // 선택된 요소로 스크롤 처리 - 검색이 초기화될 때만 실행
+  // 초기 렌더링 시 단체가 선택되어 있으면 스크롤하기
+  useEffect(() => {
+    // 단체 목록이 로드되었고, 선택된 단체가 있으며, 초기 렌더링인 경우에만 실행
+    if (
+      !isLoading &&
+      selectedShelterId &&
+      initialRender &&
+      filteredShelters.length > 0
+    ) {
+      setShouldScroll(true);
+      setInitialRender(false);
+    }
+  }, [isLoading, selectedShelterId, initialRender, filteredShelters.length]);
+
+  // 선택된 요소로 스크롤 처리
   useEffect(() => {
     if (shouldScroll && selectedShelterId && selectedShelterRef.current) {
       selectedShelterRef.current.scrollIntoView({
