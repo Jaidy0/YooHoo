@@ -4,7 +4,7 @@ import Badge from '@/components/common/Badge/Badge';
 export interface DepositTableRowProps {
   variant?: 'header' | 'row';
   type: string;
-  name: string;
+  name?: string;
   amount: number;
   message?: string;
   date: string;
@@ -18,7 +18,7 @@ const formatAmount = (value: number) => {
 export default function DepositTableRow({
   variant = 'row',
   type,
-  name,
+  name = '-',
   amount,
   message = '-',
   date,
