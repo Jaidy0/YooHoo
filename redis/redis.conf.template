@@ -1,4 +1,5 @@
 # redis.conf.template
+
 # ## 보안 설정 ##
 bind 0.0.0.0
 
@@ -6,8 +7,10 @@ bind 0.0.0.0
 requirepass $REDIS_PASSWORD
 
 # ## 기본 설정 (필요에 따라 수정) ##
-# 포트 설정 (Docker 내부에서 사용되므로 보통 변경 불필요)
-port 6379
+# Non-TLS 포트 비활성화 (TLS 포트만 사용)
+port 0
+# TLS 포트 활성화
+tls-port 6379
 
 # TCP keepalive 설정 (네트워크 불안정 시 연결 유지 도움)
 tcp-keepalive 300
@@ -18,7 +21,20 @@ tcp-keepalive 300
 # 데이터베이스 개수
 databases 16
 
-# ## RDB 스냅샷 설정 (기본값 유지 또는 필요시 조정) ##
+# ## TLS/SSL 설정 ##
+# 서버 인증서 파일 경로
+tls-cert-file /etc/redis/certs/redis.crt
+# 서버 개인 키 파일 경로
+tls-key-file /etc/redis/certs/redis.key
+
+# 클라이언트 인증서 요구 안 함 (단방향 TLS)
+tls-auth-clients no
+# 허용할 TLS 프로토콜 버전
+tls-protocols "TLSv1.2 TLSv1.3"
+# 서버가 선호하는 암호화 스위트 사용
+tls-prefer-server-ciphers yes
+
+# ## RDB 스냅샷 설정 ##
 # 900초(15분) 동안 1개 이상의 키 변경 시 저장
 save 900 1
 # 300초(5분) 동안 10개 이상의 키 변경 시 저장
@@ -29,7 +45,7 @@ save 60 10000
 # RDB 파일 이름
 dbfilename dump.rdb
 
-# RDB 파일 저장 경로 (Docker 볼륨으로 관리되므로 보통 변경 불필요)
+# RDB 파일 저장 경로
 dir /data
 
 # ## 복제 관련 설정 (현재는 단일 인스턴스이므로 주석 처리) ##
@@ -40,11 +56,11 @@ dir /data
 # 최대 클라이언트 연결 수
 # maxclients 10000
 
-# 최대 메모리 제한 (예: 1GB) 및 정책 (예: LRU)
+# 최대 메모리 제한 (예: 1GB) 및 정책
 maxmemory 1gb
 maxmemory-policy allkeys-lru
 
-# ## 위험 명령어 이름 변경 (보안 강화, 선택 사항) ##
+# ## 위험 명령어 이름 변경 (보안 강화) ##
 # CONFIG 명령어 비활성화
 rename-command CONFIG ""
 # 복제 관련 명령어 비활성화
