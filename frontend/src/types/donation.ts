@@ -44,4 +44,5 @@ export interface DonationFormData {
   supportMessage: string; // 응원 메시지
   anonymousDonation: boolean; // 익명 여부
   amount: number; // 후원 금액
+  isRecent?: boolean; // 재후원 여부 (UI 구분용)
 }
