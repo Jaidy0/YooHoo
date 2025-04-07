@@ -20,11 +20,11 @@ export default function AdminChoicePage() {
         </h2>
         <div className={styles.buttonContainer}>
           <button onClick={() => handleAdminChoice('main')}>
-            <Image src='/images/shiba.png' alt='home' width={50} height={50} />
+            <Image src='/images/login-main.png' alt='home' width={60} height={60} />
             <span>메인</span>
           </button>
           <button onClick={() => handleAdminChoice('admin')}>
-            <Image src='/images/shiba.png' alt='home' width={50} height={50} />
+            <Image src='/images/login-admin.png' alt='home' width={60} height={60} />
             <span>관리자</span>
           </button>
         </div>
