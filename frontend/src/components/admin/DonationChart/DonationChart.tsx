@@ -27,7 +27,12 @@ export default function DonationChart({
   const expenseChartRef = useRef<HTMLCanvasElement>(null);
 
   // 숫자 포맷팅 함수
-  const formatNumber = (value: number): string => {
+  const formatNumber = (value: number, isPredict = false): string => {
+    // 예측값인 경우 100원 단위로 반올림
+    if (isPredict) {
+      const roundedValue = Math.round(value / 100) * 100;
+      return new Intl.NumberFormat('ko-KR').format(roundedValue);
+    }
     return new Intl.NumberFormat('ko-KR').format(value);
   };
 
@@ -87,7 +92,10 @@ export default function DonationChart({
               tooltip: {
                 callbacks: {
                   label: (context) => {
-                    return `${formatNumber(context.parsed.y)}원`;
+                    // 마지막 데이터 포인트(예측값)인지 확인
+                    const isPredict =
+                      context.dataIndex === context.dataset.data.length - 1;
+                    return `${formatNumber(context.parsed.y, isPredict)}원`;
                   },
                 },
               },
@@ -96,8 +104,11 @@ export default function DonationChart({
                 align: 'top',
                 anchor: 'end',
                 color: '#777',
-                formatter: (value) => {
-                  return formatNumber(value);
+                formatter: (value, context) => {
+                  // 마지막 데이터 포인트(예측값)인지 확인
+                  const isPredict =
+                    context.dataIndex === context.dataset.data.length - 1;
+                  return formatNumber(value, isPredict);
                 },
                 font: {
                   weight: 'normal',
@@ -168,7 +179,10 @@ export default function DonationChart({
               tooltip: {
                 callbacks: {
                   label: (context) => {
-                    return `${formatNumber(context.parsed.y)}원`;
+                    // 마지막 데이터 포인트(예측값)인지 확인
+                    const isPredict =
+                      context.dataIndex === context.dataset.data.length - 1;
+                    return `${formatNumber(context.parsed.y, isPredict)}원`;
                   },
                 },
               },
@@ -177,8 +191,11 @@ export default function DonationChart({
                 align: 'top',
                 anchor: 'end',
                 color: '#777',
-                formatter: (value) => {
-                  return formatNumber(value);
+                formatter: (value, context) => {
+                  // 마지막 데이터 포인트(예측값)인지 확인
+                  const isPredict =
+                    context.dataIndex === context.dataset.data.length - 1;
+                  return formatNumber(value, isPredict);
                 },
                 font: {
                   weight: 'normal',
