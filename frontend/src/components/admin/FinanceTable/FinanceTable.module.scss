@@ -32,6 +32,54 @@
   margin-left: auto;
 }
 
+/* 인라인 메시지 스타일 - 새로 추가 */
+.infoMessage {
+  display: flex;
+  align-items: center;
+  padding: $spacing-sm $spacing-md;
+  background-color: rgba($yh-ivory, 0.6);
+  border-bottom: 1px solid $color-border;
+  font-size: $font-size-sm;
+  color: $text-555;
+  position: relative;
+
+  .infoIcon {
+    margin-right: $spacing-xs;
+    flex-shrink: 0;
+  }
+
+  span {
+    line-height: 1.4;
+    flex-grow: 1;
+
+    strong {
+      font-weight: $font-weight-bold;
+      color: $yh-brown;
+    }
+  }
+
+  .closeButton {
+    background: none;
+    border: none;
+    padding: 4px;
+    margin-left: $spacing-sm;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.3);
+    }
+  }
+}
+
 .tableWrapper {
   width: 100%;
   overflow-x: auto;
@@ -82,6 +130,7 @@
     align-items: center;
     gap: 10px;
     flex-shrink: 0;
+    position: relative; /* 새로 추가 - 상대 위치 지정 */
   }
 
   // 출금에서는 name, 입금에서는 category
@@ -182,6 +231,35 @@
 // Badge에 대한 스타일 - 공통이지만 크기 차이 있음
 .badge {
   width: 100%;
+  transition: all 0.2s ease; /* 새로 추가 - 배지 강화 스타일 */
+  cursor: pointer;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  // 클릭 가능함을 나타내는 밑줄 효과 - 새로 추가
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 1px;
+    background-color: currentColor;
+    transition: width 0.2s ease;
+  }
+
+  &:hover:after {
+    width: 80%;
+  }
 }
 
 // 입금용 뱃지
@@ -192,12 +270,6 @@
 // 출금용 뱃지
 .withdraw .badge {
   max-width: 80px;
-}
-
-.badge {
-  &:hover {
-    cursor: pointer;
-  }
 }
 
 .clickable {
@@ -213,76 +285,6 @@
 
   &:active {
     transform: translateY(0);
-  }
-}
-
-@media (max-width: $breakpoint-lg) {
-  .container {
-    border-radius: $border-radius-sm;
-    box-shadow: $shadow-sm;
-  }
-
-  .paginationWrapper {
-    padding: $spacing-sm;
-  }
-
-  .header,
-  .row {
-    & .content {
-      padding: 12px 2%;
-    }
-
-    & .message {
-      padding: 12px 2%;
-    }
-
-    & .evidence,
-    & .receipt {
-      padding: 10px 0.5%;
-    }
-  }
-}
-
-@media (max-width: $breakpoint-md) {
-  .all {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header,
-  .row {
-    flex-wrap: wrap;
-
-    & .badgeWrapper,
-    & .category,
-    & .name,
-    & .amount,
-    & .date {
-      padding: 8px 1%;
-    }
-
-    & .content,
-    & .message {
-      width: 100%;
-      padding: 10px 2%;
-      order: 5;
-    }
-
-    // 입금 테이블 반응형에서만 필요한 부분
-    & .evidence,
-    & .receipt {
-      width: 50%;
-      padding: 10px 1%;
-      min-width: auto;
-    }
-
-    & .evidence {
-      order: 6;
-    }
-
-    & .receipt {
-      order: 7;
-    }
   }
 }
 
@@ -340,8 +342,96 @@
   padding-top: $spacing-md;
 }
 
-.badge {
-  &:hover {
-    cursor: pointer;
+// 반응형 대응
+@media (max-width: $breakpoint-lg) {
+  .container {
+    border-radius: $border-radius-sm;
+    box-shadow: $shadow-sm;
+  }
+
+  .paginationWrapper {
+    padding: $spacing-sm;
+  }
+
+  .header,
+  .row {
+    & .content {
+      padding: 12px 2%;
+    }
+
+    & .message {
+      padding: 12px 2%;
+    }
+
+    & .evidence,
+    & .receipt {
+      padding: 10px 0.5%;
+    }
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  // 인라인 메시지 모바일 스타일 추가
+  .infoMessage {
+    padding: $spacing-xs $spacing-sm;
+    font-size: $font-size-xs;
+
+    .infoIcon {
+      width: 14px;
+      height: 14px;
+    }
+  }
+
+  .all {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header,
+  .row {
+    flex-wrap: wrap;
+
+    & .badgeWrapper,
+    & .category,
+    & .name,
+    & .amount,
+    & .date {
+      padding: 8px 1%;
+    }
+
+    & .content,
+    & .message {
+      width: 100%;
+      padding: 10px 2%;
+      order: 5;
+    }
+
+    // 입금 테이블 반응형에서만 필요한 부분
+    & .evidence,
+    & .receipt {
+      width: 50%;
+      padding: 10px 1%;
+      min-width: auto;
+    }
+
+    & .evidence {
+      order: 6;
+    }
+
+    & .receipt {
+      order: 7;
+    }
+
+    // 모바일에서 배지 컨테이너 스타일 조정
+    & .badgeWrapper {
+      display: flex;
+      flex-direction: row !important;
+      align-items: center;
+      justify-content: flex-start !important;
+
+      .badge {
+        margin-right: $spacing-xs;
+      }
+    }
   }
 }

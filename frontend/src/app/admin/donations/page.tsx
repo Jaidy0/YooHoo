@@ -128,23 +128,17 @@ export default function DonationsPage() {
             <DonationTracker
               variant='total'
               amount={total || 0}
-              compareDeposit={totalDonation || 0}
-              compareWithdraw={totalWithdrawal || 0}
+              compareDeposit={compareDonationLastWeek || 0}
+              compareWithdraw={compareWitrawLastWeek || 0}
             />
           </div>
 
           <div className={styles.rightColumn}>
             {/* 오른쪽 상단에 입금 내역 */}
-            <DonationTracker
-              variant='deposit'
-              amount={compareDonationLastWeek || 0}
-            />
+            <DonationTracker variant='deposit' amount={totalDonation || 0} />
 
             {/* 오른쪽 하단에 출금 내역 */}
-            <DonationTracker
-              variant='withdraw'
-              amount={compareWitrawLastWeek || 0}
-            />
+            <DonationTracker variant='withdraw' amount={totalWithdrawal || 0} />
           </div>
         </div>
 

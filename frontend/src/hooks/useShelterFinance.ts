@@ -76,6 +76,18 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<Error | null>(null);
 
+  // "YYYYMMDD" 형식의 문자열을 타임스탬프로 변환하는 함수
+  const parseYYYYMMDD = (dateStr: string): number => {
+    if (!dateStr) return 0;
+
+    // "YYYYMMDD" 형식을 "YYYY-MM-DD" 형식으로 변환하여 Date 객체 생성
+    const year = dateStr.substring(0, 4);
+    const month = dateStr.substring(4, 6);
+    const day = dateStr.substring(6, 8);
+
+    return new Date(`${year}-${month}-${day}`).getTime();
+  };
+
   /**
    * 모든 데이터를 조회하는 함수
    */
@@ -124,13 +136,9 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
       });
 
       const sortedWithdrawals = [...allWithdrawalsResponse].sort((a, b) => {
-        // 날짜가 undefined인 경우 처리
-        const dateA = a.withdrawalDate
-          ? new Date(a.withdrawalDate).getTime()
-          : 0;
-        const dateB = b.withdrawalDate
-          ? new Date(b.withdrawalDate).getTime()
-          : 0;
+        // withdrawalDate 대신 date 속성을 사용
+        const dateA = a.date ? parseYYYYMMDD(a.date) : 0;
+        const dateB = b.date ? parseYYYYMMDD(b.date) : 0;
         return dateB - dateA;
       });
 

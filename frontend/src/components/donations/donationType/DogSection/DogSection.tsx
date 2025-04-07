@@ -20,6 +20,7 @@ export default function DogSection({
   stepNumber,
 }: DogSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [initialRender, setInitialRender] = useState(true);
   const selectedDogRef = useRef<HTMLDivElement>(null);
 
   // 강아지 목록 가져오기
@@ -29,16 +30,37 @@ export default function DogSection({
     setSearchTerm(term);
   };
 
-  // 선택된 강아지로 스크롤
+  // 초기 렌더링 시 강아지가 선택되어 있으면 스크롤하기
   useEffect(() => {
-    // 검색어가 비어있고, 선택된 강아지가 있으며, 로딩 중이 아닐 때만 스크롤
-    if (!searchTerm && selectedDogId && !isLoading && selectedDogRef.current) {
+    // 강아지 목록이 로드되었고, 선택된 강아지가 있으며, 초기 렌더링인 경우에만 실행
+    if (!isLoading && selectedDogId && initialRender && dogs.length > 0) {
+      setTimeout(() => {
+        if (selectedDogRef.current) {
+          selectedDogRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+        setInitialRender(false);
+      }, 300); // 약간의 지연을 주어 DOM이 완전히 렌더링된 후 스크롤하도록 함
+    }
+  }, [isLoading, selectedDogId, initialRender, dogs.length]);
+
+  // 검색어 초기화 시 선택된 강아지로 스크롤
+  useEffect(() => {
+    if (
+      !searchTerm &&
+      selectedDogId &&
+      !isLoading &&
+      selectedDogRef.current &&
+      !initialRender
+    ) {
       selectedDogRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-  }, [searchTerm, selectedDogId, isLoading]);
+  }, [searchTerm, selectedDogId, isLoading, initialRender]);
 
   return (
     <div className={styles.dogSection}>

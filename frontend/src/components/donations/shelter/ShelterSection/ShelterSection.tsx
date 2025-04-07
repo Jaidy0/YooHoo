@@ -18,6 +18,8 @@ export default function ShelterSection({
 }: ShelterSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sort, setSort] = useState<'dogcount' | 'reliability'>('dogcount');
+  const [initialRender, setInitialRender] = useState(true);
+  const [shouldScroll, setShouldScroll] = useState(false);
 
   // 선택된 요소에 대한 ref
   const selectedShelterRef = useRef<HTMLDivElement>(null);
@@ -28,6 +30,10 @@ export default function ShelterSection({
   // 검색 처리
   const handleSearch = (term: string) => {
     setSearchTerm(term);
+    // 검색어가 초기화되면 스크롤 플래그 활성화
+    if (term === '' && selectedShelterId) {
+      setShouldScroll(true);
+    }
   };
 
   // 검색어를 기준으로 단체 필터링
@@ -48,15 +54,30 @@ export default function ShelterSection({
     return (bIsRecent ? 1 : 0) - (aIsRecent ? 1 : 0);
   });
 
+  // 초기 렌더링 시 단체가 선택되어 있으면 스크롤하기
+  useEffect(() => {
+    // 단체 목록이 로드되었고, 선택된 단체가 있으며, 초기 렌더링인 경우에만 실행
+    if (
+      !isLoading &&
+      selectedShelterId &&
+      initialRender &&
+      filteredShelters.length > 0
+    ) {
+      setShouldScroll(true);
+      setInitialRender(false);
+    }
+  }, [isLoading, selectedShelterId, initialRender, filteredShelters.length]);
+
   // 선택된 요소로 스크롤 처리
   useEffect(() => {
-    if (selectedShelterId && selectedShelterRef.current) {
+    if (shouldScroll && selectedShelterId && selectedShelterRef.current) {
       selectedShelterRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
+      setShouldScroll(false); // 스크롤 후 플래그 초기화
     }
-  }, [selectedShelterId, filteredShelters]);
+  }, [shouldScroll, selectedShelterId, filteredShelters]);
 
   // 로딩 상태 표시
   if (isLoading) {
