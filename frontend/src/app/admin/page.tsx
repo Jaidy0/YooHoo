@@ -147,15 +147,15 @@ export default function AdminPage() {
                       지표입니다.
                     </p>
 
-                    <h4>산정 기준</h4>
+                    <h4>🔍 신뢰 지수는 이렇게 계산돼요!</h4>
                     <ul>
-                      <li>정기적인 활동 보고서 공개 여부</li>
-                      <li>영수증 첨부 내역</li>
+                      <li>1. 후원금 중 강아지 관련 지출 비율</li>
+                      <li>2. 출금 내역에 영수증이 첨부된 비율</li>
+                      <li>3. 설립 후 운영된 연수</li>
                     </ul>
 
                     <p>
-                      신뢰 지수는 정기적으로 갱신되며, 보호소의 활동 내역에 따라
-                      변동될 수 있습니다.
+                      총 100점 만점 기준으로 산정되며, 실시간으로 갱신됩니다
                     </p>
                   </div>
                 )}
@@ -171,7 +171,7 @@ export default function AdminPage() {
                   ></div>
                 </div>
                 <div className={styles.trustPercentage}>
-                  {displayData.reliability}%
+                  {displayData.reliability}점
                 </div>
               </div>
             )}
