@@ -189,13 +189,12 @@
   justify-content: center;
 }
 
-.moreBtn {
+.yellowButton {
   width: 100%;
-  background-color: $yh-yellow !important;
+  // background-color: $yh-yellow !important;
   color: $text-333 !important;
   padding: $spacing-md !important;
   border-radius: $border-radius-md !important;
-  font-weight: $font-weight-medium !important;
 
   &:hover {
     // background-color: darken($yh-yellow, 5%) !important;
@@ -219,11 +218,4 @@
     max-width: 768px;
     margin: 0 auto;
   }
-}
-
-.moreBtn > span {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
 }

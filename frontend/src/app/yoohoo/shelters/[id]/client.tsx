@@ -302,7 +302,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
             <ReliabilityChart
               reliability={shelter?.reliability || 0}
-              reliabilityPercentage={shelter?.reliabilityPercentage || 70}
+              reliabilityPercentage={shelter?.reliabilityPercentage || 0}
             />
             <DonationUsageChart
               categories={mockDonationData.categories}

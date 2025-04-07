@@ -53,7 +53,7 @@ export default function ReliabilityChart({
         <div className={styles.statWrapper}>
           <span className={styles.statLabel}>신뢰도 점수</span>
           <span className={styles.statValue}>
-            <em>{reliability || 70}</em>점
+            <em>{reliability || 0}</em>점
           </span>
           <span className={styles.statLabel}>/ 100점</span>
         </div>
