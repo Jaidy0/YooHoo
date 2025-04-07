@@ -1,4 +1,4 @@
-# redis.conf
+# redis.conf.template
 # ## 보안 설정 ##
 # 비밀번호 설정
 requirepass $REDIS_PASSWORD
@@ -10,7 +10,7 @@ port 6379
 # TCP keepalive 설정 (네트워크 불안정 시 연결 유지 도움)
 tcp-keepalive 300
 
-# 로그 파일 경로 (Docker 환경에서는 stdout/stderr 로깅이 일반적이므로 주석 처리)
+# Docker 환경에서는 보통 stdout/stderr 사용 (로깅)
 # logfile ""
 
 # 데이터베이스 개수
@@ -39,15 +39,17 @@ dir /data
 # maxclients 10000
 
 # 최대 메모리 제한 (예: 1GB) 및 정책 (예: LRU)
-# maxmemory 1gb
-# maxmemory-policy allkeys-lru
+maxmemory 1gb
+maxmemory-policy allkeys-lru
 
 # ## 위험 명령어 이름 변경 (보안 강화, 선택 사항) ##
 # CONFIG 명령어 비활성화
-# rename-command CONFIG ""
+rename-command CONFIG ""
 # 복제 관련 명령어 비활성화
 # rename-command SLAVEOF ""
 # rename-command REPLICAOF ""
 # 전체 삭제 명령어 비활성화
-# rename-command FLUSHALL ""
-# rename-command FLUSHDB ""
+rename-command FLUSHALL ""
+rename-command FLUSHDB ""
+# KEYS 명령어 비활성화 (성능 이슈 방지)
+rename-command KEYS ""

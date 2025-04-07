@@ -9,6 +9,7 @@
       <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.develop.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.develop.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/redis/redis.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/redis/redis.conf.template" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +83,7 @@
       <workItem from="1742429842017" duration="2000" />
       <workItem from="1743147759989" duration="5386000" />
       <workItem from="1743468477036" duration="6840000" />
-      <workItem from="1743496820001" duration="22337000" />
+      <workItem from="1743496820001" duration="22728000" />
     </task>
     <servers />
   </component>
