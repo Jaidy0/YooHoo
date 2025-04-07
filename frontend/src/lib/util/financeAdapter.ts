@@ -4,7 +4,7 @@ import { DonationItem, WithdrawalItem } from '@/api/donations/donation';
 // FinanceTable 컴포넌트에서 사용하는 입금 데이터 형식
 export interface DepositTableItem {
   type: string;
-  name: string;
+  name: string | undefined;
   amount: number;
   date: string;
   message: string | undefined;
@@ -34,7 +34,7 @@ export const adaptDonationsToDepositTable = (
 
     return {
       type,
-      name: item.shelterName,
+      name: item.userNickname || undefined,
       amount: item.donationAmount,
       // YYYY-MM-DD 형식을 YYYY.MM.DD 형식으로 변환
       date: item.donationDate.replace(/-/g, '.'),

@@ -6,14 +6,15 @@ import Image from 'next/image';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useRouter } from 'next/navigation';
 import { useShelterData } from '@/hooks/useShetlerData';
+import { useAuthStore } from '@/store/authStore';
 
 export default function AdminPage() {
   const router = useRouter();
   const [isTooltipOpen, setIsTooltipOpen] = useState(false);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
-  // 임시 보호소 ID (향후 사용자 정보에서 가져올 예정)
-  const shelterId = 5;
+  const { user } = useAuthStore();
+  const shelterId = user?.shelterId || 5;
 
   // 커스텀 훅을 사용하여 보호소 데이터 가져오기
   const { shelter, isLoading, error, refreshData, dogCount } =
@@ -74,9 +75,9 @@ export default function AdminPage() {
         </div>
         <div className={styles.shelterText}>
           <div className={styles.shelterTitle}>{displayData.name}</div>
-          <div className={styles.settingButton}>
+          {/* <div className={styles.settingButton}>
             <IconBox name='gear' size={24}></IconBox>
-          </div>
+          </div> */}
           <div className={styles.shelterInfoText}>
             {/* 설립연도 */}
             <div className={styles.shelterInfoItem}>
@@ -146,15 +147,15 @@ export default function AdminPage() {
                       지표입니다.
                     </p>
 
-                    <h4>산정 기준</h4>
+                    <h4>🔍 신뢰 지수는 이렇게 계산돼요!</h4>
                     <ul>
-                      <li>정기적인 활동 보고서 공개 여부</li>
-                      <li>영수증 첨부 내역</li>
+                      <li>1. 후원금 중 강아지 관련 지출 비율</li>
+                      <li>2. 출금 내역에 영수증이 첨부된 비율</li>
+                      <li>3. 설립 후 운영된 연수</li>
                     </ul>
 
                     <p>
-                      신뢰 지수는 정기적으로 갱신되며, 보호소의 활동 내역에 따라
-                      변동될 수 있습니다.
+                      총 100점 만점 기준으로 산정되며, 실시간으로 갱신됩니다
                     </p>
                   </div>
                 )}
@@ -170,7 +171,7 @@ export default function AdminPage() {
                   ></div>
                 </div>
                 <div className={styles.trustPercentage}>
-                  {displayData.reliability}%
+                  {displayData.reliability}점
                 </div>
               </div>
             )}

@@ -12,10 +12,89 @@ import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { useShelterData } from '@/hooks/useShetlerData';
 import { useInfiniteDogData } from '@/hooks/useInfiniteDogData';
 import { useDog } from '@/hooks/useDog';
+import DonationUsageChart from '@/components/shelters/DonationUsageChart/DonationUsageChart';
+import ReliabilityChart from '@/components/shelters/ReliabilityChart/ReliabilityChart';
+import DonationUseHistoryList from '@/components/shelters/DonationUseHistoryList/DonationUseHistoryList';
 
 interface GroupDetailClientProps {
   groupId: string;
 }
+
+// Mock 데이터 추가
+const mockDonationData = {
+  categories: [
+    {
+      name: '인건비',
+      color: '#f57c17',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '시설 유지비',
+      color: '#f2b2d1',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '사료비',
+      color: '#ee417c',
+      actualPercentage: 30,
+      averagePercentage: 50,
+    },
+    {
+      name: '물품 구매',
+      color: '#f4b616',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '의료비',
+      color: '#1bb9b3',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+    {
+      name: '기타',
+      color: '#7a91e0',
+      actualPercentage: 30,
+      averagePercentage: 30,
+    },
+  ],
+  totalIncome: 34000400,
+  totalExpense: 28930400,
+  year: 2025,
+  month: 2,
+  histories: [
+    {
+      id: 1,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: true,
+    },
+    {
+      id: 2,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: false,
+    },
+    {
+      id: 3,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: true,
+    },
+    {
+      id: 4,
+      date: '2025.03.04',
+      amount: -320000,
+      description: '강아지 사료 구매',
+      isVerified: true,
+    },
+  ],
+};
 
 export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   const router = useRouter();
@@ -179,7 +258,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               <div className={styles.loadMoreContainer}>
                 <Button
                   width='100%'
-                  className={styles.yellowButton}
+                  className={styles.moreBtn}
                   onClick={handleLoadMore}
                 >
                   + 더보기
@@ -220,11 +299,19 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
 
         {activeTab === 2 && (
           <div className={styles.fundsContent}>
-            <div className={styles.statItem}>
-              <span className={styles.statLabel}>신뢰도</span>
-              <span className={styles.statValue}>{shelter?.reliability}%</span>
-            </div>
-            <p>후원금 운용 내역입니다.</p>
+            <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
+            <ReliabilityChart
+              reliability={shelter?.reliability || 0}
+              reliabilityPercentage={shelter?.reliabilityPercentage || 0}
+            />
+            <DonationUsageChart
+              categories={mockDonationData.categories}
+              totalIncome={mockDonationData.totalIncome}
+              totalExpense={mockDonationData.totalExpense}
+              year={mockDonationData.year}
+              month={mockDonationData.month}
+            />
+            <DonationUseHistoryList histories={mockDonationData.histories} />
           </div>
         )}
       </div>

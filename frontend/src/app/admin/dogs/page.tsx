@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import SearchBar from '@/components/common/SearchBar/SearchBar';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useDogData } from '@/hooks/useDogData';
+import { useAuthStore } from '@/store/authStore';
 
 // 탭 메뉴 아이템 (DogStatus enum에 맞춤)
 const dogStatusTabs = [
@@ -40,7 +41,8 @@ const dogStatusTabs = [
 export default function DogsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState(0);
-  const shelterId = 5; // 실제로는 사용자 컨텍스트에서 가져오거나 URL에서 추출
+  const { user } = useAuthStore();
+  const shelterId = user?.shelterId || 5;
 
   // 커스텀 훅 사용 - 20개씩 표시
   const {

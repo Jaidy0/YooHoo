@@ -34,5 +34,8 @@
   flex: 1;
   position: relative;
   width: 100%;
-  height: 320px;
+  /* 기존 높이를 충분히 늘려줍니다 */
+  height: 400px;
+  /* 넘치는 내용을 보이게 합니다 */
+  overflow: visible;
 }

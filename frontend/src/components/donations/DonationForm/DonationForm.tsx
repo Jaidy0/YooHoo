@@ -62,6 +62,7 @@ export default function DonationForm({
     supportMessage: '',
     anonymousDonation: false,
     amount: 0,
+    isRecent: false,
   });
 
   // 단체 계좌 정보 가져오기
@@ -172,17 +173,6 @@ export default function DonationForm({
     <div className={styles.donationForm}>
       <div className={styles.progressBarContainer}>
         <ProgressBar progress={calculateProgress()} />
-      </div>
-
-      <div className={styles.description}>
-        <p>
-          <strong>정기후원</strong> 지정한 단체에 매월 정해진 날짜마다 후원금이
-          이체됩니다.
-        </p>
-        <p>
-          <strong>일시후원</strong> 단체 후원 / 강아지 후원 중 선택하여 후원할
-          수 있습니다.
-        </p>
       </div>
 
       {/* 1. 단체 선택 */}

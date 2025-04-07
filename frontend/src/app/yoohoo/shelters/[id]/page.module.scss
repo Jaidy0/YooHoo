@@ -53,7 +53,7 @@
 }
 
 .sectionTitle {
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 
 // 단체 정보 영역
@@ -191,11 +191,10 @@
 
 .yellowButton {
   width: 100%;
-  background-color: $yh-yellow !important;
+  // background-color: $yh-yellow !important;
   color: $text-333 !important;
   padding: $spacing-md !important;
   border-radius: $border-radius-md !important;
-  font-weight: $font-weight-medium !important;
 
   &:hover {
     // background-color: darken($yh-yellow, 5%) !important;

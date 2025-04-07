@@ -61,6 +61,13 @@ export default function DonationsPage() {
     );
   }
 
+  const compareWitrawLastWeek =
+    (weeklyWithdrawalData?.['ThisWeek'] || 0) -
+    (weeklyWithdrawalData?.['1WeeksAgo'] || 0);
+  const compareDonationLastWeek =
+    (weeklyDonationData?.['ThisWeek'] || 0) -
+    (weeklyDonationData?.['1WeeksAgo'] || 0);
+
   // API 응답에서 주간 통계 데이터 구성
   const donationStats: StatItem[] = [
     { month: '5주 전', value: weeklyDonationData?.['5WeeksAgo'] || 0 },
@@ -128,10 +135,16 @@ export default function DonationsPage() {
 
           <div className={styles.rightColumn}>
             {/* 오른쪽 상단에 입금 내역 */}
-            <DonationTracker variant='deposit' amount={totalDonation || 0} />
+            <DonationTracker
+              variant='deposit'
+              amount={compareDonationLastWeek || 0}
+            />
 
             {/* 오른쪽 하단에 출금 내역 */}
-            <DonationTracker variant='withdraw' amount={totalWithdrawal || 0} />
+            <DonationTracker
+              variant='withdraw'
+              amount={compareWitrawLastWeek || 0}
+            />
           </div>
         </div>
 
