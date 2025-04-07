@@ -75,6 +75,11 @@ export default function DonationChart({
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 30, // 상단 패딩 추가
+              },
+            },
             plugins: {
               legend: {
                 display: false,
@@ -101,6 +106,8 @@ export default function DonationChart({
                 padding: {
                   bottom: 8,
                 },
+                // 레이블 오프셋 설정
+                offset: 5,
               },
             },
             scales: {
@@ -149,6 +156,11 @@ export default function DonationChart({
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 30, // 상단 패딩 추가
+              },
+            },
             plugins: {
               legend: {
                 display: false,
@@ -175,6 +187,8 @@ export default function DonationChart({
                 padding: {
                   bottom: 8,
                 },
+                // 레이블 오프셋 설정
+                offset: 5,
               },
             },
             scales: {
