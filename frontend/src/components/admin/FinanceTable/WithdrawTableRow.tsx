@@ -80,6 +80,9 @@ export default function WithdrawTableRow({
     }
   };
 
+  // category가 'Unknown'인 경우 '기타'로 표시
+  const displayCategory = category === 'Unknown' ? '기타' : category;
+
   return (
     <div className={styles.all}>
       {variant === 'header' ? (
@@ -103,7 +106,7 @@ export default function WithdrawTableRow({
               {type}
             </Badge>
           </div>
-          <div className={styles.category}>{category}</div>
+          <div className={styles.category}>{displayCategory}</div>
           <div className={styles.amount}>{formatAmount(amount)}</div>
           <div className={styles.content}>{content}</div>
           <div className={styles.date}>{date}</div>
