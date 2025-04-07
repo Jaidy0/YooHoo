@@ -1,0 +1,53 @@
+# redis.conf
+# ## 보안 설정 ##
+# 비밀번호 설정
+requirepass $REDIS_PASSWORD
+
+# ## 기본 설정 (필요에 따라 수정) ##
+# 포트 설정 (Docker 내부에서 사용되므로 보통 변경 불필요)
+port 6379
+
+# TCP keepalive 설정 (네트워크 불안정 시 연결 유지 도움)
+tcp-keepalive 300
+
+# 로그 파일 경로 (Docker 환경에서는 stdout/stderr 로깅이 일반적이므로 주석 처리)
+# logfile ""
+
+# 데이터베이스 개수
+databases 16
+
+# ## RDB 스냅샷 설정 (기본값 유지 또는 필요시 조정) ##
+# 900초(15분) 동안 1개 이상의 키 변경 시 저장
+save 900 1
+# 300초(5분) 동안 10개 이상의 키 변경 시 저장
+save 300 10
+# 60초 동안 10000개 이상의 키 변경 시 저장
+save 60 10000
+
+# RDB 파일 이름
+dbfilename dump.rdb
+
+# RDB 파일 저장 경로 (Docker 볼륨으로 관리되므로 보통 변경 불필요)
+dir /data
+
+# ## 복제 관련 설정 (현재는 단일 인스턴스이므로 주석 처리) ##
+# replicaof <masterip> <masterport>
+# masterauth <master-password>
+
+# ## 고급 설정 (필요시 주석 해제 및 수정) ##
+# 최대 클라이언트 연결 수
+# maxclients 10000
+
+# 최대 메모리 제한 (예: 1GB) 및 정책 (예: LRU)
+# maxmemory 1gb
+# maxmemory-policy allkeys-lru
+
+# ## 위험 명령어 이름 변경 (보안 강화, 선택 사항) ##
+# CONFIG 명령어 비활성화
+# rename-command CONFIG ""
+# 복제 관련 명령어 비활성화
+# rename-command SLAVEOF ""
+# rename-command REPLICAOF ""
+# 전체 삭제 명령어 비활성화
+# rename-command FLUSHALL ""
+# rename-command FLUSHDB ""
