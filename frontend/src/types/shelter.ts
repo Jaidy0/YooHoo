@@ -10,6 +10,7 @@ export interface ShelterDetail {
   businessNumber: string;
   reliability: number;
   imageUrl: string;
+  reliabilityPercentage: number; // 추가된 것
 }
 
 export interface Shelter {
