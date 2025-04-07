@@ -40,7 +40,7 @@ const dogStatusTabs = [
 
 export default function DogsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(1);
   const { user } = useAuthStore();
   const shelterId = user?.shelterId || 5;
 
