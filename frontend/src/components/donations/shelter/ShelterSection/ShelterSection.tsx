@@ -18,6 +18,7 @@ export default function ShelterSection({
 }: ShelterSectionProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sort, setSort] = useState<'dogcount' | 'reliability'>('dogcount');
+  const [shouldScroll, setShouldScroll] = useState(false);
 
   // 선택된 요소에 대한 ref
   const selectedShelterRef = useRef<HTMLDivElement>(null);
@@ -28,6 +29,10 @@ export default function ShelterSection({
   // 검색 처리
   const handleSearch = (term: string) => {
     setSearchTerm(term);
+    // 검색어가 초기화되면 스크롤 플래그 활성화
+    if (term === '' && selectedShelterId) {
+      setShouldScroll(true);
+    }
   };
 
   // 검색어를 기준으로 단체 필터링
@@ -48,15 +53,16 @@ export default function ShelterSection({
     return (bIsRecent ? 1 : 0) - (aIsRecent ? 1 : 0);
   });
 
-  // 선택된 요소로 스크롤 처리
+  // 선택된 요소로 스크롤 처리 - 검색이 초기화될 때만 실행
   useEffect(() => {
-    if (selectedShelterId && selectedShelterRef.current) {
+    if (shouldScroll && selectedShelterId && selectedShelterRef.current) {
       selectedShelterRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
+      setShouldScroll(false); // 스크롤 후 플래그 초기화
     }
-  }, [selectedShelterId, filteredShelters]);
+  }, [shouldScroll, selectedShelterId, filteredShelters]);
 
   // 로딩 상태 표시
   if (isLoading) {
