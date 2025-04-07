@@ -347,8 +347,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   />
                 </div>
                 <span className={styles.logoText}>
-                  {'단체명'} <strong>{user?.nickname || '사용자명'}</strong> 님
-                  환영합니다!
+                  <strong>{user?.nickname || '사용자명'}</strong> 님 환영합니다!
                 </span>
               </Link>
             </div>
