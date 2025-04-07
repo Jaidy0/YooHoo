@@ -21,7 +21,7 @@ services:
     volumes:
       - redis_data:/data
       # redis.conf 파일을 컨테이너 내부 경로에 마운트 (비밀번호 설정 유지)
-      - ./redis/redis.conf.generated:/usr/local/etc/redis/redis.conf
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     # 마운트된 설정 파일을 사용하도록 명령어 지정
     command: redis-server /usr/local/etc/redis/redis.conf
 

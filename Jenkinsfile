@@ -139,7 +139,7 @@ pipeline {
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
                                 envsubst < \${WORKSPACE}/prometheus.develop.template.yml > ./prometheus.yml
-                                envsubst < \${WORKSPACE}/redis/redis.conf.template > ./redis.conf.generated
+                                envsubst < \${WORKSPACE}/redis/redis.conf.template > ./redis/redis.conf
                                 docker compose -f docker-compose.develop.yml up -d mysql redis nginx canary_backend canary_frontend prometheus grafana node-exporter cadvisor
                             else
                                 echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."
