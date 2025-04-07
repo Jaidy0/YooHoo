@@ -1,5 +1,6 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
+import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 import styles from './MoveButton.module.scss';
+import { IconProps } from '../../IconBox/IconBox';
 
 export type MoveButtonVariant = 'primary' | 'secondary' | 'yellow';
 
@@ -59,18 +60,48 @@ export default function MoveButton({
     .filter(Boolean)
     .join(' ');
 
+  // variant에 따른 아이콘 색상 결정
+  const getIconColor = () => {
+    switch (variant) {
+      case 'primary':
+        return '#ff544c'; // $yh-orange 색상값
+      case 'secondary':
+        return 'white';
+      case 'yellow':
+        return 'black';
+      default:
+        return '#ff544c';
+    }
+  };
+
+  // 아이콘에 색상 적용하기 위한 함수
+  const cloneIconWithColor = (icon: ReactNode) => {
+    if (!icon || !React.isValidElement(icon)) return icon;
+
+    // IconProps 타입을 가진 props가 있는지 확인
+    const iconElement = icon as React.ReactElement<IconProps>;
+
+    // 기존 props를 유지하면서 color 속성 추가
+    return React.cloneElement(iconElement, {
+      ...iconElement.props,
+      color: getIconColor(),
+    });
+  };
+
   return (
     <button className={buttonClasses} {...props}>
       {isLoading && <span className={styles.loader}></span>}
 
       {!isLoading && leftIcon && (
-        <span className={styles.leftIcon}>{leftIcon}</span>
+        <span className={styles.leftIcon}>{cloneIconWithColor(leftIcon)}</span>
       )}
 
       <span className={styles.content}>{children}</span>
 
       {!isLoading && rightIcon && (
-        <span className={styles.rightIcon}>{rightIcon}</span>
+        <span className={styles.rightIcon}>
+          {cloneIconWithColor(rightIcon)}
+        </span>
       )}
     </button>
   );

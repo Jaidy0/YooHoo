@@ -146,7 +146,7 @@ export default function MainPage() {
               height={0}
               sizes='100vw'
               style={{
-                width: '330px',
+                width: '340px',
                 height: 'auto',
               }}
             />
@@ -158,7 +158,7 @@ export default function MainPage() {
               height={0}
               sizes='100vw'
               style={{
-                width: '250px',
+                width: '330px',
                 height: 'auto',
               }}
             />
