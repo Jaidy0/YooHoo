@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import styles from './Dashboard.module.scss';
 import MySummaryCard from '@/components/profile/MySummaryCard/MySummaryCard';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
@@ -48,14 +49,9 @@ export default function Dashboard({ className = '' }: DashboardProps) {
       today.getDate()
     );
 
-    console.log('Create date (no time):', createDateOnly);
-    console.log('Today (no time):', todayOnly);
-
     // 날짜 차이 계산 (밀리초 단위)
     const timeDiff = todayOnly.getTime() - createDateOnly.getTime();
     const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-
-    console.log('Days difference:', daysDiff);
 
     // 당일은 1일, 하루 전은 2일로 계산
     return Math.max(daysDiff + 1, 1); // 최소 1일로 보장
@@ -91,27 +87,40 @@ export default function Dashboard({ className = '' }: DashboardProps) {
         </div>
       </div>
 
-      {/* 마이 후원 레포트 */}
-      <div className={styles.buttonContainer}>
-        <MoveButton
-          leftIcon={<IconBox name='cart' size={20} />}
-          rightIcon={<IconBox name='chevron' size={20} />}
-          className={styles.moveButton}
-          variant='secondary'
-          onClick={handleMoveToReportPage}
-        >
-          마이 후원 레포트
-        </MoveButton>
+      {/* 버튼 컨테이너 - 원래 크기로 유지 */}
+      <div className={styles.buttonGroup}>
         {user?.isAdmin && (
           <MoveButton
             leftIcon={<IconBox name='dog' size={20} />}
-            className={styles.moveButton}
+            className={styles.adminButton}
             variant='yellow'
             onClick={handleMoveToShelterManage}
           >
             단체 관리
           </MoveButton>
         )}
+        <div className={styles.reportButtonWrapper}>
+          <MoveButton
+            leftIcon={<IconBox name='cart' size={20} />}
+            rightIcon={<IconBox name='chevron' size={20} />}
+            className={styles.reportButton}
+            variant='secondary'
+            onClick={handleMoveToReportPage}
+          >
+            마이 후원 레포트
+          </MoveButton>
+
+          {/* 강아지 이미지를 버튼 옆에 배치 */}
+          <div className={styles.dogImageContainer}>
+            <Image
+              src='/images/bandi-profile.png'
+              alt='강아지 이미지'
+              width={140}
+              height={140}
+              className={styles.dogImage}
+            />
+          </div>
+        </div>
       </div>
 
       {/* 요약 카드 그리드 */}
