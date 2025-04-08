@@ -22,7 +22,7 @@ interface EvidanceModalProps {
 export default function EvidanceModal({
   isOpen,
   onClose,
-  transactionUniqueNo,
+  transactionUniqueNo = 0,
   type,
   shelterId = 5, // 기본값 제공
 }: EvidanceModalProps) {
@@ -32,6 +32,8 @@ export default function EvidanceModal({
     shelterId,
     enabled: isOpen && type,
   });
+
+  // console.log('***!!! bankbookData : ', bankbookData);
 
   // 카드 내역 조회 (type이 false일 때)
   const cardData = useCardWithdrawal({

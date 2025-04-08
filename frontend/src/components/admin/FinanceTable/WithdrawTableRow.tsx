@@ -56,6 +56,7 @@ export default function WithdrawTableRow({
   const openDogSelectModal = () => {
     setIsDogSelectModalOpen(true);
   };
+
   const closeDogSelectModal = () => {
     setIsDogSelectModalOpen(false);
   };
