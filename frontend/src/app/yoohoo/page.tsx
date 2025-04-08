@@ -23,8 +23,8 @@ export default function MainPage() {
     function checkAuth() {
       checkAuthStatus();
     }
-    console.log('메인페이지 체크합니다.');
     checkAuth();
+    console.log('메인페이지 로그인 여부 체크합니다.');
   }, []);
 
   if (isLoading) {
