@@ -3,7 +3,6 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Image from 'next/image';
-import ImageUpload from '@/components/common/ImageUpload/ImageUpload';
 import Input from '@/components/common/Input/Input';
 import Button from '@/components/common/buttons/Button/Button';
 import RatingScale from '@/components/common/RatingScale/RatingScale';
@@ -35,7 +34,6 @@ export default function DogsEditPage() {
   const [isNeutered, setIsNeutered] = useState(false);
   const [isVaccinated, setIsVaccinated] = useState(false);
   const [admissionDate, setAdmissionDate] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [additionalImages, setAdditionalImages] = useState<File[]>([]);
@@ -74,24 +72,6 @@ export default function DogsEditPage() {
   const formatDateForInput = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
-  };
-
-  // 이미지 업로드 핸들러
-  const handleImageChange = (file: File | null) => {
-    setImageFile(file);
-    // 이미지가 바뀌면 이전 에러 제거
-    if (errors.mainImage) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors.mainImage;
-        return newErrors;
-      });
-    }
-  };
-
-  // 이미지 업로드 에러 핸들러
-  const handleImageError = (message: string) => {
-    setErrors((prev) => ({ ...prev, mainImage: message }));
   };
 
   // 라디오 버튼 클릭 핸들러를 생성하는 함수 (상태, 성별)
@@ -165,13 +145,7 @@ export default function DogsEditPage() {
       };
 
       // 훅을 사용하여 강아지 정보 업데이트
-      await updateDogInfo(parseInt(dogId), formData, imageFile);
-
-      // 이미지 업로드는 아직 처리되지 않음
-      if (imageFile) {
-        console.log('업로드할 이미지:', imageFile);
-        // 이미지 업로드 API 연동 시 추가해야함
-      }
+      await updateDogInfo(parseInt(dogId), formData);
 
       router.push(`/admin/dogs/${dogId}`);
     } catch (error) {
@@ -341,19 +315,6 @@ export default function DogsEditPage() {
                   </div>
                 </div>
               )}
-
-              <div className={styles.imageUploadSection}>
-                <h3 className={styles.sectionTitle}>새 대표 이미지 업로드</h3>
-                <ImageUpload
-                  onError={handleImageError}
-                  error={errors.mainImage}
-                  uploadText='대표 이미지를 업로드해주세요'
-                  value={imageFile}
-                  onChange={handleImageChange}
-                />
-
-                {/* 추가 이미지 업로드 기능은 필요에 따라 구현 */}
-              </div>
             </div>
 
             <div className={styles.formFields}>

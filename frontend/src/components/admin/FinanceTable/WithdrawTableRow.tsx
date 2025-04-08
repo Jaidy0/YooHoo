@@ -17,7 +17,6 @@ export interface WithdrawTableRowProps {
   date: string;
   transactionUniqueNo: number;
   file_id: string | null;
-  onReceiptChange?: () => void; // 영수증 변경 시 호출할 콜백
 }
 
 const formatAmount = (value: number) => {
@@ -33,7 +32,6 @@ export default function WithdrawTableRow({
   amount,
   date,
   transactionUniqueNo,
-  onReceiptChange,
   file_id,
 }: WithdrawTableRowProps) {
   // 모달 상태 관리
@@ -46,46 +44,34 @@ export default function WithdrawTableRow({
   // 영수증 존재 여부 - file_id를 기준으로 판단
   const hasReceipt = file_id !== null;
 
-  // 영수증 변경 처리
-  const handleReceiptChange = useCallback(() => {
-    // 부모 컴포넌트에 변경 알림
-    onReceiptChange?.();
-  }, [onReceiptChange]);
+  // 자동 새로고침 실행 함수
+  const refreshPage = useCallback(() => {
+    window.location.reload();
+  }, []);
 
-  // DogSelect 모달 열기/닫기
-  const openDogSelectModal = () => {
-    setIsDogSelectModalOpen(true);
-  };
-
-  const closeDogSelectModal = () => {
+  // DogSelect 모달 닫기
+  const closeDogSelectModal = useCallback(() => {
     setIsDogSelectModalOpen(false);
-  };
+    refreshPage();
+  }, [refreshPage]);
 
-  // 증빙자료 모달 열기/닫기
-  const openEvidenceModal = () => {
-    setIsEvidenceModalOpen(true);
-  };
-  const closeEvidenceModal = () => {
-    setIsEvidenceModalOpen(false);
-  };
-
-  // 영수증 모달 열기/닫기
-  const openReceiptModal = () => {
-    setIsReceiptModalOpen(true);
-  };
-  const closeReceiptModal = () => {
-    setIsReceiptModalOpen(false);
-  };
-
-  // 영수증 업로드 모달 열기/닫기
-  const openReceiptUploadModal = () => {
-    setIsReceiptUploadModalOpen(true);
-  };
-  const closeReceiptUploadModal = () => {
+  // 영수증 업로드 모달 닫기
+  const closeReceiptUploadModal = useCallback(() => {
     setIsReceiptUploadModalOpen(false);
-  };
+    refreshPage();
+  }, [refreshPage]);
 
-  // 영수증 버튼 클릭 핸들러 - file_id 기준으로 변경
+  // 모달 열기 핸들러
+  const openDogSelectModal = () => setIsDogSelectModalOpen(true);
+  const openEvidenceModal = () => setIsEvidenceModalOpen(true);
+  const openReceiptModal = () => setIsReceiptModalOpen(true);
+  const openReceiptUploadModal = () => setIsReceiptUploadModalOpen(true);
+
+  // 일반 모달 닫기 핸들러 (새로고침 불필요)
+  const closeEvidenceModal = () => setIsEvidenceModalOpen(false);
+  const closeReceiptModal = () => setIsReceiptModalOpen(false);
+
+  // 영수증 버튼 클릭 핸들러 - hasReceipt 기준으로 변경
   const handleReceiptButtonClick = () => {
     if (hasReceipt) {
       openReceiptModal();
@@ -93,6 +79,9 @@ export default function WithdrawTableRow({
       openReceiptUploadModal();
     }
   };
+
+  // category가 'Unknown'인 경우 '기타'로 표시
+  const displayCategory = category === 'Unknown' ? '기타' : category;
 
   return (
     <div className={styles.all}>
@@ -117,7 +106,7 @@ export default function WithdrawTableRow({
               {type}
             </Badge>
           </div>
-          <div className={styles.category}>{category}</div>
+          <div className={styles.category}>{displayCategory}</div>
           <div className={styles.amount}>{formatAmount(amount)}</div>
           <div className={styles.content}>{content}</div>
           <div className={styles.date}>{date}</div>
@@ -131,7 +120,7 @@ export default function WithdrawTableRow({
               variant={hasReceipt ? 'primary' : 'secondary'}
               onClick={handleReceiptButtonClick}
             >
-              {hasReceipt ? '영수증보기' : '추가하기'}
+              {hasReceipt ? '활동자료' : '추가하기'}
             </RoundButton>
           </div>
         </div>
@@ -150,10 +139,10 @@ export default function WithdrawTableRow({
         isOpen={isEvidenceModalOpen}
         onClose={closeEvidenceModal}
         transactionUniqueNo={transactionUniqueNo}
-        type={type === '인건비'}
+        type={category === '인건비'}
       />
 
-      {/* 영수증 모달 - file_id가 null이 아닐 때 표시 */}
+      {/* 영수증 모달 - 영수증이 있을 때만 표시 */}
       {hasReceipt && (
         <ReceiptModal
           isOpen={isReceiptModalOpen}
@@ -162,13 +151,13 @@ export default function WithdrawTableRow({
         />
       )}
 
-      {/* 영수증 업로드 모달 - file_id가 null일 때 표시 */}
+      {/* 영수증 업로드 모달 - 영수증이 없을 때만 표시 */}
       {!hasReceipt && (
         <ReceiptUploadModal
           isOpen={isReceiptUploadModalOpen}
           onClose={closeReceiptUploadModal}
           withdrawId={withdrawalId}
-          onUploadSuccess={handleReceiptChange}
+          onUploadSuccess={refreshPage}
         />
       )}
     </div>

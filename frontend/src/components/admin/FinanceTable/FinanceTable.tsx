@@ -19,6 +19,7 @@ export default function FinanceTable({
   // 활성화된 탭 상태
   const [activeTab, setActiveTab] = useState<string>('deposit');
   const [currentPage, setCurrentPage] = useState(1);
+  const [showInfoMessage, setShowInfoMessage] = useState(true);
   const itemsPerPage = 10;
 
   // 탭 메뉴 아이템 정의
@@ -35,6 +36,7 @@ export default function FinanceTable({
   const handleTabClick = (item: TabMenuItem, index: number) => {
     setActiveTab(index === 0 ? 'deposit' : 'withdraw');
     setCurrentPage(1); // 탭 변경 시 페이지 초기화
+    setShowInfoMessage(true); // 탭 변경 시 안내 메시지 다시 표시
   };
 
   // 현재 활성화된 탭의 데이터 선택
@@ -52,12 +54,9 @@ export default function FinanceTable({
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
-
-  // 영수증 상태 변경 핸들러 함수 (출금 데이터를 위한 콜백)
-  const handleReceiptChange = () => {
-    // 필요한 경우 상태 업데이트 또는 부모 컴포넌트에 알림
-    console.log('Receipt status changed');
-    // 추가 로직이 필요한 경우 여기에 작성
+  // 안내 메시지 닫기
+  const handleCloseInfoMessage = () => {
+    setShowInfoMessage(false);
   };
 
   return (
@@ -73,6 +72,53 @@ export default function FinanceTable({
           />
         </div>
       </div>
+
+      {/* 출금 탭이 활성화되었을 때만 인라인 메시지 표시 */}
+      {activeTab === 'withdraw' && showInfoMessage && (
+        <div className={styles.infoMessage}>
+          <svg
+            className={styles.infoIcon}
+            width='16'
+            height='16'
+            viewBox='0 0 16 16'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <circle cx='8' cy='8' r='7' stroke='#7c514d' strokeWidth='1.5' />
+            <path
+              d='M8 5V11'
+              stroke='#7c514d'
+              strokeWidth='1.5'
+              strokeLinecap='round'
+            />
+            <circle cx='8' cy='3.5' r='0.5' fill='#7c514d' stroke='#7c514d' />
+          </svg>
+          <span>
+            출금 내역의 <strong>구분</strong> 항목을 클릭하면 강아지 지정 출금
+            내역으로 설정할 수 있습니다.
+          </span>
+          <button
+            className={styles.closeButton}
+            onClick={handleCloseInfoMessage}
+            aria-label='안내 메시지 닫기'
+          >
+            <svg
+              width='10'
+              height='10'
+              viewBox='0 0 10 10'
+              fill='none'
+              xmlns='http://www.w3.org/2000/svg'
+            >
+              <path
+                d='M1 1L9 9M9 1L1 9'
+                stroke='#777777'
+                strokeWidth='1.5'
+                strokeLinecap='round'
+              />
+            </svg>
+          </button>
+        </div>
+      )}
 
       <div className={styles.tableWrapper}>
         {activeTab === 'deposit' ? (
@@ -120,7 +166,6 @@ export default function FinanceTable({
                 <WithdrawTableRow
                   key={index}
                   {...(item as Omit<WithdrawTableRowProps, 'variant'>)}
-                  onReceiptChange={handleReceiptChange}
                 />
               ))
             ) : (

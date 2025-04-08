@@ -275,6 +275,7 @@ import styles from './layout.module.scss';
 import MoveButton from '@/components/common/buttons/MoveButton/MoveButton';
 import IconBox from '@/components/common/IconBox/IconBox';
 import { useAuthStore } from '@/store/authStore';
+import { useShelterStore } from '@/store/shelterStore';
 import AdminAuthGuard from '@/components/auth/AdminAuthGuard/AdminAuthGuard';
 
 // 관리자 상단 네비게이션 항목 정의
@@ -290,6 +291,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+
+  // Auth 스토어에서 사용자 정보 가져오기
   const { user, checkAuthStatus } = useAuthStore();
 
   // 페이지 로드 시 인증 상태 확인
@@ -306,6 +309,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
     checkAuth();
   }, [checkAuthStatus]);
+
+  // Shelter 스토어에서 쉘터 정보 가져오기
+  const { shelter } = useShelterStore();
 
   // shelterId를 user 객체에서 가져옴
   const shelterIdFromUser = user?.shelterId || 1;
@@ -347,8 +353,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                   />
                 </div>
                 <span className={styles.logoText}>
-                  {'단체명'} <strong>{user?.nickname || '사용자명'}</strong> 님
-                  환영합니다!
+                  {shelter?.name || '단체명'}{' '}
+                  <strong>{user?.nickname || '사용자명'}</strong> 님 환영합니다!
                 </span>
               </Link>
             </div>

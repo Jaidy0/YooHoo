@@ -88,7 +88,7 @@ export const CardVariations: Story = {
           {...args}
           title='정기 후원'
           description='매월 자동으로 후원합니다'
-          icon={<IconBox name='calendar' size={24} />}
+          icon={<IconBox name='calendar' size={24} color="#999999"/>}
           borderType='gray'
           isSelected={false}
         />
@@ -98,7 +98,7 @@ export const CardVariations: Story = {
           {...args}
           title='일시 후원'
           description='한 번만 후원합니다'
-          icon={<IconBox name='heart' size={24} />}
+          icon={<IconBox name='heart' size={24} color="#ff544c"/>}
           borderType='none'
           isSelected={true}
         />
@@ -108,7 +108,7 @@ export const CardVariations: Story = {
           {...args}
           title='단체 후원'
           description='단체 전체를 후원합니다'
-          icon={<IconBox name='doghead' size={24} />}
+          icon={<IconBox name='doghead' size={24} color="#ff544c"/>}
           borderType='none'
           isSelected={true}
         />
@@ -118,7 +118,7 @@ export const CardVariations: Story = {
           {...args}
           title='강아지 후원'
           description='특정 강아지를 후원합니다'
-          icon={<IconBox name='dog' size={24} />}
+          icon={<IconBox name='dog' size={24} color="#999999"/>}
           borderType='gray'
           isSelected={false}
         />

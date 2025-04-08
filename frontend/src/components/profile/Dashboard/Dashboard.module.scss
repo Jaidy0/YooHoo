@@ -1,15 +1,17 @@
 .dashboard {
-  padding: 10px;
+  padding: 20px;
   margin: 10px;
   background-color: $yh-beige;
-  border-radius: 10px;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
 }
 
 .userHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .userText {
@@ -28,30 +30,67 @@
 .userBtns {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .userSettingsButton {
   padding: 0.5rem;
-  .settingsIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.05);
-    }
-  }
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 50%;
 }
 
-.buttonContainer {
-  margin-bottom: 10px;
+.buttonGroup {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 15px;
+}
+
+.adminButton {
+  width: auto;
+  align-self: flex-start;
+}
+
+.reportButtonWrapper {
+  position: relative;
 }
 
 .summaryGrid {
-  padding: 10px 0;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.75rem;
+  z-index: 2;
+  position: relative;
+}
+
+.dogImageContainer {
+  position: absolute;
+  right: -4%;
+  top: -160%;
+  z-index: 1;
+}
+
+.dogImage {
+  width: 236px;
+  height: auto;
+}
+
+// 반응형 스타일
+@media (max-width: 768px) {
+  .dogImageContainer {
+    right: -1%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dogImageContainer {
+    right: -4%;
+  }
+}
+
+@media (max-width: 360px) {
+  .dogImageContainer {
+    right: -15%;
+  }
 }

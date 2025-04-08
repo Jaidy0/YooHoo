@@ -26,9 +26,21 @@ export default function DonationChart({
   const incomeChartRef = useRef<HTMLCanvasElement>(null);
   const expenseChartRef = useRef<HTMLCanvasElement>(null);
 
-  // 숫자 포맷팅 함수
-  const formatNumber = (value: number): string => {
-    return new Intl.NumberFormat('ko-KR').format(value);
+  // 숫자 포맷팅 함수들
+  const formatToManwon = (value: number): string => {
+    // 원 단위를 만원 단위로 변환 (소수점 없이 반올림)
+    const valueInManwon = Math.round(value / 10000);
+    return `${valueInManwon}만`;
+  };
+
+  const formatToWon = (value: number, isPredict = false): string => {
+    // 예측값인 경우 10원 단위로 반올림
+    if (isPredict) {
+      const roundedValue = Math.round(value / 10) * 10;
+      return new Intl.NumberFormat('ko-KR').format(roundedValue) + '원';
+    }
+    // 일반 값은 그대로 표시
+    return new Intl.NumberFormat('ko-KR').format(value) + '원';
   };
 
   useEffect(() => {
@@ -75,6 +87,11 @@ export default function DonationChart({
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 30, // 상단 패딩 추가
+              },
+            },
             plugins: {
               legend: {
                 display: false,
@@ -82,7 +99,10 @@ export default function DonationChart({
               tooltip: {
                 callbacks: {
                   label: (context) => {
-                    return `${formatNumber(context.parsed.y)}원`;
+                    // 마지막 데이터 포인트(예측값)인지 확인
+                    const isPredict =
+                      context.dataIndex === context.dataset.data.length - 1;
+                    return formatToWon(context.parsed.y, isPredict);
                   },
                 },
               },
@@ -91,16 +111,19 @@ export default function DonationChart({
                 align: 'top',
                 anchor: 'end',
                 color: '#777',
-                formatter: (value) => {
-                  return formatNumber(value);
+                formatter: (value, context) => {
+                  return formatToManwon(value);
                 },
                 font: {
                   weight: 'normal',
-                  size: 13,
+                  size: 12,
+                  family: "'NanumSquareNeo-Variable', sans-serif",
                 },
                 padding: {
                   bottom: 8,
                 },
+                // 레이블 오프셋 설정
+                offset: 5,
               },
             },
             scales: {
@@ -149,6 +172,11 @@ export default function DonationChart({
           options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 30, // 상단 패딩 추가
+              },
+            },
             plugins: {
               legend: {
                 display: false,
@@ -156,7 +184,10 @@ export default function DonationChart({
               tooltip: {
                 callbacks: {
                   label: (context) => {
-                    return `${formatNumber(context.parsed.y)}원`;
+                    // 마지막 데이터 포인트(예측값)인지 확인
+                    const isPredict =
+                      context.dataIndex === context.dataset.data.length - 1;
+                    return formatToWon(context.parsed.y, isPredict);
                   },
                 },
               },
@@ -165,8 +196,8 @@ export default function DonationChart({
                 align: 'top',
                 anchor: 'end',
                 color: '#777',
-                formatter: (value) => {
-                  return formatNumber(value);
+                formatter: (value, context) => {
+                  return formatToManwon(value);
                 },
                 font: {
                   weight: 'normal',
@@ -175,6 +206,8 @@ export default function DonationChart({
                 padding: {
                   bottom: 8,
                 },
+                // 레이블 오프셋 설정
+                offset: 5,
               },
             },
             scales: {
