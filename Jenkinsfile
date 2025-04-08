@@ -404,22 +404,24 @@ pipeline {
                     }
                 }
             }
-            stage('Update Nginx') {
-                agent { label 'public-dev' }
-                steps {
-                    script {
-                        withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                            sh """
-                                set -a
-                                . \${WORKSPACE}/.env
-                                set +a
-                                envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
-                                docker exec nginx_lb nginx -s reload
-                            """
-                        }
+        }
+        stage('Update Nginx') {
+            agent { label 'public-dev' }
+            steps {
+                script {
+                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+                        sh """
+                            set -a
+                            . \${WORKSPACE}/.env
+                            set +a
+                            envsubst '\$EC2_BACKEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$EC2_FRONTEND_HOST \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT' < \${WORKSPACE}/nginx/nginx.stable.conf.template > ./nginx/nginx.conf
+                            docker exec nginx_lb nginx -s reload
+                        """
                     }
                 }
             }
+        }
+        stage('Canary Cleanup') {
             parallel {
                 stage('Backend Canary Cleanup') {
                     agent { label 'backend-dev' }
