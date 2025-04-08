@@ -108,7 +108,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
 
   // 입금 데이터 포맷 변환
   const depositData: FormattedDepositItem[] = rawDepositData.map((item) => ({
-    type: '지정(강아지)', // 강아지 페이지이므로 지정 후원
+    type: `지정(${item.dogName})`, // 강아지 페이지이므로 지정 후원
     name: item.depositorName || '-',
     amount: item.donationAmount || 0,
     date: item.donationDate
