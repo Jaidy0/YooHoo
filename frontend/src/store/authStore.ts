@@ -36,10 +36,14 @@ function createAuthStore() {
             isAuthenticated: false,
             isLoading: false,
           });
+          console.log('유저정보가 없습니다. 로그아웃 상태');
+
           return { isAuthenticated: false, isAdmin: false };
         }
 
         // 2. nickname이 null인 경우 '후원자'로 설정
+        console.log('로그인 상태네요');
+
         const processedUserData = {
           ...userData,
           nickname: userData.nickname || '후원자',

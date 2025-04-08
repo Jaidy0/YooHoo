@@ -52,7 +52,6 @@ export function useInfiniteDogData({
         status: convertStatus(initialStatus),
         search: initialSearch || undefined,
       };
-      /// 여기서부터터터터터
       const response = await getDogList(shelterId, params);
       const dogs = response.data || [];
 
