@@ -29,7 +29,10 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     // 특정 날짜 범위의 기부 내역 조회
     List<Donation> findByDonationDateBetween(LocalDate startDate, LocalDate endDate);
 
+
     @Query("SELECT d.dog FROM Donation d WHERE d.user.userId = :userId")
     List<Dog> findDogsByUserId(@Param("userId") Long userId);
 
+    List<Donation> findByShelter_ShelterIdAndDonationDateBetween(Long shelterId, LocalDate startDate, LocalDate endDate);
+    
 }

@@ -58,4 +58,8 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
     "FROM Withdrawal w WHERE w.shelterId = :shelterId")
 List<WithdrawalProjectionDTO> findAllByShelterIdWithProjection(@Param("shelterId") Long shelterId);
 
+@Query("SELECT w FROM Withdrawal w WHERE w.shelterId = :shelterId AND w.date BETWEEN :startDate AND :endDate")
+List<Withdrawal> findByShelterIdAndDateBetween(@Param("shelterId") Long shelterId, 
+                                                @Param("startDate") String startDate, 
+                                                @Param("endDate") String endDate);
 }

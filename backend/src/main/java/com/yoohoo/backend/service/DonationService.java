@@ -150,7 +150,7 @@ public class DonationService {
                 .sum();
     }
 
-    public Map<String, Integer> getWeeklyDonationSumsAndPrediction() {
+    public Map<String, Integer> getWeeklyDonationSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
         List<Integer> weeklySums = new ArrayList<>();
@@ -158,7 +158,7 @@ public class DonationService {
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
             LocalDate endOfWeek = startOfWeek.plusDays(6);
-            int weeklySum = donationRepository.findByDonationDateBetween(startOfWeek, endOfWeek)
+            int weeklySum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, startOfWeek, endOfWeek)
                     .stream()
                     .mapToInt(Donation::getDonationAmount)
                     .sum();

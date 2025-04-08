@@ -203,47 +203,43 @@ public class WithdrawalService {
                 .sum();
     }
 
-    public Map<String, Double> getWeeklyExpenditureSumsAndPrediction() {
+    public Map<String, Integer> getWeeklyExpenditureSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
-        List<Double> weeklySums = new ArrayList<>();
-        DateTimeFormatter dbFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-
-        // Fetch all withdrawals once
-        List<Withdrawal> allWithdrawals = withdrawalRepository.findAll();
-
+        List<Integer> weeklySums = new ArrayList<>();
+    
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
-            LocalDate endOfWeek = startOfWeek.plusDays(6);
-            LocalDate finalStartOfWeek = startOfWeek;
-            LocalDate finalEndOfWeek = endOfWeek;
-
-            double weeklySum = allWithdrawals.stream()
-                    .filter(withdrawal -> {
-                        LocalDate withdrawalDate = LocalDate.parse(withdrawal.getDate(), dbFormatter);
-                        return !withdrawalDate.isBefore(finalStartOfWeek) && !withdrawalDate.isAfter(finalEndOfWeek);
-                    })
-                    .mapToDouble(withdrawal -> Double.parseDouble(withdrawal.getTransactionBalance()))
+            LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
+            LocalDate currentEndOfWeek = currentStartOfWeek.plusDays(6); // 현재 주의 종료일
+    
+            // String으로 변환
+            String startDateStr = currentStartOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+            String endDateStr = currentEndOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    
+            int weeklySum = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, startDateStr, endDateStr)
+                    .stream()
+                    .mapToInt(withdrawal -> Integer.parseInt(withdrawal.getTransactionBalance()))
                     .sum();
+            
             weeklySums.add(weeklySum);
-            startOfWeek = startOfWeek.minusWeeks(1);
         }
-
+    
         // Reverse the list to have the most recent week last
         Collections.reverse(weeklySums);
-
+    
         // Exponential Smoothing for prediction
         double alpha = 0.3; // Smoothing factor
         double smoothedValue = weeklySums.get(0); // Initialize with the first week's value
-
+    
         for (int i = 1; i < 5; i++) {
             smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
         }
-
-        double prediction = smoothedValue;
-
+    
+        int prediction = (int) Math.round(smoothedValue);
+    
         // Create a map with named keys and maintain order
-        Map<String, Double> result = new LinkedHashMap<>();
+        Map<String, Integer> result = new LinkedHashMap<>();
         result.put("5WeeksAgo", weeklySums.get(0));
         result.put("4WeeksAgo", weeklySums.get(1));
         result.put("3WeeksAgo", weeklySums.get(2));
@@ -251,7 +247,7 @@ public class WithdrawalService {
         result.put("1WeeksAgo", weeklySums.get(4));
         result.put("ThisWeek", weeklySums.get(5));
         result.put("Prediction", prediction);
-
+    
         return result;
     }
 

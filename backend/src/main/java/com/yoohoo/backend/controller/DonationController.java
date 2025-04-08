@@ -326,9 +326,9 @@ public class DonationController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/weekly-sums")
-    public ResponseEntity<Map<String, Integer>> getWeeklyDonationSumsAndPrediction() {
-        Map<String, Integer> weeklySums = donationService.getWeeklyDonationSumsAndPrediction();
+    @PostMapping("/weekly-sums")
+    public ResponseEntity<Map<String, Integer>> getWeeklyDonationSumsAndPrediction(@RequestBody Long shelterId) {
+        Map<String, Integer> weeklySums = donationService.getWeeklyDonationSumsAndPrediction(shelterId);
         return ResponseEntity.ok(weeklySums);
     }
 }
