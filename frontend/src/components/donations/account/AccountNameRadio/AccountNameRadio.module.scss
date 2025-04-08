@@ -60,7 +60,7 @@
     }
 
     span {
-      font-size: $font-size-sm;
+      font-size: $font-size-md;
       color: $text-333;
     }
 
@@ -74,25 +74,25 @@
   .nicknameContainer {
     margin-top: 0.25rem;
     padding-left: 24px;
-    margin: 0.5rem 0;
+    margin: 0.825rem 0;
   }
 
   // 닉네임 표시 스타일
   .nicknameDisplay {
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
     color: $text-555;
     font-weight: 400;
     margin-left: 1px;
   }
 
   .inputContainer {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
   }
 
   .accountNameInput {
     width: 100%;
     padding: 0.5rem;
     border-bottom: 1px solid $text-555;
-    font-size: $font-size-sm;
+    font-size: $font-size-md;
   }
 }
