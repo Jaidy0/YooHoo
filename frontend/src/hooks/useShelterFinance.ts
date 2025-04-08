@@ -109,8 +109,8 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
       ] = await Promise.all([
         fetchShelterTotalAmount(shelterId),
         fetchShelterTotalWithdrawal(shelterId),
-        fetchDonationWeeklySums(),
-        fetchWithdrawalWeeklySums(),
+        fetchDonationWeeklySums(shelterId),
+        fetchWithdrawalWeeklySums(shelterId),
         fetchShelterDonations(shelterId),
         fetchAllWithdrawals(shelterId),
       ]);
