@@ -59,35 +59,41 @@ export const fetchShelterTotalWithdrawal = async (
  * 최근 6주간 기부금액 내역과 예측치를 조회하는 API
  * @returns 주간 기부금액 내역과 예측치
  */
-export const fetchDonationWeeklySums =
-  async (): Promise<WeeklySumsResponse> => {
-    try {
-      const response = await axios.get<WeeklySumsResponse>(
-        `${API_BASE_URL}/api/donations/weekly-sums`
-      );
-      return response.data;
-    } catch (error) {
-      console.error('주간 기부금액 내역 조회 실패:', error);
-      throw error;
-    }
-  };
+export const fetchDonationWeeklySums = async (
+  shelterId: number
+): Promise<WeeklySumsResponse> => {
+  try {
+    // const request: TotalAmountRequest = { shelterId };
+    const response = await axios.post<WeeklySumsResponse>(
+      `${API_BASE_URL}/api/donations/weekly-sums`,
+      shelterId
+    );
+    return response.data;
+  } catch (error) {
+    console.error('주간 기부금액 내역 조회 실패:', error);
+    throw error;
+  }
+};
 
 /**
  * 최근 6주간 지출금액 내역과 예측치를 조회하는 API
  * @returns 주간 지출금액 내역과 예측치
  */
-export const fetchWithdrawalWeeklySums =
-  async (): Promise<WeeklySumsResponse> => {
-    try {
-      const response = await axios.get<WeeklySumsResponse>(
-        `${API_BASE_URL}/api/withdrawal/weekly-sums`
-      );
-      return response.data;
-    } catch (error) {
-      console.error('주간 지출금액 내역 조회 실패:', error);
-      throw error;
-    }
-  };
+export const fetchWithdrawalWeeklySums = async (
+  shelterId: number
+): Promise<WeeklySumsResponse> => {
+  try {
+    const request: TotalAmountRequest = { shelterId };
+    const response = await axios.post<WeeklySumsResponse>(
+      `${API_BASE_URL}/api/withdrawal/weekly-sums`,
+      request
+    );
+    return response.data;
+  } catch (error) {
+    console.error('주간 지출금액 내역 조회 실패:', error);
+    throw error;
+  }
+};
 
 /**
  * 단체 입금 내역 전체 조회 API

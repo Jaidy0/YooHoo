@@ -1,3 +1,5 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
 .trackerCard {
   position: relative;
   width: 100%;
@@ -90,14 +92,26 @@
   }
 }
 
+// 입금 및 출금 카드에 높이 100% 설정
+.deposit,
+.withdraw {
+  height: 100%; // 부모 컨테이너의 높이를 채우도록 함
+}
+
 .simple {
   display: flex;
   padding: $spacing-lg;
   justify-content: space-between;
   align-items: center;
+  height: 100%; // 높이를 100%로 설정하여 부모 컨테이너를 채우도록 함
 
   .badge {
     flex-shrink: 0;
+  }
+
+  .amountWrapper {
+    display: flex;
+    align-items: center; // 수직 가운데 정렬
   }
 
   .amount {
