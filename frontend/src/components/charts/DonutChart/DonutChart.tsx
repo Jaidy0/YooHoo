@@ -91,14 +91,22 @@ export default function DonutChart({
               label: function (context) {
                 const label = context.label || '';
                 const value = context.raw as number;
-                const total = context.dataset.data.reduce(
-                  (a: number, b: number) => a + b,
-                  0
-                );
-                const percentage = Math.round((value / total) * 100);
                 return `${label}: ${value}건`;
               },
             },
+            position: 'nearest',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 8,
+            titleFont: {
+              size: 12,
+            },
+            bodyFont: {
+              size: 12,
+            },
+            displayColors: true,
+            caretSize: 6,
+            // 툴팁이 차트 컨테이너 밖으로 나가지 않도록 설정
+            // charts.js에서는 차트영역 밖으로 나가지 않도록 자동 조정됨
           },
         },
       },
@@ -177,7 +185,6 @@ export default function DonutChart({
         </div>
         <div className={styles.chartWrapper}>
           <canvas ref={chartRef}></canvas>
-
           {centerText && <div className={styles.centerText}>{centerText}</div>}
         </div>
       </div>

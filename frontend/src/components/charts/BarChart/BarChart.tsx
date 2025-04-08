@@ -27,6 +27,16 @@ export default function BarChart({
   const chartRef = useRef<HTMLCanvasElement>(null);
   const chartInstance = useRef<Chart | null>(null);
 
+  // 레이블을 '이번주', '1주전' 형식으로 변환하는 함수
+  const formatWeekLabels = (labels: string[]) => {
+    // 원본 레이블 유지하면서 표시용 레이블만 변환
+    return labels.map((_, index) => {
+      const weeksAgo = labels.length - 1 - index;
+      if (weeksAgo === 0) return '이번주';
+      return `${weeksAgo}주전`;
+    });
+  };
+
   useEffect(() => {
     if (!chartRef.current || isLoading || !data.values.length) return;
 
@@ -102,6 +112,15 @@ export default function BarChart({
                 return `${context.raw} ${unit}`;
               },
             },
+            position: 'nearest',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 8,
+            titleFont: {
+              size: 12,
+            },
+            bodyFont: {
+              size: 12,
+            },
           },
         },
       },
@@ -136,6 +155,9 @@ export default function BarChart({
     );
   }
 
+  // 주간 형식으로 변환된 레이블
+  const weekLabels = formatWeekLabels(data.labels);
+
   return (
     <div className={`${styles.barChartContainer} ${className}`}>
       {description && (
@@ -145,7 +167,7 @@ export default function BarChart({
         <canvas ref={chartRef}></canvas>
       </div>
       <div className={styles.legend}>
-        {data.labels.map((label, index) => (
+        {weekLabels.map((label, index) => (
           <div key={index} className={styles.legendItem}>
             <span
               className={index === highlightIndex ? styles.highlighted : ''}
