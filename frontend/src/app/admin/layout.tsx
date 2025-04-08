@@ -300,6 +300,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   // Auth 스토어에서 사용자 정보 가져오기
   const { user, checkAuthStatus } = useAuthStore();
 
+  // Shelter 스토어에서 쉘터 정보와 함수 가져오기
+  const { shelter, fetchShelterData } = useShelterStore();
+
   // 페이지 로드 시 인증 상태 확인
   useEffect(() => {
     async function checkAuth() {
@@ -314,6 +317,26 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
     checkAuth();
   }, [checkAuthStatus]);
+
+  // 사용자 정보가 변경될 때마다 shelter 정보 가져오기
+  useEffect(() => {
+    async function loadShelterData() {
+      if (user?.shelterId) {
+        console.log(
+          'AdminLayout: 쉘터 정보 로드 시작, shelterId:',
+          user.shelterId
+        );
+        try {
+          const result = await fetchShelterData(user.shelterId);
+          console.log('AdminLayout: 쉘터 정보 로드 결과', result);
+        } catch (error) {
+          console.error('AdminLayout: 쉘터 정보 로드 실패', error);
+        }
+      }
+    }
+
+    loadShelterData();
+  }, [user, fetchShelterData]);
 
   // 화면 크기 감지 및 경고창 처리
   useEffect(() => {
@@ -342,8 +365,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Shelter 스토어에서 쉘터 정보 가져오기
-  const { shelter } = useShelterStore();
+  console.log('AdminLayout: 쉘터 정보:', shelter);
 
   // shelterId를 user 객체에서 가져옴
   const shelterIdFromUser = user?.shelterId || 1;
