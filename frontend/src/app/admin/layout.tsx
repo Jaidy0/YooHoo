@@ -285,12 +285,17 @@ const adminNavItems = [
   { name: '강아지 관리', link: '/admin/dogs' },
 ];
 
+// 모바일 디바이스 최소 너비 (이 너비보다 작으면 경고창 표시)
+const MIN_DESKTOP_WIDTH = 768; // 태블릿 크기 이하를 모바일로 간주
+
 export default function AdminLayout({ children }: { children: ReactNode }) {
   console.log('Admin Layout 함수 컴포넌트 실행');
 
   const pathname = usePathname();
   const router = useRouter();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [showMobileWarning, setShowMobileWarning] = useState(false);
 
   // Auth 스토어에서 사용자 정보 가져오기
   const { user, checkAuthStatus } = useAuthStore();
@@ -309,6 +314,33 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
     checkAuth();
   }, [checkAuthStatus]);
+
+  // 화면 크기 감지 및 경고창 처리
+  useEffect(() => {
+    // 초기 화면 크기 확인
+    const checkScreenSize = () => {
+      const isMobile = window.innerWidth < MIN_DESKTOP_WIDTH;
+      setIsMobileView(isMobile);
+
+      // 모바일 화면에서만 경고창 표시
+      if (isMobile) {
+        setShowMobileWarning(true);
+      } else {
+        setShowMobileWarning(false);
+      }
+    };
+
+    // 첫 로드 시 체크
+    checkScreenSize();
+
+    // 화면 크기 변경 시 체크
+    window.addEventListener('resize', checkScreenSize);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('resize', checkScreenSize);
+    };
+  }, []);
 
   // Shelter 스토어에서 쉘터 정보 가져오기
   const { shelter } = useShelterStore();
@@ -335,9 +367,30 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     }
   };
 
+  // 경고창 닫기 핸들러
+  const handleCloseWarning = () => {
+    setShowMobileWarning(false);
+  };
+
   // AdminAuthGuard로 감싸서 인증 및 관리자 권한 확인
   return (
     <AdminAuthGuard shelterId={shelterIdFromUser}>
+      {showMobileWarning && (
+        <div className={styles.mobileWarning}>
+          <div className={styles.warningContent}>
+            <IconBox name='bell' size={24} />
+            <p>관리자 페이지는 웹으로 이용해주시기 바랍니다.</p>
+            <p>화면 크기가 작아 일부 기능이 제한될 수 있습니다.</p>
+            <button
+              className={styles.warningCloseBtn}
+              onClick={handleCloseWarning}
+            >
+              확인
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className={styles.adminLayout}>
         <header className={styles.adminHeader}>
           <div className={styles.headerContainer}>
@@ -345,8 +398,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Link href='/admin'>
                 <div className={styles.logoImage}>
                   <Image
-                    width={100}
-                    height={100}
+                    width={50}
+                    height={50}
                     src='/images/yoohoo-logo.svg'
                     alt='유후 로고'
                     className={styles.logo}
