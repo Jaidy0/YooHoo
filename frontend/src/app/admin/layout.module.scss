@@ -51,7 +51,9 @@
     font-size: $font-size-md;
     font-weight: $font-weight-normal;
     color: $text-555;
-    margin: $spacing-sm;
+    margin-left: $spacing-sm;
+    margin-bottom: $spacing-xs;
+    align-self: flex-end; /* 하단 정렬로 변경 */
     strong {
       font-size: $font-size-2xl;
       font-weight: $font-weight-bold;
@@ -83,7 +85,6 @@
   background-color: $yh-admin-bg;
   padding: $spacing-sm 0;
   text-align: center;
-  border-top: 1px solid $color-border;
 }
 
 .footerContent {
