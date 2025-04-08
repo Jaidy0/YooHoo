@@ -7,6 +7,7 @@ import IconBox from '@/components/common/IconBox/IconBox';
 import { useRouter } from 'next/navigation';
 import { useShelterData } from '@/hooks/useShetlerData';
 import { useAuthStore } from '@/store/authStore';
+import ReliabilityChart from '@/components/shelters/ReliabilityChart/ReliabilityChart';
 
 export default function AdminPage() {
   const router = useRouter();
@@ -19,6 +20,8 @@ export default function AdminPage() {
   // 커스텀 훅을 사용하여 보호소 데이터 가져오기
   const { shelter, isLoading, error, refreshData, dogCount } =
     useShelterData(shelterId);
+
+  const { shelter: shelterReliablity } = useShelterData(shelterId);
 
   // 툴팁 토글 및 닫기 함수
   const toggleTooltip = () => setIsTooltipOpen((prev) => !prev);
@@ -162,18 +165,14 @@ export default function AdminPage() {
               </div>
             </div>
             {/* API에서 받아온 신뢰도 표시 */}
+
             {shelter && (
-              <div className={styles.trustIndicator}>
-                <div className={styles.trustBar}>
-                  <div
-                    className={styles.trustFill}
-                    style={{ width: `${displayData.reliability}%` }}
-                  ></div>
-                </div>
-                <div className={styles.trustPercentage}>
-                  {displayData.reliability}점
-                </div>
-              </div>
+              <ReliabilityChart
+                reliability={shelterReliablity?.reliability || 0}
+                reliabilityPercentage={
+                  shelterReliablity?.reliabilityPercentage || 0
+                }
+              />
             )}
           </div>
         </div>
