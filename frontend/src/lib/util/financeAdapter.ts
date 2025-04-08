@@ -34,7 +34,7 @@ export const adaptDonationsToDepositTable = (
 
     return {
       type,
-      name: item.userNickname || undefined,
+      name: item.depositorName || undefined,
       amount: item.donationAmount,
       // YYYY-MM-DD 형식을 YYYY.MM.DD 형식으로 변환
       date: item.donationDate.replace(/-/g, '.'),
