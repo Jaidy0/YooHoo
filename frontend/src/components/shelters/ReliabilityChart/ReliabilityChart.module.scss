@@ -6,12 +6,18 @@
   margin-bottom: 30px;
   padding-bottom: 30px;
   border-bottom: 1px solid #eee;
+  gap: 20px;
 
   .textStatWrapper {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    gap: 20px;
+    align-items: start;
+    flex-direction: column;
+
+    .textStatContainer {
+      display: flex;
+    }
+
     .statWrapper {
       width: 300px;
       display: flex;
@@ -50,6 +56,12 @@
     display: block;
     content: '';
   }
+}
+
+.descriptionTitle {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
 }
 
 .description {
@@ -111,4 +123,8 @@
       color: #333333;
     }
   }
+}
+
+.unit {
+  font-size: 18px;
 }
