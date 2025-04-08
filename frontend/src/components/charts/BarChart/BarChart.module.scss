@@ -5,6 +5,7 @@
   padding: 0.5rem 0;
   background-color: white;
   border-radius: 10px;
+  position: relative; /* 툴팁 위치 조정을 위해 추가 */
 
   .chartDescription {
     text-align: left;
@@ -24,6 +25,7 @@
   height: 180px;
   padding: 0 1rem;
   margin-bottom: 0.5rem;
+  z-index: 1; /* 툴팁이 위에 표시되도록 기본 레이어 설정 */
 
   canvas {
     width: 100%;
@@ -71,14 +73,10 @@
   font-size: 0.875rem;
 }
 
-// @media (max-width: 576px) {
-//   .legendItem {
-//     span {
-//       font-size: 0.75rem;
-//     }
-
-//     strong {
-//       font-size: 0.875rem;
-//     }
-//   }
-// }
+/* 차트 툴팁은 글로벌 스타일에서 처리하세요 */
+/* global.scss 또는 별도의 스타일 파일에 다음 코드를 추가하세요:
+.chartjs-tooltip {
+  z-index: 10 !important;
+  pointer-events: none !important;
+}
+*/

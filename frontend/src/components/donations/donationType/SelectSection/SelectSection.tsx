@@ -32,12 +32,11 @@ export default function SelectSection({
 
         <div className={styles.description}>
           <p>
-            <strong>정기후원</strong> 지정한 단체에 매월 정해진 날짜마다
-            후원금이 이체됩니다.
+            <strong>정기후원</strong> 매월 정해진 날짜마다 후원금이 이체됩니다.
           </p>
           <p>
-            <strong>일시후원</strong> 단체 후원 / 강아지 후원 중 선택하여 후원할
-            수 있습니다.
+            <strong>일시후원</strong> 단체 후원 / 강아지 후원 중 선택하여
+            후원합니다.
           </p>
         </div>
 
