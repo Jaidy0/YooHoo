@@ -1,9 +1,12 @@
 .logoutBtn {
-  padding: 0.5rem;
-  border-radius: 8px;
-  background-color: rgba(0, 0, 0, 0);
-  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem;
   border: none;
+  border-radius: 100%;
+  background-color: $yh-yellow;
+  color: white;
   font-size: $font-size-sm;
   font-weight: $font-weight-medium;
   cursor: pointer;

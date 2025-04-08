@@ -28,7 +28,7 @@ function createAuthStore() {
 
         // 1. API 호출
         const userData = await fetchCurrentUser();
-        console.log('createAuthStore userData', userData);
+        console.log('checkAuthStatus ### createAuthStore userData', userData);
 
         if (!userData) {
           set({
