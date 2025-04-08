@@ -294,7 +294,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const [isMobileView, setIsMobileView] = useState(false);
+  const [, setIsMobileView] = useState(false);
   const [showMobileWarning, setShowMobileWarning] = useState(false);
 
   // Auth 스토어에서 사용자 정보 가져오기
