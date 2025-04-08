@@ -9,6 +9,7 @@ import LogoutBtn from '@/components/auth/LogoutBtn';
 import { useAuthStore } from '@/store/authStore';
 import NicknameModal from '../NicknameModal/NicknameModal';
 import { useDonationStats } from '@/hooks/donations/useDonationStats';
+import Button from '@/components/common/buttons/Button/Button';
 
 interface DashboardProps {
   className?: string;
@@ -77,12 +78,14 @@ export default function Dashboard({ className = '' }: DashboardProps) {
           째예요!
         </h2>
         <div className={styles.userBtns}>
-          <div
-            className={styles.userSettingsButton}
+          <Button
+            variant='primary'
+            size='sm'
             onClick={() => setIsModalOpen(true)}
           >
-            <IconBox name='gear' size={20} />
-          </div>
+            닉네임 변경
+          </Button>
+          {/* <IconBox name='gear' size={20} /> */}
           <LogoutBtn />
         </div>
       </div>
