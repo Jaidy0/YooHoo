@@ -51,7 +51,6 @@ export const fetchBankbookWithdrawal = async (
     `${API_BASE_URL}/api/bankbook/withdrawal`,
     params
   );
-
   return response.data;
 };
 

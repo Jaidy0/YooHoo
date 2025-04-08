@@ -24,11 +24,13 @@ export interface WithdrawalItem {
   category: string;
   content?: string;
   amount?: number;
-  withdrawalDate?: string;
+  withdrawalDate?: string; // 삭제 필요
   file_id: string;
   dogId?: number;
   dogName?: string;
   type?: 'SHELTER' | 'DOG'; // 'SHELTER': 단체, 'DOG': 지정(강아지)
+  onEvidenceClick?: (transactionUniqueNo: number, type: boolean) => void;
+  onReceiptClick?: (withdrawalId: number) => void;
 }
 
 // 총 금액 요청 인터페이스

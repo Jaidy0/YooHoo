@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ShelterDetail } from '@/types/shelter';
+import { ReliabilityResponse, ShelterDetail } from '@/types/shelter';
 
 const API_BASE_URL: string =
   process.env.NEXT_PUBLIC_API_URL ?? 'https://j12b209.p.ssafy.io';
@@ -79,5 +79,28 @@ export const getRecentDonatedShelters = async () => {
   } catch (error) {
     console.error('최근 후원 단체 조회 실패:', error);
     return [];
+  }
+};
+
+/**
+ * 보호소의 신뢰지수 정보를 가져오는 API
+ * @param shelterId 보호소 ID
+ * @returns 신뢰지수 정보
+ */
+
+export const getShelterReliability = async (
+  shelterId: number
+): Promise<ReliabilityResponse> => {
+  try {
+    const response = await axios.get<ReliabilityResponse>(
+      `${API_BASE_URL}/api/shelter/${shelterId}/reliability`,
+      {
+        withCredentials: true,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(`보호소 ID ${shelterId}의 신뢰지수 조회 실패:`, error);
+    throw error;
   }
 };
