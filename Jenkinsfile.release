@@ -38,7 +38,7 @@ pipeline {
         NEXT_PUBLIC_KAKAO_REDIRECT_URI=""
         // 자동 승인을 위한 추가 환경 변수
         ERROR_RATE_THRESHOLD = 1.0 // 오류율 임계값 (%)
-        RESPONSE_TIME_THRESHOLD = 200 // 응답 시간 임계값 (ms)
+        RESPONSE_TIME_THRESHOLD = 0.2 // 응답 시간 임계값 (초)
         MONITORING_DURATION = 60 // 모니터링 지속 시간 (초)
     }
     stages {
@@ -492,9 +492,6 @@ pipeline {
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.backend.yml stop canary_backend
                                 docker compose -f docker-compose.backend.yml rm -f canary_backend
-                                # 백엔드 이미지 정리
-                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
-                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
                             "
                         """
                     }
@@ -504,9 +501,6 @@ pipeline {
                                 cd /home/${EC2_USER}/${COMPOSE_PROJECT_NAME}
                                 docker compose -f docker-compose.frontend.yml stop canary_frontend
                                 docker compose -f docker-compose.frontend.yml rm -f canary_frontend
-                                # 프론트엔드 이미지 정리
-                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
-                                docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
                             "
                         """
                     }

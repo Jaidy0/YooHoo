@@ -1,8 +1,6 @@
 # redis.conf.template
 
 # ## 보안 설정 ##
-bind 0.0.0.0
-
 # 비밀번호 설정
 requirepass $REDIS_PASSWORD
 
@@ -12,11 +10,13 @@ port 0
 # TLS 포트 활성화
 tls-port 6379
 
-# TCP keepalive 설정 (네트워크 불안정 시 연결 유지 도움)
+# TCP keepalive 설정 (네트워크 불안정 시 연결 유지)
 tcp-keepalive 300
 
 # Docker 환경에서는 보통 stdout/stderr 사용 (로깅)
 # logfile ""
+
+bind 0.0.0.0
 
 # 데이터베이스 개수
 databases 16
