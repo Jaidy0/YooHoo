@@ -42,6 +42,7 @@ interface DonationUsageChartProps {
   totalExpense: number;
   year: number;
   month: number;
+  day: number;
 }
 
 export default function DonationUsageChart({
@@ -50,6 +51,7 @@ export default function DonationUsageChart({
   totalExpense,
   year,
   month,
+  day,
 }: DonationUsageChartProps) {
   const chartData = {
     labels: categories.map((item) => item.name),
@@ -209,12 +211,12 @@ export default function DonationUsageChart({
               <div className={styles.total}>
                 <span className={styles.label}>총 잔액</span>
                 <span className={styles.value}>
-                  {formatCurrency(totalIncome)}
+                  {formatCurrency(totalIncome - totalExpense)}
                 </span>
               </div>
             </div>
             <p className={styles.date}>
-              {year}년 {month}월 기준
+              {year}년 {month}월 {day}일 오늘 기준
             </p>
           </div>
         </div>

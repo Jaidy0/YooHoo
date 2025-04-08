@@ -15,89 +15,35 @@ import { useDog } from '@/hooks/useDog';
 import DonationUsageChart from '@/components/shelters/DonationUsageChart/DonationUsageChart';
 import ReliabilityChart from '@/components/shelters/ReliabilityChart/ReliabilityChart';
 import DonationUseHistoryList from '@/components/shelters/DonationUseHistoryList/DonationUseHistoryList';
+import EvidanceModal from '@/components/admin/EvidenceModal/EvidanceModal';
+import { useShelterWithdrawals } from '@/hooks/useShelterWithdrawals';
+import { useShelterTotalAmountResult } from '@/hooks/useShelterTotalAmountResult';
+import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
+import { useCategoryPercentages } from '@/hooks/useCategoryPercentages';
 
 interface GroupDetailClientProps {
   groupId: string;
 }
 
-// Mock 데이터 추가
-const mockDonationData = {
-  categories: [
-    {
-      name: '인건비',
-      color: '#f57c17',
-      actualPercentage: 30,
-      averagePercentage: 30,
-    },
-    {
-      name: '시설 유지비',
-      color: '#f2b2d1',
-      actualPercentage: 30,
-      averagePercentage: 30,
-    },
-    {
-      name: '사료비',
-      color: '#ee417c',
-      actualPercentage: 30,
-      averagePercentage: 50,
-    },
-    {
-      name: '물품 구매',
-      color: '#f4b616',
-      actualPercentage: 30,
-      averagePercentage: 30,
-    },
-    {
-      name: '의료비',
-      color: '#1bb9b3',
-      actualPercentage: 30,
-      averagePercentage: 30,
-    },
-    {
-      name: '기타',
-      color: '#7a91e0',
-      actualPercentage: 30,
-      averagePercentage: 30,
-    },
-  ],
-  totalIncome: 34000400,
-  totalExpense: 28930400,
-  year: 2025,
-  month: 2,
-  histories: [
-    {
-      id: 1,
-      date: '2025.03.04',
-      amount: -320000,
-      description: '강아지 사료 구매',
-      isVerified: true,
-    },
-    {
-      id: 2,
-      date: '2025.03.04',
-      amount: -320000,
-      description: '강아지 사료 구매',
-      isVerified: false,
-    },
-    {
-      id: 3,
-      date: '2025.03.04',
-      amount: -320000,
-      description: '강아지 사료 구매',
-      isVerified: true,
-    },
-    {
-      id: 4,
-      date: '2025.03.04',
-      amount: -320000,
-      description: '강아지 사료 구매',
-      isVerified: true,
-    },
-  ],
-};
-
 export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   const router = useRouter();
+
+  // 상태 관리
+  const [activeTab, setActiveTab] = useState(0);
+  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
+  const [selectedDogId, setSelectedDogId] = useState<number | null>(null);
+  const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<{
+    uniqueNo: number;
+    type: boolean;
+    withdrawId?: number;
+  } | null>(null);
+
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth() + 1; // getMonth()는 0부터 시작하므로 1을 더해줍니다
+  const day = currentDate.getDate();
 
   // useShelterData 훅 사용
   const {
@@ -121,15 +67,24 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     initialSearch: '',
   });
 
-  // 상태 관리
-  const [activeTab, setActiveTab] = useState(0);
-  const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
-  const [selectedDogId, setSelectedDogId] = useState<number | null>(null);
+  const {
+    totalIncome,
+    totalExpense,
+    // isLoading: isAmountLoading,
+    // error: amountError,
+  } = useShelterTotalAmountResult(Number(groupId));
 
   // 선택된 강아지의 상세 정보를 가져오기 위한 useDog 훅
   const { dog: dogDetails, isLoading: isDogDetailsLoading } = useDog(
     selectedDogId || 0
   );
+
+  // 카테고리 퍼센티지 데이터 가져오기
+  const {
+    categories: categoryPercentages,
+    isLoading: isCategoryLoading,
+    error: categoryError,
+  } = useCategoryPercentages(Number(groupId));
 
   // 탭 메뉴 아이템
   const tabMenuItems = [
@@ -186,8 +141,88 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     }
   }
 
-  // 로딩 상태 체크
-  if (isShelterLoading || isDogLoading) {
+  // 증빙자료 클릭 핸들러
+  const handleEvidenceClick = (transactionUniqueNo: number, type: boolean) => {
+    const newTransaction = { uniqueNo: transactionUniqueNo, type };
+    setSelectedTransaction(newTransaction);
+    setIsEvidenceModalOpen(true);
+    console.log('***!!! selectedTransaction : ', newTransaction);
+  };
+
+  // 영수증 확인 클릭 핸들러
+  const handleReceiptClick = (withdrawId: number) => {
+    setSelectedTransaction({ uniqueNo: 0, type: false, withdrawId });
+    setIsReceiptModalOpen(true);
+  };
+
+  // Modal 닫기 핸들러들
+  const handleCloseEvidenceModal = () => {
+    setIsEvidenceModalOpen(false);
+    setSelectedTransaction(null);
+  };
+
+  const handleCloseReceiptModal = () => {
+    setIsReceiptModalOpen(false);
+    setSelectedTransaction(null);
+  };
+
+  // 지출 내역 데이터 가져오기
+  const {
+    withdrawals,
+    isLoading: isWithdrawalsLoading,
+    error: withdrawalsError,
+  } = useShelterWithdrawals(Number(groupId));
+
+  // 지출 내역 데이터 변환
+  const formatDate = (dateString: string): string => {
+    if (!dateString) return '날짜 없음';
+    try {
+      // YYYYMMDD 형식을 YYYY.MM.DD 형식으로 변환
+      const year = dateString.substring(0, 4);
+      const month = dateString.substring(4, 6);
+      const day = dateString.substring(6, 8);
+      return `${year}.${month}.${day}`;
+    } catch (error) {
+      console.error('날짜 변환 오류:', error);
+      return '날짜 형식 오류';
+    }
+  };
+
+  const historyItems = withdrawals.map((withdrawal) => {
+    // console.log('withdrawal category:', withdrawal.category);
+    // console.log('전체 withdrawal 객체:', withdrawal);
+
+    return {
+      date: formatDate(withdrawal.date),
+      withdrawalId: withdrawal.withdrawalId,
+      transactionUniqueNo: withdrawal.transactionUniqueNo,
+      merchantId: withdrawal.merchantId,
+      name: withdrawal.name,
+      transactionBalance: withdrawal.transactionBalance,
+      shelterId: withdrawal.shelterId,
+      category: withdrawal.category || '미분류', // 기본값 추가
+      content: withdrawal.content,
+      amount: withdrawal.amount,
+      withdrawalDate: withdrawal.withdrawalDate,
+      file_id: withdrawal.file_id,
+      dogId: withdrawal.dogId,
+      dogName: withdrawal.dogName,
+      type: withdrawal.type,
+      onEvidenceClick: handleEvidenceClick,
+      onReceiptClick: handleReceiptClick,
+    };
+  });
+
+  // console.log('***!!! withdrawals : ', withdrawals);
+  // console.log('***!!! historyItems : ', historyItems);
+
+  // 로딩 상태 체크 수정
+  if (
+    isShelterLoading ||
+    isDogLoading ||
+    isWithdrawalsLoading ||
+    isCategoryLoading
+  ) {
     return (
       <div className={styles.loadingContainer}>
         <LoadingSpinner />
@@ -195,11 +230,18 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     );
   }
 
-  // 에러 상태 체크
-  if (shelterError || dogError) {
+  // 에러 상태 체크 수정
+  if (shelterError || dogError || withdrawalsError || categoryError) {
     return (
       <div className={styles.errorContainer}>
-        <p>{shelterError || dogError}</p>
+        <p>
+          {(
+            shelterError ||
+            dogError ||
+            withdrawalsError ||
+            categoryError
+          )?.toString() || '데이터를 불러오는 중 오류가 발생했습니다.'}
+        </p>
         <Button
           onClick={() => {
             if (shelterError) refreshShelterData();
@@ -305,16 +347,35 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               reliabilityPercentage={shelter?.reliabilityPercentage || 0}
             />
             <DonationUsageChart
-              categories={mockDonationData.categories}
-              totalIncome={mockDonationData.totalIncome}
-              totalExpense={mockDonationData.totalExpense}
-              year={mockDonationData.year}
-              month={mockDonationData.month}
+              categories={categoryPercentages}
+              totalIncome={totalIncome}
+              totalExpense={totalExpense}
+              year={year}
+              month={month}
+              day={day}
             />
-            <DonationUseHistoryList histories={mockDonationData.histories} />
+            <DonationUseHistoryList histories={historyItems} />
           </div>
         )}
       </div>
+
+      {/* Modal 컴포넌트 추가 */}
+      {selectedTransaction && (
+        <>
+          <EvidanceModal
+            isOpen={isEvidenceModalOpen}
+            onClose={handleCloseEvidenceModal}
+            transactionUniqueNo={selectedTransaction.uniqueNo}
+            type={selectedTransaction.type}
+            shelterId={Number(groupId)}
+          />
+          <ReceiptModal
+            isOpen={isReceiptModalOpen}
+            onClose={handleCloseReceiptModal}
+            withdrawId={selectedTransaction.withdrawId || 0}
+          />
+        </>
+      )}
     </div>
   );
 }

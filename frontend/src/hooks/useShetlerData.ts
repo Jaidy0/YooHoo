@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
-import { getShelterDetail, getDogCountByShelter } from '@/api/shelter/shelter';
+import {
+  getShelterDetail,
+  getDogCountByShelter,
+  getShelterReliability,
+} from '@/api/shelter/shelter';
 import { ShelterDetail } from '@/types/shelter';
 
 /**
@@ -29,13 +33,23 @@ export const useShelterData = (shelterId: number) => {
       setIsLoading(true);
       setError(null);
 
-      // 여러 API 요청을 병렬로 실행하여 성능 최적화
-      const [shelterData, dogCountData] = await Promise.all([
+      // 신뢰지수 API를 포함하여 병렬로 실행
+      const [shelterData, dogCountData, reliabilityData] = await Promise.all([
         getShelterDetail(shelterId),
         getDogCountByShelter(shelterId),
+        getShelterReliability(shelterId),
       ]);
 
-      setShelter(shelterData);
+      // shelterData에 신뢰지수 정보 추가
+      const shelterWithReliability = {
+        ...shelterData,
+        reliability: reliabilityData.reliabilityScore,
+        reliabilityPercentage: reliabilityData.reliabilityPercentage,
+      };
+
+      console.log('shelterWithReliability : ', shelterWithReliability);
+
+      setShelter(shelterWithReliability);
       setDogCount(dogCountData);
     } catch (err) {
       setError('보호소 정보를 가져오는데 실패했습니다.');

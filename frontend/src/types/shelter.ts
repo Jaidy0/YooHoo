@@ -26,3 +26,10 @@ export interface ShelterAccountInfo {
   accountNo: string;
   bankName: string;
 }
+
+// 신뢰지수 응답 타입
+export interface ReliabilityResponse {
+  shelterId: number;
+  reliabilityScore: number;
+  reliabilityPercentage: number;
+}

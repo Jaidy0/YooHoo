@@ -186,6 +186,34 @@ export const assignDogToWithdrawal = async (
   }
 };
 
+/**
+ * 보호소의 카테고리별 지출 비율을 조회하는 API
+ * @param shelterId 보호소 ID
+ * @returns 카테고리별 평균 및 실제 지출 비율
+ */
+
+// 타입 정의 추가
+interface CategoryPercentage {
+  name: string;
+  averagePercentage: number;
+  actualPercentage: number;
+}
+
+export const fetchWithdrawalCategoryPercentages = async (
+  shelterId: number
+): Promise<CategoryPercentage[]> => {
+  try {
+    const response = await axios.post<CategoryPercentage[]>(
+      `${API_BASE_URL}/api/withdrawal/category-percentages`,
+      { shelterId }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('카테고리별 지출 비율 조회 실패:', error);
+    throw error;
+  }
+};
+
 // 타입들을 명시적으로 내보내기
 export type {
   DonationItem,
@@ -195,4 +223,5 @@ export type {
   WeeklySumsResponse,
   WithdrawalRequest,
   WithdrawalResponse,
+  CategoryPercentage,
 };

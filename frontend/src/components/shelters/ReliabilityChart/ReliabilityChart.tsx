@@ -33,29 +33,28 @@ interface ReliabilityChartProps {
 }
 
 export default function ReliabilityChart({
-  reliabilityPercentage = 70,
-  reliability = 70,
+  reliabilityPercentage = 0,
+  reliability = 0,
 }: ReliabilityChartProps) {
   return (
     <div className={styles.container}>
       <div className={styles.textStatWrapper}>
-        <div className={styles.textWrapper}>
-          <h3 className={styles.title}>
-            이 단체의
-            <br />
-            후원금 운용 신뢰지수는?
-          </h3>
-          <p className={styles.description}>
-            신뢰지수란 단체와의 운용 결과와 서류 증빙률 등 객관적 지표로 계산된
-            수치를 기준으로 산정한 후원금 지표입니다.
-          </p>
-        </div>
-        <div className={styles.statWrapper}>
-          <span className={styles.statLabel}>신뢰도 점수</span>
-          <span className={styles.statValue}>
-            <em>{reliability || 0}</em>점
-          </span>
-          <span className={styles.statLabel}>/ 100점</span>
+        <h3 className={styles.title}>신뢰지수</h3>
+        <div className={styles.textStatContainer}>
+          <div className={styles.textWrapper}>
+            <strong className={styles.descriptionTitle}>신뢰지수란?</strong>
+            <p className={styles.description}>
+              신뢰지수란 단체와의 운용 결과와 서류 증빙률 등 객관적 지표로
+              계산된 수치를 기준으로 산정한 후원금 지표입니다.
+            </p>
+          </div>
+          <div className={styles.statWrapper}>
+            <span className={styles.statLabel}>신뢰도 점수</span>
+            <span className={styles.statValue}>
+              <em>{reliability || 0}</em>점
+            </span>
+            <span className={styles.statLabel}>/ 100점</span>
+          </div>
         </div>
       </div>
       <div className={styles.chartWrapper} style={{ height: '200px' }}>
@@ -118,7 +117,10 @@ export default function ReliabilityChart({
           </div>
           <div className={styles.centerText}>
             <span className={styles.label}>상위</span>
-            <span className={styles.value}>{reliabilityPercentage}%</span>
+            <span className={styles.value}>
+              {`${(100 - reliabilityPercentage).toFixed(1)}`}
+              <em className={styles.unit}>%</em>
+            </span>
           </div>
         </div>
       </div>
