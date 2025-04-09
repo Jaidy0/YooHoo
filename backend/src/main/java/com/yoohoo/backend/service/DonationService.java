@@ -161,12 +161,11 @@ public class DonationService {
             LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
             LocalDate currentEndOfWeek = (i == 0) ? today : currentStartOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
 
-            // 쿼리 실행: 5주 전부터 1주 전까지의 합계 계산
             List<Donation> donations;
             if (i == 0) {
                 // 이번 주의 경우, 각 날짜별로 조회하여 합산
                 int weeklySum = 0;
-                for (LocalDate date = currentStartOfWeek; !date.isAfter(today); date = date.plusDays(1)) {
+                for (LocalDate date = currentStartOfWeek.plusDays(1); !date.isAfter(today); date = date.plusDays(1)) {
                     donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, date, date);
                     weeklySum += donations.stream()
                             .mapToInt(Donation::getDonationAmount)
@@ -235,6 +234,7 @@ public class DonationService {
                 })
                 .distinct()
                 .collect(Collectors.toList());
+                
     }
 
     // 사용자가 후원한 강아지 엔티티 조회
