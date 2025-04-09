@@ -6,6 +6,7 @@ import DogSelectModal from '@/components/admin/DogSelectModal/DogSelectModal';
 import EvidanceModal from '@/components/admin/EvidenceModal/EvidanceModal';
 import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
 import ReceiptUploadModal from '@/components/admin/ReceiptUploadModal/ReceiptUploadModal';
+import IconBox from '@/components/common/IconBox/IconBox';
 
 export interface WithdrawTableRowProps {
   variant?: 'header' | 'row';
@@ -127,9 +128,14 @@ export default function WithdrawTableRow({
             <Badge
               variant='negative'
               className={styles.badge}
-              onClick={openDogSelectModal}
+              onClick={type === '단체' ? openDogSelectModal : undefined}
             >
-              {badgeText}
+              <div className={styles.badgeContent}>
+                {badgeText}
+                {type === '단체' && (
+                  <IconBox name='chevron' rotate={90} size={15} />
+                )}
+              </div>
             </Badge>
           </div>
           <div className={styles.category}>{displayCategory}</div>

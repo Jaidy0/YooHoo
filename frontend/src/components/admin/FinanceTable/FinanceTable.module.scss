@@ -233,6 +233,12 @@
   transition: all 0.2s ease; /* 새로 추가 - 배지 강화 스타일 */
   cursor: pointer;
   position: relative;
+  .badgeContent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
 
   &:hover {
     transform: translateY(-1px);
