@@ -103,7 +103,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
           </MoveButton>
         )}
         <div className={styles.reportButtonWrapper}>
-          <MoveButton
+          {/* <MoveButton
             leftIcon={<IconBox name='cart' size={20} />}
             rightIcon={<IconBox name='chevron' size={20} />}
             className={styles.reportButton}
@@ -111,7 +111,7 @@ export default function Dashboard({ className = '' }: DashboardProps) {
             onClick={handleMoveToReportPage}
           >
             마이 후원 레포트
-          </MoveButton>
+          </MoveButton> */}
 
           {/* 강아지 이미지를 버튼 옆에 배치 */}
           <div className={styles.dogImageContainer}>
