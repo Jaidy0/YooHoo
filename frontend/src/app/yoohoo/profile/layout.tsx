@@ -57,7 +57,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           activeIndex={activeTabIndex}
           onMenuItemClick={handleTabClick}
           size='sm'
-          fullWidth
+          fullWidth={true}
         />
       </div>
 

@@ -11,10 +11,16 @@
     width: 100%;
 
     .menuList {
+      display: flex;
       width: 100%;
+      justify-content: space-between;
 
       .menuItem {
-        flex: 1;
+        // flex: 1;
+      }
+
+      @media screen and (max-width: 359px) {
+        padding: 0px 0;
       }
     }
   }
@@ -22,8 +28,9 @@
   // 탭 메뉴 크기
   &--sm {
     .menuItem {
-      font-size: 0.875rem;
-      padding: $spacing-xs $spacing-sm;
+      // display: inline-block;
+      font-size: 0.9rem;
+      padding: $spacing-lg 0;
       height: 32px;
     }
   }
@@ -31,7 +38,7 @@
   &--md {
     .menuItem {
       font-size: 1rem;
-      padding: $spacing-sm $spacing-md;
+      // padding: $spacing-sm $spacing-md;
       height: 40px;
     }
   }
@@ -49,11 +56,12 @@
   display: flex;
   list-style: none;
   margin: 0;
-  padding: 0;
-  border-bottom: 1px solid $color-border;
+  padding: 0px $spacing-lg;
+  // border-bottom: 1px solid $color-border;
 }
 
 .menuItem {
+  flex: 1;
   position: relative;
   margin: 0;
   text-align: center;
@@ -69,31 +77,42 @@
   }
 
   &--active {
-    font-weight: $font-weight-medium;
+    font-weight: $font-weight-bold;
 
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background-color: $text-121212;
+    span {
+      display: inline-block;
+      position: relative;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -18px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: $text-121212;
+      }
     }
 
     .menuLink {
       color: $text-121212;
+      justify-content: space-between;
+
+      .menuLinkText {
+        display: inline-block;
+        border-bottom: 1px solid #000;
+      }
     }
   }
 }
 
 .menuLink {
   display: flex;
+  // flex: 1;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   color: $color-text;
-  width: 100%;
+  // width: 100%;
   height: 100%;
 }
 
