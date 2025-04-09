@@ -8,6 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jenkinsfile.dev" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile.dev" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,7 +93,7 @@
       <workItem from="1743468477036" duration="6840000" />
       <workItem from="1743496820001" duration="46640000" />
       <workItem from="1744211059128" duration="243000" />
-      <workItem from="1744211356047" duration="9328000" />
+      <workItem from="1744211356047" duration="9666000" />
     </task>
     <servers />
   </component>
