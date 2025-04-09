@@ -3,7 +3,7 @@ package com.yoohoo.backend.repository;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.entity.Shelter;
 
-import io.lettuce.core.dynamic.annotation.Param;
+import org.springframework.data.repository.query.Param;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -27,8 +27,8 @@ public interface ShelterRepository extends JpaRepository<Shelter, Long> {
 
 
     @Modifying
-    @Query("UPDATE Shelter s SET s.reliability = :reliability WHERE s.shelterId = :shelterId")
-    void updateReliability(@Param("shelterId") Long shelterId, @Param("reliability") int reliability);
+    @Query("UPDATE Shelter s SET s.reliability = :score WHERE s.id = :shelterId")
+    void updateReliability(@Param("shelterId") Long shelterId, @Param("score") int score);
 
     @Query("SELECT s.reliability FROM Shelter s WHERE s.reliability IS NOT NULL")
     List<Integer> findAllReliabilityScores();

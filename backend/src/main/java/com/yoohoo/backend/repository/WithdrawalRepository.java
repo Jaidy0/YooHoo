@@ -54,7 +54,7 @@ public interface WithdrawalRepository extends JpaRepository<Withdrawal, Long> {
     "w.shelterId AS shelterId, " +
     "w.transactionUniqueNo AS transactionUniqueNo, " +
     "w.dogId AS dogId, " +
-    "w.file.fileId AS fileId " +  // 💡 alias 꼭 맞춰야 함
+    "w.file.fileId AS fileId " +  
     "FROM Withdrawal w WHERE w.shelterId = :shelterId")
 List<WithdrawalProjectionDTO> findAllByShelterIdWithProjection(@Param("shelterId") Long shelterId);
 

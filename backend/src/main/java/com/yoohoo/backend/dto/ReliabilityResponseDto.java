@@ -2,13 +2,14 @@ package com.yoohoo.backend.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
+
 
 @Data
-@Getter
 @AllArgsConstructor
 public class ReliabilityResponseDto {
     private Long shelterId;
-    private int reliabilityScore;
-    private double reliabilityPercentage; // 상위 백분위
+    private int reliabilityScore;           // 총점
+    private int dogScore;                   // 강아지 비용 점수 (최대 50점)
+    private int fileScore;                  // 첨부파일 점수 (최대 30점)
+    private int foundationScore;            // 설립 연차 점수 (최대 20점)
 }

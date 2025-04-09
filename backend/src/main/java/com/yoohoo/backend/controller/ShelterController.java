@@ -1,13 +1,11 @@
 package com.yoohoo.backend.controller;
 
-import com.yoohoo.backend.dto.DogDTO;
 import com.yoohoo.backend.dto.DogListDTO;
 import com.yoohoo.backend.dto.ReliabilityResponseDto;
 import com.yoohoo.backend.dto.ShelterDetailDTO;
 import com.yoohoo.backend.dto.ShelterListDTO;
 import com.yoohoo.backend.service.ShelterService;
 import com.yoohoo.backend.service.DogService;
-import com.yoohoo.backend.service.ReliabilityService;
 import com.yoohoo.backend.service.S3Service;
 import com.yoohoo.backend.service.ShelterFinanceService;
 

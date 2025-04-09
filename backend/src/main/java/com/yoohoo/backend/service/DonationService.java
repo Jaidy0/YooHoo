@@ -166,9 +166,8 @@ public class DonationService {
             if (i == 0) {
                 // 이번 주의 경우, 각 날짜별로 조회하여 합산
                 int weeklySum = 0;
-                for (int j = 0; j <= today.getDayOfMonth() - 1; j++) {
-                    LocalDate currentDate = today.minusDays(j);
-                    donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentDate, currentDate);
+                for (LocalDate date = currentStartOfWeek; !date.isAfter(today); date = date.plusDays(1)) {
+                    donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, date, date);
                     weeklySum += donations.stream()
                             .mapToInt(Donation::getDonationAmount)
                             .sum();
@@ -176,8 +175,6 @@ public class DonationService {
                 weeklySums.add(weeklySum);
             } else {
                 // 5주 전부터 1주 전까지의 기부 내역 조회
-                String startDateStr = currentStartOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                String endDateStr = currentEndOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
                 donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
                 int weeklySum = donations.stream()
                         .mapToInt(Donation::getDonationAmount)
@@ -210,7 +207,6 @@ public class DonationService {
         result.put("Prediction", prediction);
 
         return result;
-        
     }
 
     public List<Map<String, String>> getShelterNamesWithFileUrlByUserId(Long userId) {
