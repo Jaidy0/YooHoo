@@ -118,7 +118,7 @@ export default function WithdrawTableRow({
           <div className={styles.content}>내용</div>
           <div className={styles.date}>날짜</div>
           <div className={styles.evidence}>증빙자료</div>
-          <div className={styles.receipt}>영수증</div>
+          <div className={styles.receipt}>활동내용</div>
         </div>
       ) : (
         <div className={styles.row}>

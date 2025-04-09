@@ -36,15 +36,15 @@ export default function ReceiptUploadModal({
     // 에러 발생 시 콜백
     onError: (error) => {
       setUploadError(
-        '영수증 업로드 중 오류가 발생했습니다. 다시 시도해주세요.'
+        '활동내용 업로드 중 오류가 발생했습니다. 다시 시도해주세요.'
       );
-      console.error('영수증 업로드 오류:', error);
+      console.error('활동내용 업로드 오류:', error);
     },
   });
 
   const handleSubmit = async () => {
     if (!selectedFile) {
-      setUploadError('업로드할 영수증 이미지를 선택해주세요.');
+      setUploadError('업로드할 활동내용 이미지를 선택해주세요.');
       return;
     }
 
@@ -70,13 +70,13 @@ export default function ReceiptUploadModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title='영수증 업로드'
+      title='활동내용 업로드'
       className={styles.modal}
     >
       <div className={styles.container}>
         <div className={styles.content}>
           <p className={styles.description}>
-            영수증 이미지를 업로드해주세요. (최대 5MB)
+            활동내용 이미지를 업로드해주세요.
           </p>
 
           <ImageUpload
@@ -85,7 +85,7 @@ export default function ReceiptUploadModal({
             onError={handleImageError}
             className={styles.imageUpload}
             error={uploadError}
-            uploadText='영수증 이미지를 업로드해주세요'
+            uploadText='활동내용 이미지를 업로드해주세요'
           />
         </div>
 
