@@ -36,19 +36,6 @@ export default function ReliabilityChart({
 
   return (
     <div className={styles.container}>
-      <div className={styles.textStatWrapper}>
-        <h3 className={styles.title}>신뢰지수</h3>
-        <div className={styles.textStatContainer}>
-          <div className={styles.textWrapper}>
-            <strong className={styles.descriptionTitle}>신뢰지수란?</strong>
-            <p className={styles.description}>
-              신뢰지수란 단체와의 운용 결과와 서류 증빙률 등 객관적 지표로
-              계산된 수치를 기준으로 산정한 후원금 지표입니다.
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* 메인 차트 영역 */}
       <div className={styles.chartContainer}>
         {/* 사용 현황 정보 표시 */}
