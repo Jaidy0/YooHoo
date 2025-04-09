@@ -4,11 +4,24 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/common/buttons/Button/Button';
 import { useProcessUserAccount } from '@/hooks/userAccount/useProcessUserAccount';
 import { useAuthStore } from '@/store/authStore';
+import { useEffect } from 'react';
+import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 
 export default function LoginError() {
   const router = useRouter();
   const { processAccount, isLoading, error } = useProcessUserAccount();
-  const user = useAuthStore((state) => state.user);
+  const { user, checkAuthStatus, isLoading: isAuthLoading } = useAuthStore();
+
+  useEffect(() => {
+    console.log('[LoginError] 컴포넌트 마운트, 인증 상태 확인 시작');
+    checkAuthStatus()
+      .then((result) => {
+        console.log('[LoginError] 인증 상태 확인 완료:', result);
+      })
+      .catch((err) => {
+        console.error('[LoginError] 인증 상태 확인 실패:', err);
+      });
+  }, []);
 
   const handleClick = async () => {
     try {
@@ -40,6 +53,21 @@ export default function LoginError() {
     }
   };
 
+  if (isAuthLoading) {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+        }}
+      >
+        <LoadingSpinner size='large' />
+      </div>
+    );
+  }
+
   return (
     <div>
       <div>
@@ -51,10 +79,19 @@ export default function LoginError() {
           아래 버튼을 누르시면, 통장 개설부터 계좌 등록까지 한번에 완료할 수
           있어요.
         </p>
-        <Button variant='primary' onClick={handleClick} disabled={isLoading}>
+        <Button
+          variant='primary'
+          onClick={handleClick}
+          disabled={isLoading || isAuthLoading || !user}
+        >
           {isLoading ? '처리 중...' : '통장 개설 & 등록'}
         </Button>
         {error && <p style={{ color: 'red' }}>{error}</p>}
+        {!user && !isAuthLoading && (
+          <p style={{ color: 'red' }}>
+            사용자 정보를 불러올 수 없습니다. 다시 로그인해 주세요.
+          </p>
+        )}
         <p>
           ※ 이 로직은 SSAFY 교육용 금융망 API에 구조에 맞춰 별도로 추가된 로직
           입니다. 원활한 시연을 위해 소중한 클릭 한번 부탁드려요☺️

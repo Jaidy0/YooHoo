@@ -190,7 +190,7 @@ export default function AdminPage() {
               <div className={styles.statItem}>
                 <div className={styles.pawContainer}>
                   <Image
-                    src='/images/paw.png'
+                    src='/images/dogpaw.png'
                     alt='강아지 발바닥'
                     width={120}
                     height={120}
@@ -204,7 +204,7 @@ export default function AdminPage() {
               <div className={styles.statItem}>
                 <div className={styles.pawContainer}>
                   <Image
-                    src='/images/paw.png'
+                    src='/images/dogpaw.png'
                     alt='강아지 발바닥'
                     width={120}
                     height={120}
@@ -218,9 +218,9 @@ export default function AdminPage() {
               <div className={styles.statItem}>
                 <div className={styles.pawContainer}>
                   <Image
-                    src='/images/paw.png'
+                    src='/images/dogpaw.png'
                     alt='강아지 발바닥'
-                    width={120}
+                    width={200}
                     height={120}
                     className={styles.pawImage}
                   />

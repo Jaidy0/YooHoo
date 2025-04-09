@@ -64,7 +64,7 @@ export default function DropDown({
 
   // 옵션 선택 처리
   function handleOptionSelect(optionValue: string) {
-    onChange && onChange(optionValue);
+    onChange?.(optionValue);
     setIsOpen(false);
   }
 
