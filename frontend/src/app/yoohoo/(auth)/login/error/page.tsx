@@ -2,15 +2,17 @@
 
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/buttons/Button/Button';
-import { useProcessUserAccount } from '@/hooks/userAccount/useProcessUserAccount';
+// import { useProcessUserAccount } from '@/hooks/userAccount/useProcessUserAccount';
 import { useAuthStore } from '@/store/authStore';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 
 export default function LoginError() {
   const router = useRouter();
-  const { processAccount, isLoading, error } = useProcessUserAccount();
+  // const { processAccount, isLoading, error } = useProcessUserAccount();
   const { user, checkAuthStatus, isLoading: isAuthLoading } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('[LoginError] 컴포넌트 마운트, 인증 상태 확인 시작');
@@ -24,6 +26,8 @@ export default function LoginError() {
   }, []);
 
   const handleClick = async () => {
+    setIsLoading(true);
+    setError(null); // 이전 오류 상태 초기화
     try {
       console.log('[LoginError] 현재 사용자 정보:', user);
       if (!user?.kakaoEmail) {
@@ -36,12 +40,23 @@ export default function LoginError() {
         name: user.nickname || '후원자',
       });
 
-      // authStore에서 가져온 kakaoEmail 사용
-      const result = await processAccount({
-        email: user.kakaoEmail,
-        name: user.nickname || '후원자',
+      // Next.js API 라우트로 요청
+      const response = await fetch('/api/proxy/member', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.kakaoEmail,
+          name: user.nickname || '후원자',
+        }),
       });
 
+      if (!response.ok) {
+        throw new Error('API 요청 실패');
+      }
+
+      const result = await response.json();
       console.log('[LoginError] 계좌 생성 결과:', result);
 
       // 성공 시 리다이렉트
@@ -50,6 +65,9 @@ export default function LoginError() {
     } catch (err) {
       console.error('[LoginError] 계좌 생성 실패:', err);
       alert('계좌 생성 실패 ! 다시 시도해주세요.');
+      setError('계좌 생성 실패 ! 다시 시도해주세요.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
