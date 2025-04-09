@@ -10,6 +10,7 @@ import DateRangePicker from '@/components/profile/DateRangePicker/DateRangePicke
 import { useAuthGuard } from '@/components/auth/AuthGuard/AuthGuard';
 import { useDonationsByDateRange } from '@/hooks/donations/useDonationHistory';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
+import DonationReportSummary from '@/components/profile/DonationReportSummary/DonationReportSummary';
 
 interface DonationHistory {
   donationId: number;
@@ -82,6 +83,13 @@ export default function DonationHistoryPage() {
 
   return (
     <div className={styles.historyContainer}>
+      {/* 후원 레포트 요약 컴포넌트 추가 */}
+      <DonationReportSummary
+        donations={donationHistory}
+        isLoading={isLoading}
+        hasError={!!error}
+      />
+
       <SectionBox
         title='마이 후원 내역'
         subtitle={firstMonthGroup ? firstMonthGroup[0] : undefined}

@@ -23,7 +23,7 @@ export default function LogoutButton() {
 
   return (
     <button className={styles.logoutBtn} onClick={handleLogout}>
-      <IconBox size={20} name='logout' />
+      <IconBox size={16} name='logout' />
     </button>
   );
 }
