@@ -26,7 +26,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://finopenapi.ssafy.io/ssafy/api/v1:path*', // 실제 API 서버 주소
+        destination: 'https://finopenapi.ssafy.io/ssafy/api/v1/:path*', // 슬래시 추가
       },
     ];
   },
