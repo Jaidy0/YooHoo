@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class DonationService {
@@ -157,18 +158,32 @@ public class DonationService {
 
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
-            LocalDate currentDate = (i == 0) ? today : startOfWeek.minusWeeks(i); // 이번 주는 오늘, 나머지는 이전 주의 일요일로 설정
-            LocalDate endDate = currentDate.plusDays(1); // 현재 날짜의 다음 날까지 포함
+            LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
+            LocalDate currentEndOfWeek = (i == 0) ? today : currentStartOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
 
-            // 쿼리 실행: 각 날짜에 대한 기부 내역 조회
-            List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentDate, endDate);
-
-            // 주간 합계 계산
-            int weeklySum = donations.stream()
-                    .mapToInt(Donation::getDonationAmount)
-                    .sum();
-
-            weeklySums.add(weeklySum);
+            // 쿼리 실행: 5주 전부터 1주 전까지의 합계 계산
+            List<Donation> donations;
+            if (i == 0) {
+                // 이번 주의 경우, 각 날짜별로 조회하여 합산
+                int weeklySum = 0;
+                for (int j = 0; j <= today.getDayOfMonth() - 1; j++) {
+                    LocalDate currentDate = today.minusDays(j);
+                    donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentDate, currentDate);
+                    weeklySum += donations.stream()
+                            .mapToInt(Donation::getDonationAmount)
+                            .sum();
+                }
+                weeklySums.add(weeklySum);
+            } else {
+                // 5주 전부터 1주 전까지의 기부 내역 조회
+                String startDateStr = currentStartOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                String endDateStr = currentEndOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
+                int weeklySum = donations.stream()
+                        .mapToInt(Donation::getDonationAmount)
+                        .sum();
+                weeklySums.add(weeklySum);
+            }
         }
 
         // Reverse the list to have the most recent week last
@@ -195,6 +210,7 @@ public class DonationService {
         result.put("Prediction", prediction);
 
         return result;
+        
     }
 
     public List<Map<String, String>> getShelterNamesWithFileUrlByUserId(Long userId) {

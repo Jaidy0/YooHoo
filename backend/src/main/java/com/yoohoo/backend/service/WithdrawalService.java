@@ -210,6 +210,7 @@ public class WithdrawalService {
         LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
         List<Integer> weeklySums = new ArrayList<>();
 
+        
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
             LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
