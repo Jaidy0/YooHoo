@@ -167,9 +167,9 @@ export default function AdminPage() {
             {shelter && (
               <ReliabilityChart
                 reliability={shelterReliablity?.reliability || 0}
-                reliabilityPercentage={
-                  shelterReliablity?.reliabilityPercentage || 0
-                }
+                dogScore={shelterReliablity?.dogScore || 0}
+                fileScore={shelterReliablity?.fileScore || 0}
+                foundationScore={shelterReliablity?.foundationScore || 0}
               />
             )}
           </div>
