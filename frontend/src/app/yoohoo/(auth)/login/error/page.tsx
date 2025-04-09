@@ -12,21 +12,30 @@ export default function LoginError() {
 
   const handleClick = async () => {
     try {
+      console.log('[LoginError] 현재 사용자 정보:', user);
       if (!user?.kakaoEmail) {
+        console.error('[LoginError] 사용자 이메일이 없습니다.');
         throw new Error('사용자 이메일을 찾을 수 없습니다.');
       }
 
-      // authStore에서 가져온 kakaoEmail 사용
-      await processAccount({
+      console.log('[LoginError] 계좌 생성 시작:', {
         email: user.kakaoEmail,
         name: user.nickname || '후원자',
       });
+
+      // authStore에서 가져온 kakaoEmail 사용
+      const result = await processAccount({
+        email: user.kakaoEmail,
+        name: user.nickname || '후원자',
+      });
+
+      console.log('[LoginError] 계좌 생성 결과:', result);
 
       // 성공 시 리다이렉트
       alert('계좌 생성 성공 ! 이제 즐겁고 투명하게 YooHoo~🐶');
       router.push('/yoohoo');
     } catch (err) {
-      console.error('계좌 생성 실패:', err);
+      console.error('[LoginError] 계좌 생성 실패:', err);
       alert('계좌 생성 실패 ! 다시 시도해주세요.');
     }
   };
