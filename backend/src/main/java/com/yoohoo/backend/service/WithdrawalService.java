@@ -172,6 +172,8 @@ public class WithdrawalService {
             response.put("merchantId", withdrawal.getMerchantId());
             response.put("shelterId", withdrawal.getShelterId());
             response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+            response.put("content", withdrawal.getContent());
+            response.put("file_id", withdrawal.getFile() != null ? withdrawal.getFile().getFileId() : null);
 
             if (withdrawal.getDogId() == null) {
                 response.put("name", "단체");
@@ -211,7 +213,7 @@ public class WithdrawalService {
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
             LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
-            LocalDate currentEndOfWeek = currentStartOfWeek.plusDays(6); // 현재 주의 종료일
+            LocalDate currentEndOfWeek = (i == 0) ? today : currentStartOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
     
             // String으로 변환
             String startDateStr = currentStartOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));

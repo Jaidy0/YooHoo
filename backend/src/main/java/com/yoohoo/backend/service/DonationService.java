@@ -157,7 +157,7 @@ public class DonationService {
 
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
-            LocalDate endOfWeek = startOfWeek.plusDays(6);
+            LocalDate endOfWeek = (i == 0) ? today : startOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
             int weeklySum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, startOfWeek, endOfWeek)
                     .stream()
                     .mapToInt(Donation::getDonationAmount)
