@@ -154,32 +154,24 @@ public class DonationService {
     public Map<String, Integer> getWeeklyDonationSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
-        List<Integer> weeklySums = new ArrayList<>();
+        List<Integer> weeklySums = new ArrayList<>(Collections.nCopies(6, 0)); // Initialize with zeros
 
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
             LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일 (일요일)
             LocalDate currentEndOfWeek = currentStartOfWeek.plusDays(6); // 현재 주의 종료일 (토요일)
 
-            int weeklySum = 0; // 주간 합계 초기화
+            // 주간 합계 초기화
+            int weeklySum = 0;
 
-            if (i == 0) {
-                // 이번 주의 경우, 각 날짜별로 조회하여 합산
-                for (LocalDate date = currentStartOfWeek; !date.isAfter(today); date = date.plusDays(1)) {
-                    List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, date, date);
-                    weeklySum += donations.stream()
-                            .mapToInt(Donation::getDonationAmount)
-                            .sum();
-                }
-            } else {
-                // 5주 전부터 1주 전까지의 기부 내역 조회
-                List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
-                weeklySum = donations.stream()
-                        .mapToInt(Donation::getDonationAmount)
-                        .sum();
-            }
+            // 기부 내역 조회
+            List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
+            weeklySum = donations.stream()
+                    .mapToInt(Donation::getDonationAmount)
+                    .sum();
 
-            weeklySums.add(weeklySum);
+            // 주간 합계 저장
+            weeklySums.set(i, weeklySum);
         }
 
         // Reverse the list to have the most recent week last
