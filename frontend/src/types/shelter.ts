@@ -22,6 +22,7 @@ export interface Shelter {
   dogCount: number;
   reliability: number;
   imageUrl: string;
+  foundationDate: string;
 }
 
 export interface ShelterAccountInfo {
