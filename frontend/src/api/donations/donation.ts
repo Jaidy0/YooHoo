@@ -63,10 +63,15 @@ export const fetchDonationWeeklySums = async (
   shelterId: number
 ): Promise<WeeklySumsResponse> => {
   try {
-    // const request: TotalAmountRequest = { shelterId };
+    // Content-Type 헤더를 명시적으로 설정
     const response = await axios.post<WeeklySumsResponse>(
       `${API_BASE_URL}/api/donations/weekly-sums`,
-      shelterId
+      shelterId.toString(), // 숫자를 문자열로 변환
+      {
+        headers: {
+          'Content-Type': 'text/plain', // 또는 서버가 기대하는 다른 타입
+        },
+      }
     );
     return response.data;
   } catch (error) {
