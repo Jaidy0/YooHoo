@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './page.module.scss';
 import Image from 'next/image';
-import IconBox from '@/components/common/IconBox/IconBox';
 import { useRouter } from 'next/navigation';
 import { useShelterData } from '@/hooks/useShetlerData';
 import { useAuthStore } from '@/store/authStore';
@@ -137,11 +136,10 @@ export default function AdminPage() {
           <div className={styles.trustContent}>
             <div className={styles.trustHeader}>
               <div className={styles.adminTitle}>단체 신뢰 지수</div>
+              <div className={styles.questionButton} onClick={toggleTooltip}>
+                ?
+              </div>
               <div className={styles.tooltipContainer}>
-                <div className={styles.questionButton} onClick={toggleTooltip}>
-                  <IconBox name='zoom' size={24}></IconBox>
-                </div>
-
                 {isTooltipOpen && (
                   <div className={styles.tooltip} ref={tooltipRef}>
                     <h4>신뢰 지수란?</h4>
