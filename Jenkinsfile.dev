@@ -1,14 +1,14 @@
 pipeline {
-    agent none
+	agent none
     options {
-        disableConcurrentBuilds()
+		disableConcurrentBuilds()
         skipDefaultCheckout(true)
     }
     parameters {
-        string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')
+		string(name: 'TRAFFIC_SPLIT', defaultValue: '10', description: '카나리 배포 시 트래픽 비율 (%)')
     }
     environment {
-        DOCKER_IMAGE_PREFIX = "murhyun2"
+		DOCKER_IMAGE_PREFIX = "murhyun2"
         EC2_PUBLIC_HOST = ""
         STABLE_BACKEND_PORT = ""
         CANARY_BACKEND_PORT = ""
@@ -36,23 +36,23 @@ pipeline {
         MONITORING_DURATION = 60 // 모니터링 지속 시간 (초)
     }
     stages {
-        stage('Checkout') {
-            agent any
+		stage('Checkout') {
+			agent any
             steps {
-                sh 'rm -f .git/index.lock || true'
+				sh 'rm -f .git/index.lock || true'
                 retry(3) {
-                    git branch: "develop",
+					git branch: "develop",
                         credentialsId: "${GIT_CREDENTIALS_ID}",
                         url: "${GIT_REPOSITORY_URL}"
                 }
             }
         }
         stage('Prepare Environment') {
-            agent any
+			agent any
             steps {
-                withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {
-                    script {
-                        def envContent = readFile(ENV_FILE_PATH).replaceAll('\r', '')
+				withCredentials([file(credentialsId: 'env-file-content', variable: 'ENV_FILE_PATH')]) {
+					script {
+						def envContent = readFile(ENV_FILE_PATH).replaceAll('\r', '')
                         def extraEnv = """
                         DOCKER_IMAGE_PREFIX=${DOCKER_IMAGE_PREFIX}
                         STABLE_TAG=stable-${BUILD_NUMBER}
@@ -66,7 +66,7 @@ pipeline {
                         finalEnvContent.split('\n').each { line ->
                             def keyValue = line.split('=', 2)
                             if (keyValue.size() == 2) {
-                                envMap[keyValue[0].trim()] = keyValue[1].trim()
+							envMap[keyValue[0].trim()] = keyValue[1].trim()
                             }
                         }
                         EC2_PUBLIC_HOST = envMap['EC2_PUBLIC_HOST']
@@ -84,14 +84,14 @@ pipeline {
             }
         }
         stage('Build & Push Images') {
-            parallel {
-                stage('Build Backend') {
-                    agent { label 'backend-dev' }
+			parallel {
+				stage('Build Backend') {
+					agent { label 'backend-dev' }
                     steps {
-                        script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                dir("backend") {
-                                    sh """
+						script {
+							docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+								dir("backend") {
+									sh """
                                         docker build -t ${BACKEND_IMAGE}:${CANARY_TAG} .
                                         docker push ${BACKEND_IMAGE}:${CANARY_TAG}
                                     """
@@ -101,12 +101,12 @@ pipeline {
                     }
                 }
                 stage('Build Frontend') {
-                    agent { label 'frontend-dev' }
+					agent { label 'frontend-dev' }
                     steps {
-                        script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                dir("frontend") {
-                                    sh """
+						script {
+							docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+								dir("frontend") {
+									sh """
                                         docker build \\
                                             --build-arg NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \\
                                             --build-arg NEXT_PUBLIC_KAKAO_CLIENT_ID=${NEXT_PUBLIC_KAKAO_CLIENT_ID} \\
@@ -122,10 +122,10 @@ pipeline {
             }
         }
         stage('Deploy Canary') {
-            agent { label 'public-dev' } // Jenkins 에이전트가 서버 1이라고 가정
+			agent { label 'public-dev' } // Jenkins 에이전트가 서버 1이라고 가정
             steps {
-                script {
-                    sh """
+				script {
+					sh """
                         # gettext 설치 확인 및 설치
                         if ! dpkg -s gettext > /dev/null 2>&1; then
                             sudo apt-get update && sudo apt-get install -y gettext
@@ -187,7 +187,7 @@ pipeline {
                 }
             }
         }
-/*         stage('Monitor Canary with Prometheus') {
+        stage('Monitor Canary with Prometheus') {
             agent { label 'public-dev' }
             steps {
                 script {
@@ -355,15 +355,15 @@ pipeline {
                     }
                 }
             }
-        } */
+        }
         stage('Promote to Stable') {
-            parallel {
-                stage('Backend Promotion') {
-                    agent { label 'backend-dev' }
+			parallel {
+				stage('Backend Promotion') {
+					agent { label 'backend-dev' }
                     steps {
-                        script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                sh """
+						script {
+							docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+								sh """
                                     docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:${STABLE_TAG}
                                     docker tag ${BACKEND_IMAGE}:${CANARY_TAG} ${BACKEND_IMAGE}:latest
                                     docker push ${BACKEND_IMAGE}:${STABLE_TAG}
@@ -371,7 +371,7 @@ pipeline {
                                 """
                             }
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                                sh """
+								sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml pull stable_backend &&
@@ -383,11 +383,11 @@ pipeline {
                     }
                 }
                 stage('Frontend Promotion') {
-                    agent { label 'frontend-dev' }
+					agent { label 'frontend-dev' }
                     steps {
-                        script {
-                            docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
-                                sh """
+						script {
+							docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_HUB_CREDENTIALS_ID}") {
+								sh """
                                     docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:${STABLE_TAG}
                                     docker tag ${FRONTEND_IMAGE}:${CANARY_TAG} ${FRONTEND_IMAGE}:latest
                                     docker push ${FRONTEND_IMAGE}:${STABLE_TAG}
@@ -395,7 +395,7 @@ pipeline {
                                 """
                             }
                             withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                                sh """
+								sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml pull stable_frontend &&
@@ -409,11 +409,11 @@ pipeline {
             }
         }
         stage('Update Nginx') {
-        agent { label 'public-dev' }
+			agent { label 'public-dev' }
             steps {
-                script {
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
+				script {
+					withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+						sh """
                             set -a
                             . \${WORKSPACE}/.env
                             set +a
@@ -425,13 +425,13 @@ pipeline {
             }
         }
         stage('Cleanup Canary') {
-            parallel {
-                stage('Backend Canary Cleanup') {
-                    agent { label 'backend-dev' }
+			parallel {
+				stage('Backend Canary Cleanup') {
+					agent { label 'backend-dev' }
                     steps {
-                        script {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                                sh """
+						script {
+							withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+								sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml stop canary_backend &&
@@ -443,11 +443,11 @@ pipeline {
                     }
                 }
                 stage('Frontend Canary Cleanup') {
-                    agent { label 'frontend-dev' }
+					agent { label 'frontend-dev' }
                     steps {
-                        script {
-                            withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                                sh """
+						script {
+							withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+								sh """
                                     ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                         cd ${WORKSPACE} &&
                                         docker compose -f docker-compose.develop.yml stop canary_frontend &&
@@ -462,12 +462,12 @@ pipeline {
         }
     }
     post {
-        failure {
-            node('public-dev') {
-                echo "배포 실패: 롤백을 진행합니다."
+		failure {
+			node('public-dev') {
+				echo "배포 실패: 롤백을 진행합니다."
                 script {
-                    withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
+					withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
+						sh """
                             set -a
                             . \${WORKSPACE}/.env
                             set +a
@@ -476,7 +476,7 @@ pipeline {
                         """
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
+						sh """
                             ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml up -d stable_backend
@@ -484,7 +484,7 @@ pipeline {
                         """
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
+						sh """
                             ssh -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml up -d stable_frontend
@@ -492,7 +492,7 @@ pipeline {
                         """
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
+						sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_backend
@@ -501,7 +501,7 @@ pipeline {
                         """
                     }
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
-                        sh """
+						sh """
                             ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_PUBLIC_HOST} "
                                 cd ${WORKSPACE}
                                 docker compose -f docker-compose.develop.yml stop canary_frontend
@@ -513,8 +513,8 @@ pipeline {
             }
         }
         always {
-            node('public-dev') {
-                sh """
+			node('public-dev') {
+				sh """
                     docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
                     docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
                 """
@@ -523,7 +523,7 @@ pipeline {
                     docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
                 """
                 script {
-                    def Branch_Name = env.GIT_BRANCH ? env.GIT_BRANCH.replace('origin/', '') : sh(script: "git name-rev --name-only HEAD | sed 's/^origin\\///'", returnStdout: true).trim()
+					def Branch_Name = env.GIT_BRANCH ? env.GIT_BRANCH.replace('origin/', '') : sh(script: "git name-rev --name-only HEAD | sed 's/^origin\\///'", returnStdout: true).trim()
                     def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
                     def Author_Email = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                     def Commit_Message = sh(script: "git log -1 --pretty=%s", returnStdout: true).trim()

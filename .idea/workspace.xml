@@ -7,6 +7,7 @@
     <list default="true" id="ec70ab62-bbb7-422b-a307-791072c1d4d3" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jenkinsfile.dev" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile.dev" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,7 +92,7 @@
       <workItem from="1743468477036" duration="6840000" />
       <workItem from="1743496820001" duration="46640000" />
       <workItem from="1744211059128" duration="243000" />
-      <workItem from="1744211356047" duration="8110000" />
+      <workItem from="1744211356047" duration="8628000" />
     </task>
     <servers />
   </component>
