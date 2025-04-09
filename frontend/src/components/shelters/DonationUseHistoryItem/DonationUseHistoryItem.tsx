@@ -55,7 +55,7 @@ export default function DonationUseHistoryItem({
               className={styles.btn}
               onClick={() => onReceiptClick?.(withdrawalId)}
             >
-              영수증 확인
+              활동내용 확인
             </RoundButton>
           )}
           <RoundButton

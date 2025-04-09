@@ -34,7 +34,7 @@ export default function DonationForm({
   const { submitDonation, isLoading, error, isSuccess } = useDonationSubmit();
 
   // 강아지 ID가 있으면 일시후원 및 강아지 후원으로 기본값 설정
-  const initialDonationType: DonationType = initialDogId ? 1 : 0; // 강아지 ID가 있으면 일시후원(1)
+  const initialDonationType: DonationType = initialDogId ? 1 : 1; // 강아지 ID가 있으면 일시후원(1)
   const initialTargetType: TargetType = initialDogId ? 'dog' : 'shelter'; // 강아지 ID가 있으면 강아지 후원
 
   // 단체 정보 가져오기
@@ -99,7 +99,7 @@ export default function DonationForm({
   const [stepsCompleted, setStepsCompleted] = useState({
     shelter: !!initialShelterId,
     donationType: true, // 항상 선택되어 있음 (기본값이 있기 때문)
-    paymentDetails: false,
+    paymentDetails: true,
     targetSelection: true, // 항상 선택되어 있음 (기본값이 있기 때문)
     dogSelection: !!initialDogId, // 강아지 ID가 있으면 이미 선택된 것으로 간주
     accountInfo: false,
