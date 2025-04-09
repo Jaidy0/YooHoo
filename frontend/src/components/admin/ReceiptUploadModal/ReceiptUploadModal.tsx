@@ -9,7 +9,7 @@ export interface ReceiptUploadModalProps {
   isOpen: boolean;
   onClose: () => void;
   withdrawId: number;
-  onUploadSuccess?: () => void; // 업로드 성공 시 호출할 콜백
+  onUploadSuccess?: () => void; // 단순히 성공 여부만 전달
 }
 
 export default function ReceiptUploadModal({
@@ -21,20 +21,24 @@ export default function ReceiptUploadModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadError, setUploadError] = useState<string>('');
 
+  // useReceipt 훅 사용
   const { uploadReceiptImage, isLoading } = useReceipt(withdrawId, {
+    // 성공 시 콜백
     onSuccess: () => {
+      // 모달 닫기 및 성공 콜백 호출
       onClose();
-      onUploadSuccess?.(); // 업로드 성공 후 부모 컴포넌트에 알림
+
+      // 업로드 성공 시 부모 컴포넌트에 알림
+      if (onUploadSuccess) {
+        onUploadSuccess();
+      }
     },
+    // 에러 발생 시 콜백
     onError: (error) => {
       setUploadError(
         '영수증 업로드 중 오류가 발생했습니다. 다시 시도해주세요.'
       );
       console.error('영수증 업로드 오류:', error);
-    },
-    onDataChange: () => {
-      // 필요한 경우 여기에서 추가 작업 수행
-      onUploadSuccess?.(); // 데이터 변경 시 부모 컴포넌트에 알림
     },
   });
 
@@ -45,12 +49,11 @@ export default function ReceiptUploadModal({
     }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const result = await uploadReceiptImage(selectedFile);
-      // 업로드 성공 시 처리는 onSuccess와 onDataChange에서 처리됨
+      await uploadReceiptImage(selectedFile);
+      // 성공 처리는 onSuccess 콜백에서 수행
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      // 에러는 훅에서 처리됨
+      // 에러 처리는 onError 콜백에서 수행
     }
   };
 

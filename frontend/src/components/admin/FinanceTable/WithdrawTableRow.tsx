@@ -17,6 +17,8 @@ export interface WithdrawTableRowProps {
   date: string;
   transactionUniqueNo: number;
   file_id: string | null;
+  dogId?: number | null;
+  dogName?: string | null;
 }
 
 const formatAmount = (value: number) => {
@@ -33,7 +35,18 @@ export default function WithdrawTableRow({
   date,
   transactionUniqueNo,
   file_id,
+  dogId: initialDogId = null,
+  dogName: initialDogName = null,
 }: WithdrawTableRowProps) {
+  // 로컬 상태 관리
+  const [hasUploadedReceipt, setHasUploadedReceipt] = useState(
+    file_id !== null
+  );
+  const [localDogId, setLocalDogId] = useState<number | null>(initialDogId);
+  const [localDogName, setLocalDogName] = useState<string | null>(
+    initialDogName
+  );
+
   // 모달 상태 관리
   const [isDogSelectModalOpen, setIsDogSelectModalOpen] = useState(false);
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
@@ -41,25 +54,14 @@ export default function WithdrawTableRow({
   const [isReceiptUploadModalOpen, setIsReceiptUploadModalOpen] =
     useState(false);
 
-  // 영수증 존재 여부 - file_id를 기준으로 판단
-  const hasReceipt = file_id !== null;
+  // 영수증 존재 여부 - hasUploadedReceipt 상태 기준으로 판단
+  const hasReceipt = hasUploadedReceipt;
 
-  // 자동 새로고침 실행 함수
-  const refreshPage = useCallback(() => {
-    window.location.reload();
-  }, []);
+  // 강아지 할당 여부 - localDogId를 기준으로 판단
+  const hasDogAssigned = localDogId !== null && localDogName !== null;
 
-  // DogSelect 모달 닫기
-  const closeDogSelectModal = useCallback(() => {
-    setIsDogSelectModalOpen(false);
-    refreshPage();
-  }, [refreshPage]);
-
-  // 영수증 업로드 모달 닫기
-  const closeReceiptUploadModal = useCallback(() => {
-    setIsReceiptUploadModalOpen(false);
-    refreshPage();
-  }, [refreshPage]);
+  // 뱃지 텍스트 - 강아지가 할당되었으면 "지정(강아지이름)"으로 표시
+  const badgeText = hasDogAssigned ? `지정(${localDogName})` : type;
 
   // 모달 열기 핸들러
   const openDogSelectModal = () => setIsDogSelectModalOpen(true);
@@ -67,9 +69,32 @@ export default function WithdrawTableRow({
   const openReceiptModal = () => setIsReceiptModalOpen(true);
   const openReceiptUploadModal = () => setIsReceiptUploadModalOpen(true);
 
-  // 일반 모달 닫기 핸들러 (새로고침 불필요)
+  // DogSelect 모달 닫기
+  const closeDogSelectModal = useCallback(() => {
+    setIsDogSelectModalOpen(false);
+  }, []);
+
+  // 강아지 선택 성공 콜백
+  const handleDogSelectSuccess = useCallback(
+    (dogId: number, dogName: string) => {
+      // 낙관적 업데이트 수행
+      setLocalDogId(dogId);
+      setLocalDogName(dogName);
+      setIsDogSelectModalOpen(false);
+    },
+    []
+  );
+
+  // 영수증 업로드 성공 콜백
+  const handleReceiptUploadSuccess = useCallback(() => {
+    // 영수증 업로드 성공 상태로 변경
+    setHasUploadedReceipt(true);
+  }, []);
+
+  // 일반 모달 닫기 핸들러
   const closeEvidenceModal = () => setIsEvidenceModalOpen(false);
   const closeReceiptModal = () => setIsReceiptModalOpen(false);
+  const closeReceiptUploadModal = () => setIsReceiptUploadModalOpen(false);
 
   // 영수증 버튼 클릭 핸들러 - hasReceipt 기준으로 변경
   const handleReceiptButtonClick = () => {
@@ -103,7 +128,7 @@ export default function WithdrawTableRow({
               className={styles.badge}
               onClick={openDogSelectModal}
             >
-              {type}
+              {badgeText}
             </Badge>
           </div>
           <div className={styles.category}>{displayCategory}</div>
@@ -126,12 +151,14 @@ export default function WithdrawTableRow({
         </div>
       )}
 
-      {/* 강아지 선택 모달 */}
+      {/* 강아지 선택 모달 - onSuccess 콜백 추가 */}
       <DogSelectModal
         isOpen={isDogSelectModalOpen}
         onClose={closeDogSelectModal}
         withDrawId={withdrawalId}
         title={`${type} 상세 정보`}
+        initialDogId={localDogId?.toString()}
+        onSuccess={handleDogSelectSuccess}
       />
 
       {/* 증빙자료 모달 */}
@@ -157,7 +184,7 @@ export default function WithdrawTableRow({
           isOpen={isReceiptUploadModalOpen}
           onClose={closeReceiptUploadModal}
           withdrawId={withdrawalId}
-          onUploadSuccess={refreshPage}
+          onUploadSuccess={handleReceiptUploadSuccess}
         />
       )}
     </div>
