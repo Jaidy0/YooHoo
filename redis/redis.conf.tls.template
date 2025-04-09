@@ -5,10 +5,10 @@
 requirepass $REDIS_PASSWORD
 
 # ## 기본 설정 ##
-# Non-TLS 포트 활성화 (기본값 6379)
-port 6379
-# TLS 포트 비활성화 (주석 처리)
-# tls-port 6379
+# Non-TLS 포트 비활성화 (TLS 포트만 사용)
+port 0
+# TLS 포트 활성화
+tls-port 6379
 
 # TCP keepalive 설정 (네트워크 불안정 시 연결 유지)
 tcp-keepalive 300
@@ -21,18 +21,18 @@ bind 0.0.0.0
 # 데이터베이스 개수
 databases 16
 
-# ## TLS/SSL 설정 (모두 주석 처리) ##
+# ## TLS/SSL 설정 ##
 # 서버 인증서 파일 경로
-# tls-cert-file /etc/redis/certs/redis.crt
+tls-cert-file /etc/redis/certs/redis.crt
 # 서버 개인 키 파일 경로
-# tls-key-file /etc/redis/certs/redis.key
+tls-key-file /etc/redis/certs/redis.key
 
 # 클라이언트 인증서 요구 안 함 (단방향 TLS)
-# tls-auth-clients no
+tls-auth-clients no
 # 허용할 TLS 프로토콜 버전
-# tls-protocols "TLSv1.2 TLSv1.3"
+tls-protocols "TLSv1.2 TLSv1.3"
 # 서버가 선호하는 암호화 스위트 사용
-# tls-prefer-server-ciphers yes
+tls-prefer-server-ciphers yes
 
 # ## RDB 스냅샷 설정 ##
 # 900초(15분) 동안 1개 이상의 키 변경 시 저장
