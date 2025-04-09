@@ -2,6 +2,20 @@
 
 .dogDetailView {
   width: 100%;
+
+  :global(.global-rating-button) {
+    width: 40px;
+    height: 14px;
+
+    // 특정 조건 하에서 스타일 변경
+    &.some-condition {
+      font-weight: bold;
+    }
+  }
+
+  :global(.global-rating-label) {
+    width: 60px;
+  }
 }
 
 .backButtonContainer {

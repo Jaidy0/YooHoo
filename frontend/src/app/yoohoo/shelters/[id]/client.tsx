@@ -268,7 +268,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             menuItems={tabMenuItems}
             defaultActiveIndex={activeTab}
             onMenuItemClick={handleTabClick}
-            fullWidth
+            fullWidth={true}
           />
         </div>
       </div>

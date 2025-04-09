@@ -136,20 +136,21 @@ export default function TabMenu({
             .join(' ');
 
           return (
-            <div key={`tab-menu-item-${index}`} className={itemClasses}>
-              <a
-                href={item.link}
-                className={styles.menuLink}
-                onClick={(e) => {
-                  if (onMenuItemClick) {
-                    e.preventDefault();
-                    handleItemClick(item, index);
-                  }
-                }}
-              >
-                {item.name}
-              </a>
-            </div>
+            // <div >
+            <a
+              key={`tab-menu-item-${index}`}
+              href={item.link}
+              className={`${itemClasses} ${styles.menuLink}`}
+              onClick={(e) => {
+                if (onMenuItemClick) {
+                  e.preventDefault();
+                  handleItemClick(item, index);
+                }
+              }}
+            >
+              <span className={styles.menuLinkText}>{item.name}</span>
+            </a>
+            // </div>
           );
         })}
       </ul>
