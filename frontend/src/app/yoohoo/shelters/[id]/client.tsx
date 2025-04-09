@@ -31,8 +31,8 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   const searchParams = useSearchParams();
 
   // URL 쿼리 파라미터에서 tab과 dogId 가져오기
-  const tabParam = searchParams.get('tab');
-  const dogIdParam = searchParams.get('dogId');
+  const tabParam = searchParams?.get('tab');
+  const dogIdParam = searchParams?.get('dogId');
 
   // 상태 관리
   const [activeTab, setActiveTab] = useState(tabParam ? parseInt(tabParam) : 0);

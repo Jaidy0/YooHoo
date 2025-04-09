@@ -27,7 +27,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ items }) => {
           const isActive =
             item.href === '/yoohoo'
               ? pathname === '/yoohoo'
-              : pathname.startsWith(item.href);
+              : pathname?.startsWith(item.href);
 
           return (
             <li key={index} className={styles.navItem}>

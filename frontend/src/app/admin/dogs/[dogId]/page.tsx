@@ -14,7 +14,7 @@ import { useDogFinance } from '@/hooks/useDogFinance'; // 강아지 재정 데�
 export default function DogDetailPage() {
   const router = useRouter();
   const params = useParams();
-  const dogId = params.dogId as string;
+  const dogId = params?.dogId as string;
 
   // 커스텀 훅 사용
   const {

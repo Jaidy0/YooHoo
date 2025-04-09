@@ -14,7 +14,7 @@ import { useDogUpdate } from '@/hooks/useDogUpdate'; // 새로운 훅 import
 export default function DogsEditPage() {
   const router = useRouter();
   const params = useParams();
-  const dogId = params.dogId as string;
+  const dogId = params?.dogId as string;
 
   // useDog 훅을 사용하여 강아지 데이터 조회
   const { dog, isLoading: isLoadingDog, error: dogError } = useDog(dogId);
