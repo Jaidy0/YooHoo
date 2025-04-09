@@ -158,28 +158,28 @@ public class DonationService {
 
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
-            LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
-            LocalDate currentEndOfWeek = (i == 0) ? today : currentStartOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
+            LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일 (일요일)
+            LocalDate currentEndOfWeek = currentStartOfWeek.plusDays(6); // 현재 주의 종료일 (토요일)
 
-            List<Donation> donations;
+            int weeklySum = 0; // 주간 합계 초기화
+
             if (i == 0) {
                 // 이번 주의 경우, 각 날짜별로 조회하여 합산
-                int weeklySum = 0;
-                for (LocalDate date = currentStartOfWeek.plusDays(1); !date.isAfter(today); date = date.plusDays(1)) {
-                    donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, date, date);
+                for (LocalDate date = currentStartOfWeek; !date.isAfter(today); date = date.plusDays(1)) {
+                    List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, date, date);
                     weeklySum += donations.stream()
                             .mapToInt(Donation::getDonationAmount)
                             .sum();
                 }
-                weeklySums.add(weeklySum);
             } else {
                 // 5주 전부터 1주 전까지의 기부 내역 조회
-                donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
-                int weeklySum = donations.stream()
+                List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
+                weeklySum = donations.stream()
                         .mapToInt(Donation::getDonationAmount)
                         .sum();
-                weeklySums.add(weeklySum);
             }
+
+            weeklySums.add(weeklySum);
         }
 
         // Reverse the list to have the most recent week last
