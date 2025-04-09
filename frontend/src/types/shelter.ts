@@ -10,7 +10,9 @@ export interface ShelterDetail {
   businessNumber: string;
   reliability: number;
   imageUrl: string;
-  reliabilityPercentage: number; // 추가된 것
+  dogScore: number;
+  fileScore: number;
+  foundationScore: number;
 }
 
 export interface Shelter {
@@ -31,5 +33,7 @@ export interface ShelterAccountInfo {
 export interface ReliabilityResponse {
   shelterId: number;
   reliabilityScore: number;
-  reliabilityPercentage: number;
+  dogScore: number;
+  fileScore: number;
+  foundationScore: number;
 }

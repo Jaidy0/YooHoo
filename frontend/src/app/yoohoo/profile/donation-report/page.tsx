@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import SectionBox from '@/components/common/SectionBox/SectionBox';
 import DonutChart from '@/components/charts/DonutChart/DonutChart';
 import BarChart from '@/components/charts/BarChart/BarChart';
@@ -9,8 +10,11 @@ import { getUserDonations } from '@/api/donations/myDonation';
 import { useAuthStore } from '@/store/authStore';
 import { Donation, ReportData } from '@/types/donation';
 import { processDataForReport } from '@/lib/util/donationReportUtils';
+import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
+import IconBox from '@/components/common/IconBox/IconBox';
 
 export default function DonationReportPage() {
+  const router = useRouter();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [hasData, setHasData] = useState(false);
@@ -29,7 +33,7 @@ export default function DonationReportPage() {
       labels: [],
       values: [],
     },
-    username: user?.nickname || '회원',
+    username: user?.nickname || '후원자',
   });
 
   useEffect(() => {
@@ -44,7 +48,7 @@ export default function DonationReportPage() {
           // 데이터 처리 후 reportData 상태 업데이트
           const processedData = processDataForReport(
             donations,
-            user?.nickname || '회원'
+            user?.nickname || '후원자'
           );
           setReportData(processedData);
         } else {
@@ -61,6 +65,11 @@ export default function DonationReportPage() {
     fetchDonations();
   }, [user]);
 
+  // 목록으로 돌아가기 (후원 내역 페이지로 이동)
+  const handleBackToList = () => {
+    router.push('/yoohoo/profile');
+  };
+
   if (isLoading) {
     return <div className={styles.loading}>데이터를 불러오는 중입니다...</div>;
   }
@@ -68,6 +77,13 @@ export default function DonationReportPage() {
   if (!hasData) {
     return (
       <div className={styles.noDataContainer}>
+        {/* 목록으로 돌아가기 버튼 */}
+        <div className={styles.backButtonContainer}>
+          <RoundButton onClick={handleBackToList} className={styles.backButton}>
+            <IconBox name='arrow' size={16} />
+            프로필로 돌아가기
+          </RoundButton>
+        </div>
         <div className={styles.noDataMessage}>
           <p>후원 내역이 없습니다.</p>
           <p>첫 번째 후원을 통해 의미 있는 변화를 만들어보세요!</p>
@@ -78,6 +94,13 @@ export default function DonationReportPage() {
 
   return (
     <div className={styles.reportPageContainer}>
+      {/* 목록으로 돌아가기 버튼 */}
+      <div className={styles.backButtonContainer}>
+        <RoundButton onClick={handleBackToList} className={styles.backButton}>
+          <IconBox name='arrow' size={16} />
+          프로필로 돌아가기
+        </RoundButton>
+      </div>
       {/* 첫 번째 섹션 - 후원 유형별 비율 */}
       <SectionBox
         title='마이 후원 레포트'

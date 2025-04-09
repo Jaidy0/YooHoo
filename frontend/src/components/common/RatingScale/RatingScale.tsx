@@ -75,7 +75,7 @@ export default function RatingScale({
           <button
             key={rating}
             type='button'
-            className={`${styles.ratingButton} ${displayValue >= rating ? styles.active : ''}`}
+            className={`${styles.ratingButton} global-rating-button ${displayValue >= rating ? styles.active : ''}`}
             onClick={() => handleClick(rating)}
             onMouseEnter={() => handleMouseEnter(rating)}
             disabled={readOnly}

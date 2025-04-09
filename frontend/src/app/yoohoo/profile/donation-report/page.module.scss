@@ -8,6 +8,21 @@
   padding: 1.5rem;
 }
 
+.backButtonContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+  margin-left: 1rem;
+
+  .backButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: $text-333;
+    font-weight: 500;
+  }
+}
+
 .loading {
   display: flex;
   justify-content: center;

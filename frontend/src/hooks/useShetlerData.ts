@@ -44,7 +44,9 @@ export const useShelterData = (shelterId: number) => {
       const shelterWithReliability = {
         ...shelterData,
         reliability: reliabilityData.reliabilityScore,
-        reliabilityPercentage: reliabilityData.reliabilityPercentage,
+        dogScore: reliabilityData.dogScore,
+        fileScore: reliabilityData.fileScore,
+        foundationScore: reliabilityData.foundationScore,
       };
 
       console.log('shelterWithReliability : ', shelterWithReliability);

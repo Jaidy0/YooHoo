@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import TabMenu from '@/components/common/TabMenu/TabMenu';
 import DogCard from '@/components/common/Card/DogCard/DogCard';
 import DogDetailView from '@/components/shelters/DogDetailView/DogDetailView';
@@ -20,6 +20,7 @@ import { useShelterWithdrawals } from '@/hooks/useShelterWithdrawals';
 import { useShelterTotalAmountResult } from '@/hooks/useShelterTotalAmountResult';
 import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
 import { useCategoryPercentages } from '@/hooks/useCategoryPercentages';
+import { useSearchParams } from 'next/navigation';
 
 interface GroupDetailClientProps {
   groupId: string;
@@ -27,11 +28,18 @@ interface GroupDetailClientProps {
 
 export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // URL 쿼리 파라미터에서 tab과 dogId 가져오기
+  const tabParam = searchParams.get('tab');
+  const dogIdParam = searchParams.get('dogId');
 
   // 상태 관리
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(tabParam ? parseInt(tabParam) : 0);
   const [selectedDog, setSelectedDog] = useState<Dog | null>(null);
-  const [selectedDogId, setSelectedDogId] = useState<number | null>(null);
+  const [selectedDogId, setSelectedDogId] = useState<number | null>(
+    dogIdParam ? parseInt(dogIdParam) : null
+  );
   const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState<{
@@ -115,6 +123,26 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
       setSelectedDogId(dogId);
     }
   }
+
+  // 컴포넌트 마운트 시 URL 파라미터에 따라 상태 설정
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(parseInt(tabParam));
+    }
+
+    if (dogIdParam) {
+      const dogId = parseInt(dogIdParam);
+      setSelectedDogId(dogId);
+
+      // 강아지 데이터가 로드된 후에 해당 강아지 선택
+      if (!isDogLoading && dogs.length > 0) {
+        const dog = dogs.find((d) => d.dogId === dogId);
+        if (dog) {
+          setSelectedDog(dog);
+        }
+      }
+    }
+  }, [tabParam, dogIdParam, isDogLoading, dogs]);
 
   // 상세 정보 닫기 핸들러
   function handleCloseDetail() {
@@ -268,7 +296,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             menuItems={tabMenuItems}
             defaultActiveIndex={activeTab}
             onMenuItemClick={handleTabClick}
-            fullWidth
+            fullWidth={true}
           />
         </div>
       </div>
@@ -344,7 +372,9 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
             <ReliabilityChart
               reliability={shelter?.reliability || 0}
-              reliabilityPercentage={shelter?.reliabilityPercentage || 0}
+              dogScore={shelter?.dogScore || 0}
+              foundationScore={shelter?.foundationScore || 0}
+              fileScore={shelter?.fileScore || 0}
             />
             <DonationUsageChart
               categories={categoryPercentages}

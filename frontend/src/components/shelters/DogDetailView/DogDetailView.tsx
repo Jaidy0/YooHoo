@@ -127,7 +127,11 @@ export default function DogDetailView({
             <h3 className={styles.sectionTitle}>성격</h3>
             <div className={styles.personalityContainer}>
               <div className={styles.personalityItem}>
-                <span className={styles.personalityLabel}>활발함</span>
+                <span
+                  className={`${styles.personalityLabel} global-rating-label`}
+                >
+                  활발함
+                </span>
                 <span className={styles.detailValue}>
                   <RatingScale
                     value={dogDetails?.energetic || 1}

@@ -22,7 +22,11 @@ export default function Layout({ children }: { children: ReactNode }) {
   // 경로가 변경될 때마다 활성 탭 인덱스 업데이트
   useEffect(() => {
     // 경로에 따라 활성 탭 인덱스 결정
-    if (pathname === '/yoohoo/profile' || pathname === '/yoohoo/profile/') {
+    if (
+      pathname === '/yoohoo/profile' ||
+      pathname === '/yoohoo/profile/' ||
+      pathname === '/yoohoo/profile/donation-report' // 후원 레포트 페이지도 '후원 내역' 탭으로 처리
+    ) {
       setActiveTabIndex(0);
     } else if (pathname.startsWith('/yoohoo/profile/donate-dogs')) {
       setActiveTabIndex(1);
@@ -57,7 +61,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           activeIndex={activeTabIndex}
           onMenuItemClick={handleTabClick}
           size='sm'
-          fullWidth
+          fullWidth={true}
         />
       </div>
 
