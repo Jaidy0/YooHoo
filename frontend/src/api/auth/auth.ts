@@ -4,11 +4,11 @@ import axios from 'axios';
 
 // 상수 정의
 const API_KEY = '54cc585638ea49a5b13f7ec7887c7c1b';
-const BASE_URL = 'https://finopenapi.ssafy.io/ssafy/api/v1';
+// const BASE_URL = 'https://finopenapi.ssafy.io/ssafy/api/v1';
 const URLS = {
-  MEMBER: `${BASE_URL}/member`,
-  ACCOUNT: `${BASE_URL}/edu/demandDeposit/createDemandDepositAccount`,
-  DEPOSIT: `${BASE_URL}/edu/demandDeposit/updateDemandDepositAccountDeposit`,
+  MEMBER: '/api/member',
+  ACCOUNT: '/api/edu/demandDeposit/createDemandDepositAccount',
+  DEPOSIT: '/api/edu/demandDeposit/updateDemandDepositAccountDeposit',
 } as const;
 
 const CONSTANTS = {
