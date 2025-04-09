@@ -39,99 +39,58 @@ public class UserController {
             KakaoLoginDto userInfo = userService.getUserInfoFromKakao(accessToken);
             logger.info("User info retrieved: {}", userInfo);
             
-            // 카카오 ID를 통해 데이터베이스에서 사용자 조회
-            Long kakaoId = userInfo.getKakaoId(); // 카카오 ID
+            // 사용자 정보 저장 및 토큰 Redis에 저장
+            User user = userService.saveUserWithToken(userInfo, accessToken);
+            logger.info("User saved: {}", user);
+            
+            // 세션에 사용자 ID 저장 (인증 목적)
+            session.setAttribute("userId", user.getUserId());
+            logger.info("User ID stored in session: {}", user.getUserId());
+
+            // 카카오 ID를 통해 데이터베이스에서 이메일 정보 가져오기
+            Long kakaoId = user.getKakaoId(); // 데이터베이스에 저장된 카카오 ID
             User dbUser = userService.findUserByKakaoId(kakaoId); // 카카오 ID로 사용자 조회
-            logger.info("Database user retrieved: {}", dbUser);
+            String userId = dbUser.getKakaoEmail(); // 데이터베이스에서 이메일 가져오기
 
-            if (dbUser == null) {
-                // 신규 유저인 경우
-                User user = userService.saveUserWithToken(userInfo, accessToken);
-                logger.info("User saved: {}", user);
-                session.setAttribute("userId", user.getUserId());
-                logger.info("User ID stored in session: {}", user.getUserId());
+            // 요청 본문 준비
+            String apiKey = "54cc585638ea49a5b13f7ec7887c7c1b";
+            String requestBody = String.format("{\"apiKey\":\"%s\", \"userId\":\"%s\"}", apiKey, userId);
+            
+            // 로그 추가
+            logger.info("Sending POST request to external API with userId: {}", userId);
+            logger.info("Request body: {}", requestBody);
+            
+            // 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            // 요청 엔티티 생성
+            HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
+            
+            // POST 요청 전송
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<Map> response = restTemplate.exchange(
+                    "https://finopenapi.ssafy.io/ssafy/api/v1/member/search",
+                    HttpMethod.POST,
+                    entity,
+                    Map.class
+            );
 
-                // 요청 본문 준비
-                String apiKey = "54cc585638ea49a5b13f7ec7887c7c1b";
-                String requestBody = String.format("{\"apiKey\":\"%s\", \"userId\":\"%s\"}", apiKey, user.getKakaoEmail());
-                
-                // 로그 추가
-                logger.info("Sending POST request to external API with userId: {}", user.getKakaoEmail());
-                logger.info("Request body: {}", requestBody);
-                
-                // 헤더 설정
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                
-                // 요청 엔티티 생성
-                HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-                
-                // POST 요청 전송
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<Map> response = restTemplate.exchange(
-                        "https://finopenapi.ssafy.io/ssafy/api/v1/member/search",
-                        HttpMethod.POST,
-                        entity,
-                        Map.class
-                );
-
-                // 응답 상태 코드 확인
-                if (!response.getStatusCode().is2xxSuccessful()) {
-                    logger.error("Failed to call external API: {}", response.getBody());
-                    throw new RuntimeException("Failed to call external API");
-                }
-
-                // 응답에서 userKey 추출
-                String userKey = (String) response.getBody().get("userKey");
-                logger.info("UserKey retrieved from external API: {}", userKey);
-                // Redis에 userKey 저장
-                userService.storeUserKeyInRedis(user.getUserId(), userKey);
-            } else {
-                // 기존 유저인 경우
-                session.setAttribute("userId", dbUser.getUserId());
-                logger.info("User ID stored in session: {}", dbUser.getUserId());
-
-                // 요청 본문 준비
-                String apiKey = "54cc585638ea49a5b13f7ec7887c7c1b";
-                String requestBody = String.format("{\"apiKey\":\"%s\", \"userId\":\"%s\"}", apiKey, dbUser.getKakaoEmail());
-                
-                // 로그 추가
-                logger.info("Sending POST request to external API with userId: {}", dbUser.getKakaoEmail());
-                logger.info("Request body: {}", requestBody);
-                
-                // 헤더 설정
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                
-                // 요청 엔티티 생성
-                HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-                
-                // POST 요청 전송
-                RestTemplate restTemplate = new RestTemplate();
-                ResponseEntity<Map> response = restTemplate.exchange(
-                        "https://finopenapi.ssafy.io/ssafy/api/v1/member/search",
-                        HttpMethod.POST,
-                        entity,
-                        Map.class
-                );
-
-                // 응답 상태 코드 확인
-                if (!response.getStatusCode().is2xxSuccessful()) {
-                    logger.error("Failed to call external API: {}", response.getBody());
-                    throw new RuntimeException("Failed to call external API");
-                }
-
-                // 응답에서 userKey 추출
-                String userKey = (String) response.getBody().get("userKey");
-                logger.info("UserKey retrieved from external API: {}", userKey);
-                // Redis에 userKey 저장
-                userService.storeUserKeyInRedis(dbUser.getUserId(), userKey);
+            // 응답 상태 코드 확인
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                logger.error("Failed to call external API: {}", response.getBody());
+                throw new RuntimeException("Failed to call external API");
             }
 
-            return new RedirectView("https://j12b209.p.ssafy.io/yoohoo/login/callback");
+            // 응답에서 userKey 추출
+            String userKey = (String) response.getBody().get("userKey");
+            // Redis에 userKey 저장
+            userService.storeUserKeyInRedis(user.getUserId(), userKey);
+            
+            return new RedirectView("/yoohoo/login/callback");
         } catch (Exception e) {
             logger.error("Kakao 로그인 중 오류 발생", e);
-            return new RedirectView("https://j12b209.p.ssafy.io/yoohoo/login/error");
+            return new RedirectView("/yoohoo/login/error");
         }
     }
 
@@ -143,7 +102,7 @@ public class UserController {
             
             if (userId == null) {
                 logger.error("User not logged in");
-                return new RedirectView("https://j12b209.p.ssafy.io/yoohoo/login/error");
+                return new RedirectView("/yoohoo/login/error");
             }
             
             // Redis에서 토큰 가져오기
@@ -151,7 +110,7 @@ public class UserController {
             
             if (accessToken == null) {
                 logger.error("Access token not found for user: {}", userId);
-                return new RedirectView("https://j12b209.p.ssafy.io/yoohoo/login/error");
+                return new RedirectView("/yoohoo/login/error");
             }
             
             // 헤더 설정
@@ -171,7 +130,7 @@ public class UserController {
             // 카카오 연결 해제 성공 확인
             if (!unlinkResponse.getStatusCode().is2xxSuccessful()) {
                 logger.error("Failed to unlink with Kakao: {}", unlinkResponse.getBody());
-                return new RedirectView("https://j12b209.p.ssafy.io/yoohoo/login/error");
+                return new RedirectView("/yoohoo/login/error");
             }
 
             // 토큰 삭제 및 사용자 정보 업데이트
@@ -187,10 +146,10 @@ public class UserController {
             session.invalidate();
             
             // 연결 끊기 성공 시 메인 페이지로 리디렉션
-            return new RedirectView("https://j12b209.p.ssafy.io/");
+            return new RedirectView("/");
         } catch (Exception e) {
             logger.error("Error during unlink", e);
-            return new RedirectView("https://j12b209.p.ssafy.io/yoohoo/login/error");
+            return new RedirectView("/yoohoo/login/error");
         }
     }
 

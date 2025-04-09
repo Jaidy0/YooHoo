@@ -27,14 +27,6 @@ import java.util.HashMap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.web.client.RestClientException;
-import com.yoohoo.backend.dto.UserKeyRequestDto;
-import com.yoohoo.backend.dto.UserKeyResponseDto;
-import com.yoohoo.backend.dto.CreateAccountRequestDto;
-import com.yoohoo.backend.dto.CreateAccountResponseDto;
-import com.yoohoo.backend.dto.DepositRequestDto;
-import java.util.Random;
-import java.time.format.DateTimeFormatter;
 
 @Service
 public class UserService {
@@ -160,136 +152,21 @@ public class UserService {
     }
 
     public User saveUserWithToken(KakaoLoginDto userInfo, String accessToken) {
+        // 카카오 ID로 사용자 조회
         User user = findUserByKakaoId(userInfo.getKakaoId());
-
+        
+        // 이미 존재하는 경우 이메일을 업데이트
         if (user.getKakaoEmail() == null) {
-            user.setKakaoEmail(userInfo.getEmail());
+            user.setKakaoEmail(userInfo.getEmail()); // 카카오 이메일 저장
         }
-
-        // 1. 카카오 이메일을 사용하여 userKey 생성
-        String userKey = createUserKey(user.getKakaoEmail());
         
-        // 2. userKey를 사용하여 은행 계좌 생성
-        String accountNo = createBankAccount(userKey);
+        // 토큰 저장
+        tokenService.saveToken(user.getUserId(), accessToken);
         
-        // 3. 생성된 계좌에 100만원 입금
-        depositToAccount(accountNo, userKey);
-
         // Redis에 사용자 정보 저장
         storeUserInfoInRedis(user);
         
-        return userRepository.save(user);
-    }
-
-    private String createUserKey(String email) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/member/";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        UserKeyRequestDto requestDto = new UserKeyRequestDto();
-        requestDto.setApiKey("54cc585638ea49a5b13f7ec7887c7c1b");
-        requestDto.setUserId(email);
-
-        HttpEntity<UserKeyRequestDto> request = new HttpEntity<>(requestDto, headers);
-        ResponseEntity<UserKeyResponseDto> response;
-
-        try {
-            response = restTemplate.postForEntity(url, request, UserKeyResponseDto.class);
-            return response.getBody().getUserKey();
-        } catch (RestClientException e) {
-            logger.error("Failed to create user key for email {}: {}", email, e.getMessage());
-            throw new RuntimeException("Failed to create user key");
-        }
-    }
-
-    private String createBankAccount(String userKey) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/createDemandDepositAccount";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        CreateAccountRequestDto requestDto = new CreateAccountRequestDto();
-        requestDto.setHeader(new CreateAccountRequestDto.Header());
-
-        // 현재 날짜와 시간 가져오기
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HHmmss");
-
-        // 필드 설정
-        requestDto.getHeader().setTransmissionDate(now.format(dateFormatter));
-        requestDto.getHeader().setTransmissionTime(now.format(timeFormatter));
-        requestDto.getHeader().setInstitutionTransactionUniqueNo(generateUniqueTransactionNo(now)); // 고유 거래 번호 생성
-        requestDto.getHeader().setUserKey(userKey);
-        
-        // 고정된 값 설정
-        requestDto.setAccountTypeUniqueNo("999-1-b9744b3c37a243");
-
-        HttpEntity<CreateAccountRequestDto> request = new HttpEntity<>(requestDto, headers);
-        ResponseEntity<CreateAccountResponseDto> response;
-
-        try {
-            response = restTemplate.postForEntity(url, request, CreateAccountResponseDto.class);
-            
-            // Check the response status code
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                logger.error("Failed to create bank account: {}", response.getBody());
-                throw new RuntimeException("Failed to create bank account: " + response.getStatusCode());
-            }
-
-            // Check if the response body is null
-            CreateAccountResponseDto responseBody = response.getBody();
-            if (responseBody == null || responseBody.getRec() == null) {
-                logger.error("Response body or REC is null: {}", responseBody);
-                throw new RuntimeException("Response body or REC is null");
-            }
-
-            return responseBody.getRec().getAccountNo();
-        } catch (RestClientException e) {
-            logger.error("Failed to create bank account: {}", e.getMessage());
-            throw new RuntimeException("Failed to create bank account", e);
-        }
-    }
-
-    private String generateUniqueTransactionNo(LocalDateTime now) {
-        String transmissionDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String transmissionTime = now.format(DateTimeFormatter.ofPattern("HHmmss"));
-        String uniqueTransactionNo;
-
-        // 랜덤한 6자리 숫자 생성
-        String randomSixDigits = String.format("%06d", new Random().nextInt(1000000));
-        uniqueTransactionNo = transmissionDate + transmissionTime + randomSixDigits;
-
-        return uniqueTransactionNo; // 고유한 거래 번호 반환
-    }
-
-    private void depositToAccount(String accountNo, String userKey) {
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://finopenapi.ssafy.io/ssafy/api/v1/edu/demandDeposit/updateDemandDepositAccountDeposit";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        DepositRequestDto requestDto = new DepositRequestDto();
-        requestDto.setHeader(new DepositRequestDto.Header());
-        requestDto.getHeader().setUserKey(userKey);
-        // Set other header fields (transmissionDate, transmissionTime, institutionTransactionUniqueNo) here
-
-        requestDto.setAccountNo(accountNo);
-        requestDto.setTransactionBalance("1000000"); // 100만원
-        requestDto.setTransactionSummary("입금 100만원");
-
-        HttpEntity<DepositRequestDto> request = new HttpEntity<>(requestDto, headers);
-
-        try {
-            restTemplate.postForEntity(url, request, String.class); // Assuming the response is not needed
-        } catch (RestClientException e) {
-            logger.error("Failed to deposit to account {}: {}", accountNo, e.getMessage());
-            throw new RuntimeException("Failed to deposit to account");
-        }
+        return userRepository.save(user); // 사용자 정보 저장
     }
 
     private void storeUserInfoInRedis(User user) {
