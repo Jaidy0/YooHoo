@@ -91,13 +91,15 @@ export const createUser = async (
   email: string
 ): Promise<CreateUserResponse> => {
   try {
+    console.log('[auth] 사용자 생성 요청:', { email });
     const response = await axios.post<CreateUserResponse>(URLS.MEMBER, {
       apiKey: API_KEY,
       userId: email,
     });
+    console.log('[auth] 사용자 생성 성공:', response.data);
     return response.data;
   } catch (error) {
-    console.error('사용자 생성 실패:', error);
+    console.error('[auth] 사용자 생성 실패:', error);
     throw error;
   }
 };
@@ -106,6 +108,7 @@ export const createAccount = async (
   userKey: string
 ): Promise<ApiResponse<CreateAccountResponseRec>> => {
   try {
+    console.log('[auth] 계좌 생성 요청:', { userKey });
     const { date, time } = getNow();
     const response = await axios.post<ApiResponse<CreateAccountResponseRec>>(
       URLS.ACCOUNT,
@@ -126,12 +129,17 @@ export const createAccount = async (
     );
 
     if (response.data.Header.responseCode !== 'H0000') {
+      console.error(
+        '[auth] 계좌 생성 실패 - 응답 코드:',
+        response.data.Header.responseCode
+      );
       throw new Error(response.data.Header.responseMessage);
     }
 
+    console.log('[auth] 계좌 생성 성공:', response.data);
     return response.data;
   } catch (error) {
-    console.error('계좌 생성 실패:', error);
+    console.error('[auth] 계좌 생성 실패:', error);
     throw error;
   }
 };
@@ -143,6 +151,12 @@ export const depositToAccount = async (
   description: string = '초기 후원 입금'
 ): Promise<ApiResponse<DepositResponseRec>> => {
   try {
+    console.log('[auth] 입금 요청:', {
+      userKey,
+      accountNo,
+      amount,
+      description,
+    });
     const { date, time } = getNow();
     const response = await axios.post<ApiResponse<DepositResponseRec>>(
       URLS.DEPOSIT,
@@ -165,12 +179,17 @@ export const depositToAccount = async (
     );
 
     if (response.data.Header.responseCode !== 'H0000') {
+      console.error(
+        '[auth] 입금 실패 - 응답 코드:',
+        response.data.Header.responseCode
+      );
       throw new Error(response.data.Header.responseMessage);
     }
 
+    console.log('[auth] 입금 성공:', response.data);
     return response.data;
   } catch (error) {
-    console.error('입금 실패:', error);
+    console.error('[auth] 입금 실패:', error);
     throw error;
   }
 };
@@ -191,19 +210,24 @@ export const processUserAccount = async (
   };
 }> => {
   try {
+    console.log('[auth] 계좌 처리 시작:', user);
+
     // 사용자 생성
     const userData = await createUser(user.email);
+    console.log('[auth] 사용자 생성 완료:', userData);
 
     // 계좌 생성
     const accountData = await createAccount(userData.userKey);
+    console.log('[auth] 계좌 생성 완료:', accountData);
 
     // 입금 처리
     const depositData = await depositToAccount(
       userData.userKey,
       accountData.REC.accountNo
     );
+    console.log('[auth] 입금 처리 완료:', depositData);
 
-    return {
+    const result = {
       name: user.name || '후원자',
       email: user.email,
       userKey: userData.userKey,
@@ -215,8 +239,11 @@ export const processUserAccount = async (
         transactionDate: depositData.REC.transactionDate,
       },
     };
+
+    console.log('[auth] 계좌 처리 완료:', result);
+    return result;
   } catch (error) {
-    console.error(`${user.name} (${user.email}) 처리 중 오류 발생:`, error);
+    console.error('[auth] 계좌 처리 실패:', error);
     throw error;
   }
 };
