@@ -374,9 +374,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (pathname === '/admin') {
       setActiveTabIndex(0);
-    } else if (pathname.startsWith('/admin/donations')) {
+    } else if (pathname?.startsWith('/admin/donations')) {
       setActiveTabIndex(1);
-    } else if (pathname.startsWith('/admin/dogs')) {
+    } else if (pathname?.startsWith('/admin/dogs')) {
       setActiveTabIndex(2);
     }
   }, [pathname]);

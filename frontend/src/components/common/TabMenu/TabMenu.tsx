@@ -93,7 +93,7 @@ export default function TabMenu({
     const index = menuItems.findIndex(
       (item) =>
         pathname === item.link ||
-        (item.link && item.link !== '/admin' && pathname.startsWith(item.link))
+        (item.link && item.link !== '/admin' && pathname?.startsWith(item.link))
     );
 
     if (index !== -1) {

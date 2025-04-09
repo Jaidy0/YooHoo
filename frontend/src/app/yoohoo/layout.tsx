@@ -48,7 +48,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const isMainPage = pathname === '/yoohoo';
 
   // 경로에서 페이지 키 추출
-  const pageKey = pathname.split('/').pop() as keyof typeof PAGE_TITLES;
+  const pageKey = pathname?.split('/').pop() as keyof typeof PAGE_TITLES;
   const pageTitle = pageKey ? PAGE_TITLES[pageKey] : PAGE_TITLES.main;
 
   // 제외할 페이지
@@ -59,14 +59,18 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     '/yoohoo/login/choice',
     '/yoohoo/donate/complete',
   ];
-  const shouldHideHeader = hideHeaderForPaths.includes(pathname);
+  const shouldHideHeader = pathname
+    ? hideHeaderForPaths.includes(pathname)
+    : false;
   const hideBottomNavForPaths = [
     '/yoohoo/donate/complete',
     '/yoohoo/login/callback',
     '/yoohoo/login/kakao',
     '/yoohoo/login/choice',
   ];
-  const shouldHideBottomNav = hideBottomNavForPaths.includes(pathname);
+  const shouldHideBottomNav = pathname
+    ? hideBottomNavForPaths.includes(pathname)
+    : false;
 
   return (
     <div className={styles.container}>

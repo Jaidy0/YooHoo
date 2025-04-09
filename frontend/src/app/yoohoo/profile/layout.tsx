@@ -28,11 +28,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       pathname === '/yoohoo/profile/donation-report' // 후원 레포트 페이지도 '후원 내역' 탭으로 처리
     ) {
       setActiveTabIndex(0);
-    } else if (pathname.startsWith('/yoohoo/profile/donate-dogs')) {
+    } else if (pathname?.startsWith('/yoohoo/profile/donate-dogs')) {
       setActiveTabIndex(1);
-    } else if (pathname.startsWith('/yoohoo/profile/certificates')) {
+    } else if (pathname?.startsWith('/yoohoo/profile/certificates')) {
       setActiveTabIndex(2);
-    } else if (pathname.startsWith('/yoohoo/profile/receipts')) {
+    } else if (pathname?.startsWith('/yoohoo/profile/receipts')) {
       setActiveTabIndex(3);
     }
   }, [pathname]);
