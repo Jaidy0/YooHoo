@@ -94,18 +94,20 @@ export default function DonationReportPage() {
 
   return (
     <div className={styles.reportPageContainer}>
-      {/* 목록으로 돌아가기 버튼 */}
-      <div className={styles.backButtonContainer}>
-        <RoundButton onClick={handleBackToList} className={styles.backButton}>
-          <IconBox name='arrow' size={16} />
-          프로필로 돌아가기
-        </RoundButton>
-      </div>
       {/* 첫 번째 섹션 - 후원 유형별 비율 */}
       <SectionBox
         title='마이 후원 레포트'
         subtitle='후원 유형별 비율'
         className={styles.reportSection}
+        titleRight={
+          <RoundButton
+            onClick={handleBackToList}
+            className={styles.inlineBackButton}
+          >
+            <IconBox name='arrow' size={16} />
+            프로필로 돌아가기
+          </RoundButton>
+        }
       >
         <DonutChart
           data={reportData.donationType}

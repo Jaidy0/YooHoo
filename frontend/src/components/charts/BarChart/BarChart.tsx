@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import Chart from 'chart.js/auto';
 import styles from './BarChart.module.scss';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 interface BarChartProps {
   data: {
@@ -122,8 +123,12 @@ export default function BarChart({
               size: 12,
             },
           },
+          datalabels: {
+            display: false,
+          },
         },
       },
+      plugins: [ChartDataLabels],
     });
 
     return () => {

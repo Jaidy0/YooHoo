@@ -68,7 +68,11 @@ export default function Dashboard({ className = '' }: DashboardProps) {
   };
 
   return (
-    <div className={`${styles.dashboard} ${className}`}>
+    <div
+    className={`${styles.dashboard} ${
+      user?.isAdmin ? styles.adminDashboard : styles.userDashboard
+    } ${className}`}
+  >
       {/* 사용자 정보 헤더 */}
       <div className={styles.userHeader}>
         <h2 className={styles.userText}>
@@ -85,7 +89,6 @@ export default function Dashboard({ className = '' }: DashboardProps) {
           >
             닉네임 변경
           </Button>
-          {/* <IconBox name='gear' size={20} /> */}
           <LogoutBtn />
         </div>
       </div>
@@ -102,27 +105,16 @@ export default function Dashboard({ className = '' }: DashboardProps) {
             단체 관리
           </MoveButton>
         )}
-        <div className={styles.reportButtonWrapper}>
-          {/* <MoveButton
-            leftIcon={<IconBox name='cart' size={20} />}
-            rightIcon={<IconBox name='chevron' size={20} />}
-            className={styles.reportButton}
-            variant='secondary'
-            onClick={handleMoveToReportPage}
-          >
-            마이 후원 레포트
-          </MoveButton> */}
 
-          {/* 강아지 이미지를 버튼 옆에 배치 */}
-          <div className={styles.dogImageContainer}>
-            <Image
-              src='/images/bandi-profile.png'
-              alt='강아지 이미지'
-              width={140}
-              height={140}
-              className={styles.dogImage}
-            />
-          </div>
+        {/* 강아지 이미지를 버튼 옆에 배치 */}
+        <div className={styles.dogImageContainer}>
+          <Image
+            src='/images/bandi-profile.png'
+            alt='강아지 이미지'
+            width={140}
+            height={140}
+            className={styles.dogImage}
+          />
         </div>
       </div>
 
