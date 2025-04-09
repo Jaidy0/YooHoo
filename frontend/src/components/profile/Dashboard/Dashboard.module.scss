@@ -1,5 +1,5 @@
 .dashboard {
-  padding: 20px;
+  padding: 10px;
   margin: 10px;
   background-color: $yh-beige;
   border-radius: 16px;
@@ -7,10 +7,77 @@
   overflow: hidden;
 }
 
+// 관리자용 스타일 (기존 첫 번째 스타일)
+.adminDashboard {
+  .buttonGroup {
+    min-height: 55px;
+  }
+
+  .dogImageContainer {
+    right: 20%;
+    top: -70%;
+  }
+
+  @media (max-width: 768px) {
+    .dogImageContainer {
+      right: 20%;
+      top: -65%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .dogImageContainer {
+      right: 20%;
+      top: -35%;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .dogImageContainer {
+      right: 20%;
+      top: 5%;
+    }
+  }
+}
+
+// 일반 사용자용 스타일 (기존 두 번째 스타일)
+.userDashboard {
+  .buttonGroup {
+    min-height: 30px;
+  }
+
+  .dogImageContainer {
+    right: 25%;
+    top: -210%;
+  }
+
+  @media (max-width: 768px) {
+    .dogImageContainer {
+      right: 25%;
+      top: -200%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .dogImageContainer {
+      right: 23%;
+      top: -150%;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .dogImageContainer {
+      right: 15%;
+      top: -70%;
+    }
+  }
+}
+
+
 .userHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 }
 
 .userText {
@@ -47,14 +114,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   position: relative;
+  min-height: 30px;
 }
 
 .adminButton {
   width: auto;
   align-self: flex-start;
-  margin-top: 10px; // 버튼 간격 조정
 }
 
 .reportButtonWrapper {
@@ -70,13 +137,13 @@
   gap: 0.75rem;
   z-index: 2;
   position: relative;
-  margin-top: -30px; // 그리드를 위로 올리기
+  margin-top: -20px;
 }
 
 .dogImageContainer {
   position: absolute;
   right: 20%;
-  top: -160%;
+  top: -190%;
   z-index: 1;
 }
 
@@ -88,8 +155,8 @@
 // 반응형 스타일
 @media (max-width: 768px) {
   .dogImageContainer {
-    right: 24%;
-    top: -130%;
+    right: 25%;
+    top: -200%;
   }
 
   .dogImage {
@@ -104,12 +171,12 @@
 
 @media (max-width: 480px) {
   .dogImageContainer {
-    right: 15%;
-    top: -120%;
+    right: 23%;
+    top: -150%;
   }
 
   .dogImage {
-    width: 90px;
+    width: 80px;
     height: auto;
   }
 
@@ -120,12 +187,12 @@
 
 @media (max-width: 360px) {
   .dogImageContainer {
-    right: 5%;
-    top: -110%;
+    right: 15%;
+    top: -70%;
   }
 
   .dogImage {
-    width: 90px;
+    width: 60px;
     height: auto;
   }
 
