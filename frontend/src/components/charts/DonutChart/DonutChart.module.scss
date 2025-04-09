@@ -16,6 +16,24 @@
   gap: 0.3rem;
   flex-wrap: wrap;
   width: 100%;
+  position: relative; // 기준 위치 설정
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    bottom: 10px;
+    left: 50%; // 또는 정확한 경계값 px
+    transform: translateX(-50%);
+    width: 1px;
+    background-color: #ddd;
+  }
+}
+
+.descriptionWithLegend {
+  flex: 1;
+  max-width: 220px;
+  padding: 10px;
 }
 
 .chartWrapper {
