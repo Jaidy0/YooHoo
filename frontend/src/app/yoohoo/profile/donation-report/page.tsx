@@ -29,7 +29,7 @@ export default function DonationReportPage() {
       labels: [],
       values: [],
     },
-    username: user?.nickname || '회원',
+    username: user?.nickname || '후원자',
   });
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function DonationReportPage() {
           // 데이터 처리 후 reportData 상태 업데이트
           const processedData = processDataForReport(
             donations,
-            user?.nickname || '회원'
+            user?.nickname || '후원자'
           );
           setReportData(processedData);
         } else {
