@@ -204,7 +204,7 @@ export const processUserAccount = async (
     );
 
     return {
-      name: user.name,
+      name: user.name || '후원자',
       email: user.email,
       userKey: userData.userKey,
       accountNo: accountData.REC.accountNo,
