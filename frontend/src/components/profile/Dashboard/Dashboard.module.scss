@@ -71,33 +71,33 @@
 
 .dogImageContainer {
   position: absolute;
-  right:15%;
-  top: -160%;
+  right:10%;
+  top: -80%;
   z-index: 1;
 }
 
 .dogImage {
-  width: 120px;
+  width: 90px;
   height: auto;
 }
 
 // 반응형 스타일
 @media (max-width: 768px) {
   .dogImageContainer {
-    right:20%;
-    top: -115%;
+    right: 7%;
+    top: -67%;
   }
   
   .dogImage {
-    width: 100px;
+    width: 80px;
     height: auto;
   }
 }
 
 @media (max-width: 480px) {
   .dogImageContainer {
-    right: 16%;
-    top: -90%;
+    right: 7%;
+    top: -80%;
   }
   
   .dogImage {
@@ -108,8 +108,8 @@
 
 @media (max-width: 360px) {
   .dogImageContainer {
-    right: 10%;
-    top: -90%;
+    right: 7%;
+    top: -80%;
   }
 
   .dogImage {
