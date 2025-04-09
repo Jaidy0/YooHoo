@@ -163,17 +163,59 @@ pipeline {
                     )
                     withCredentials([sshUserPrivateKey(credentialsId: "${EC2_PUBLIC_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
 						sh """
-                            if ! dpkg -s gettext > /dev/null 2>&1; then
-                                sudo apt-get update && sudo apt-get install -y gettext
-                            fi
-                            set -a
-                            . \${WORKSPACE}/.env
-                            set +a
+							# gettext 설치 확인 및 설치
+							if ! dpkg -s gettext > /dev/null 2>&1; then
+								sudo apt-get update && sudo apt-get install -y gettext
+							fi
+
+							# .env 파일 로드
+							set -a
+							. \${WORKSPACE}/.env
+							set +a
+
+							# Nginx 설정 파일 생성
+							echo "Generating Nginx config..."
                             envsubst '\$EC2_BACKEND_HOST \$EC2_FRONTEND_HOST \$STABLE_BACKEND_PORT \$CANARY_BACKEND_PORT \$STABLE_FRONTEND_PORT \$CANARY_FRONTEND_PORT \$STABLE_WEIGHT \$CANARY_WEIGHT' < \${WORKSPACE}/nginx/nginx.conf.template > ./nginx/nginx.conf
+
+							# Docker Compose 실행 또는 Nginx 리로드
                             if ! docker ps --filter "name=nginx_lb" --filter "status=running" | grep -q "nginx_lb"; then
                                 echo "nginx_lb 컨테이너가 실행 중이지 않습니다. 시작합니다."
+
+								# Prometheus 설정 파일 생성
+								echo "Generating Prometheus config..."
                                 envsubst < \${WORKSPACE}/prometheus.template.yml > ./prometheus.yml
-                                envsubst < \${WORKSPACE}/redis/redis.conf.template > ./redis/redis.conf
+
+								# Redis 설정 파일 생성
+								echo "Generating Redis config..."
+								envsubst < \${WORKSPACE}/redis/redis.conf.template > ./redis/redis.conf
+
+								# Redis TLS 인증서 준비 단계
+								echo "Preparing Redis TLS certificates (first run)..."
+
+								# 1. Redis용 인증서 디렉토리 생성 (/opt/redis-certs)
+								echo "Creating directory /opt/redis-certs..."
+								sudo mkdir -p /opt/redis-certs
+								sudo chmod 755 /opt/redis-certs
+
+								# 2. Let's Encrypt 인증서 복사 (redis.crt, redis.key 이름으로)
+								echo "Copying Let's Encrypt certificates..."
+								sudo cp /etc/letsencrypt/live/j12b209.p.ssafy.io/fullchain.pem /opt/redis-certs/redis.crt || echo "WARN: Failed to copy fullchain.pem"
+								sudo cp /etc/letsencrypt/live/j12b209.p.ssafy.io/privkey.pem /opt/redis-certs/redis.key || echo "WARN: Failed to copy privkey.pem"
+
+								# 3. 복사된 파일 권한 조정 (redis 컨테이너가 읽을 수 있도록)
+								echo "Setting permissions for copied certificates..."
+								# 파일이 성공적으로 복사되었는지 확인 후 권한 변경
+								if [ -f /opt/redis-certs/redis.crt ]; then sudo chmod 644 /opt/redis-certs/redis.crt; fi
+								if [ -f /opt/redis-certs/redis.key ]; then
+									sudo chmod 640 /opt/redis-certs/redis.key
+									# Redis 컨테이너의 그룹 ID(보통 redis=999)가 읽도록 그룹 변경 시도
+									echo "Attempting to set group ownership for redis.key..."
+									sudo chgrp redis /opt/redis-certs/redis.key || sudo chgrp 999 /opt/redis-certs/redis.key || echo "WARN: Group 'redis' or GID '999' not found, relying on 640 permissions."
+								fi
+								echo "Redis TLS certificate preparation finished."
+
+								# 전체 서비스 시작
+								echo "Starting all services..."
                                 docker compose -f docker-compose.infra.yml up -d
                             else
                                 echo "nginx_lb 컨테이너가 실행 중입니다. nginx 리로드를 수행합니다."
@@ -184,7 +226,7 @@ pipeline {
                 }
             }
         }
-        stage('Monitor Canary with Prometheus') {
+        /*stage('Monitor Canary with Prometheus') {
 			agent { label 'public-dev' }
             steps {
 				script {
@@ -352,7 +394,7 @@ pipeline {
                     }
                 }
             }
-        }
+        }*/
         stage('Promote to Stable') {
 			parallel {
 				stage('Backend Promotion') {
