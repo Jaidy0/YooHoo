@@ -219,8 +219,18 @@ public class WithdrawalService {
             String startDateStr = currentStartOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
             String endDateStr = currentEndOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     
-            int weeklySum = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, startDateStr, endDateStr)
-                    .stream()
+            // 쿼리 실행
+            List<Withdrawal> withdrawals = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, startDateStr, endDateStr);
+    
+            // 데이터가 없을 경우, startDate를 다음 날로 조정하여 다시 조회
+            if (withdrawals.isEmpty() && i == 0) {
+                // 이번 주의 시작일을 다음 날로 조정
+                startDateStr = currentStartOfWeek.plusDays(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                withdrawals = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, startDateStr, endDateStr);
+            }
+    
+            // 데이터가 여전히 없으면 0으로 설정
+            int weeklySum = withdrawals.stream()
                     .mapToInt(withdrawal -> Integer.parseInt(withdrawal.getTransactionBalance()))
                     .sum();
             

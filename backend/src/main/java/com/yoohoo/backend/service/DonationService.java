@@ -158,10 +158,22 @@ public class DonationService {
         // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
             LocalDate endOfWeek = (i == 0) ? today : startOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
-            int weeklySum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, startOfWeek, endOfWeek)
-                    .stream()
+
+            // 쿼리 실행
+            List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, startOfWeek, endOfWeek);
+            
+            // 데이터가 없을 경우, startOfWeek를 다음 날로 조정하여 다시 조회
+            if (donations.isEmpty() && i == 0) {
+                // 이번 주의 시작일을 다음 날로 조정
+                startOfWeek = startOfWeek.plusDays(1);
+                donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, startOfWeek, endOfWeek);
+            }
+
+            // 주간 합계 계산
+            int weeklySum = donations.stream()
                     .mapToInt(Donation::getDonationAmount)
                     .sum();
+            
             weeklySums.add(weeklySum);
             startOfWeek = startOfWeek.minusWeeks(1);
         }

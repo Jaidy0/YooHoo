@@ -18,7 +18,15 @@ public class DogListDTO {
     private Integer age;
     private Integer gender;
     private Optional<String> imageUrl = Optional.empty();
+    private Long shelterId;
 
+    public Long getShelterId() {
+        return shelterId;
+    }
+
+    public void setShelterId(Long shelterId) {
+        this.shelterId = shelterId;
+    }
 
     public static DogListDTO fromEntity(Dog dog, Optional<String> imageUrl) {
         DogListDTO dto = new DogListDTO();
@@ -28,6 +36,7 @@ public class DogListDTO {
         dto.setAge(dog.getAge());
         dto.setGender(dog.getGender());
         dto.setImageUrl(imageUrl);
+        dto.setShelterId(dog.getShelter().getShelterId());
         return dto;
     }
 
