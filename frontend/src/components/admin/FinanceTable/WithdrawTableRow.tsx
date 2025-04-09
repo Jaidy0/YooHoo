@@ -107,6 +107,7 @@ export default function WithdrawTableRow({
 
   // category가 'Unknown'인 경우 '기타'로 표시
   const displayCategory = category === 'Unknown' ? '기타' : category;
+  const displayContent = category === 'Unknown' ? ' 기타 지출' : content;
 
   return (
     <div className={styles.all}>
@@ -133,7 +134,7 @@ export default function WithdrawTableRow({
           </div>
           <div className={styles.category}>{displayCategory}</div>
           <div className={styles.amount}>{formatAmount(amount)}</div>
-          <div className={styles.content}>{content}</div>
+          <div className={styles.content}>{displayContent}</div>
           <div className={styles.date}>{date}</div>
           <div className={styles.evidence}>
             <RoundButton variant='primary' onClick={openEvidenceModal}>
