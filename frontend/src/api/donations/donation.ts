@@ -69,7 +69,7 @@ export const fetchDonationWeeklySums = async (
       shelterId.toString(), // 숫자를 문자열로 변환
       {
         headers: {
-          'Content-Type': 'text/plain', // 또는 서버가 기대하는 다른 타입
+          'Content-Type': 'application/json',
         },
       }
     );
