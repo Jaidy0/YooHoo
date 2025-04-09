@@ -3,22 +3,31 @@
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/buttons/Button/Button';
 import { useProcessUserAccount } from '@/hooks/userAccount/useProcessUserAccount';
+import { useAuthStore } from '@/store/authStore';
 
 export default function LoginError() {
   const router = useRouter();
   const { processAccount, isLoading, error } = useProcessUserAccount();
+  const user = useAuthStore((state) => state.user);
 
   const handleClick = async () => {
     try {
-      // 여기서 사용자 정보를 직접 전달
+      if (!user?.kakaoEmail) {
+        throw new Error('사용자 이메일을 찾을 수 없습니다.');
+      }
+
+      // authStore에서 가져온 kakaoEmail 사용
       await processAccount({
-        email: 'test@example.com', // 실제 사용자 이메일
-        name: 'Test User', // 실제 사용자 이름
+        email: user.kakaoEmail,
+        name: user.nickname || '후원자',
       });
+
       // 성공 시 리다이렉트
-      router.push('/');
+      alert('계좌 생성 성공 ! 이제 즐겁고 투명하게 YooHoo~🐶');
+      router.push('/yoohoo');
     } catch (err) {
       console.error('계좌 생성 실패:', err);
+      alert('계좌 생성 실패 ! 다시 시도해주세요.');
     }
   };
 
