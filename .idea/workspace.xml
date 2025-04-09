@@ -7,9 +7,6 @@
     <list default="true" id="ec70ab62-bbb7-422b-a307-791072c1d4d3" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jenkinsfile" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jenkinsfile.dev" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile.dev" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Jenkinsfile.release" beforeDir="false" afterPath="$PROJECT_DIR$/Jenkinsfile.release" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/redis/redis.conf.template" beforeDir="false" afterPath="$PROJECT_DIR$/redis/redis.conf.template" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,6 +38,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/workspace/study/jpa-using/jpashop&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
@@ -66,8 +64,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.59" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.59" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
       </set>
     </attachedChunks>
   </component>
@@ -84,6 +82,8 @@
       <workItem from="1743147759989" duration="5386000" />
       <workItem from="1743468477036" duration="6840000" />
       <workItem from="1743496820001" duration="46640000" />
+      <workItem from="1744211059128" duration="243000" />
+      <workItem from="1744211356047" duration="69000" />
     </task>
     <servers />
   </component>
