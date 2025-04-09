@@ -22,14 +22,14 @@ const nextConfig: NextConfig = {
 
     return config;
   },
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: 'https://finopenapi.ssafy.io/ssafy/api/v1/:path*', // 슬래시 추가
-      },
-    ];
-  },
+  // async rewrites() {
+  //   return [
+  //     {
+  //       source: '/api/:path*',
+  //       destination: 'https://finopenapi.ssafy.io/ssafy/api/v1/:path*', // 슬래시 추가
+  //     },
+  //   ];
+  // },
 };
 
 export default nextConfig;
