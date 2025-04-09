@@ -6,21 +6,18 @@
 .reportSection {
   border-radius: 12px;
   padding: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-.backButtonContainer {
+.inlineBackButton {
+  font-size: 0.875rem;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  color: $text-333;
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 1rem;
-  margin-left: 1rem;
-
-  .backButton {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: $text-333;
-    font-weight: 500;
-  }
+  align-items: center;
+  gap: 4px;
+  margin-right: 0.5rem;
 }
 
 .loading {

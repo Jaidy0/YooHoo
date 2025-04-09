@@ -92,10 +92,19 @@ export const createUser = async (
 ): Promise<CreateUserResponse> => {
   try {
     console.log('[auth] 사용자 생성 요청:', { email });
-    const response = await axios.post<CreateUserResponse>(URLS.MEMBER, {
-      apiKey: API_KEY,
-      userId: email,
-    });
+    const response = await axios.post<CreateUserResponse>(
+      URLS.MEMBER,
+      {
+        apiKey: API_KEY,
+        userId: email,
+      },
+      {
+        withCredentials: true, // 쿠키를 포함한 인증 정보 전송
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
     console.log('[auth] 사용자 생성 성공:', response.data);
     return response.data;
   } catch (error) {

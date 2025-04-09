@@ -30,8 +30,12 @@
     .menuItem {
       // display: inline-block;
       font-size: 0.9rem;
-      padding: $spacing-lg 0;
+      padding: $spacing-lg $spacing-sm;
       height: 32px;
+    }
+
+    .menuList {
+      padding: 0px 20px; // sm 사이즈일 때 패딩 조정
     }
   }
 
@@ -41,6 +45,10 @@
       // padding: $spacing-sm $spacing-md;
       height: 40px;
     }
+
+    .menuList {
+      padding: 0px 40px; // md 사이즈일 때 기본 패딩
+    }
   }
 
   &--lg {
@@ -49,6 +57,10 @@
       padding: $spacing-md $spacing-lg;
       height: 48px;
     }
+
+    .menuList {
+      padding: 0; // lg 사이즈일 때 패딩 0으로 설정
+    }
   }
 }
 
@@ -56,12 +68,13 @@
   display: flex;
   list-style: none;
   margin: 0;
-  padding: 0px $spacing-lg;
+  // 여기서 패딩 기본값을 제거하고 각 사이즈별 스타일에서 정의
+  // padding: 0px 40px;
   // border-bottom: 1px solid $color-border;
 }
 
 .menuItem {
-  flex: 1;
+  // flex: 1;
   position: relative;
   margin: 0;
   text-align: center;
@@ -71,6 +84,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: $spacing-sm;
 
   &:hover {
     background-color: rgba($text-121212, 0.05);

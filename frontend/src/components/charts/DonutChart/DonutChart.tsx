@@ -1,8 +1,12 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import Chart from 'chart.js/auto';
+import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './DonutChart.module.scss';
+
+// Chart.js 필수 요소 등록
+Chart.register(...registerables, ChartDataLabels);
 
 interface DonutChartProps {
   data: {
@@ -23,12 +27,11 @@ export default function DonutChart({
   description,
 }: DonutChartProps) {
   const chartRef = useRef<HTMLCanvasElement>(null);
-  const chartInstance = useRef<Chart | null>(null);
+  const chartInstance = useRef<Chart<'doughnut'> | null>(null);
 
   useEffect(() => {
     if (!chartRef.current || isLoading || !data.values.length) return;
 
-    // 이전 차트 인스턴스 제거
     if (chartInstance.current) {
       chartInstance.current.destroy();
     }
@@ -36,7 +39,6 @@ export default function DonutChart({
     const ctx = chartRef.current.getContext('2d');
     if (!ctx) return;
 
-    // 차트 색상
     const chartColors = [
       getComputedStyle(document.documentElement)
         .getPropertyValue('--chart-orange')
@@ -58,13 +60,11 @@ export default function DonutChart({
         .trim(),
     ];
 
-    // 데이터 개수에 맞게 색상 배열 생성
     const colors = data.labels.map(
       (_, index) => chartColors[index % chartColors.length]
     );
 
-    // 차트 생성
-    chartInstance.current = new Chart(ctx, {
+    const config: ChartConfiguration<'doughnut'> = {
       type: 'doughnut',
       data: {
         labels: data.labels,
@@ -105,12 +105,16 @@ export default function DonutChart({
             },
             displayColors: true,
             caretSize: 6,
-            // 툴팁이 차트 컨테이너 밖으로 나가지 않도록 설정
-            // charts.js에서는 차트영역 밖으로 나가지 않도록 자동 조정됨
+          },
+          datalabels: {
+            display: false,
           },
         },
       },
-    });
+      plugins: [ChartDataLabels],
+    };
+
+    chartInstance.current = new Chart(ctx, config);
 
     return () => {
       if (chartInstance.current) {
@@ -119,7 +123,6 @@ export default function DonutChart({
     };
   }, [data, isLoading]);
 
-  // 로딩 중인 경우
   if (isLoading) {
     return (
       <div
@@ -130,7 +133,6 @@ export default function DonutChart({
     );
   }
 
-  // 데이터가 없는 경우
   if (!data.values.length) {
     return (
       <div
@@ -141,10 +143,7 @@ export default function DonutChart({
     );
   }
 
-  // 총 값 계산
   const total = data.values.reduce((sum, val) => sum + val, 0);
-
-  // 차트 색상
   const chartColorNames = [
     'orange',
     'yellow',
