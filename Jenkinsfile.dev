@@ -170,10 +170,7 @@ pipeline {
                             # 파일이 성공적으로 복사되었는지 확인 후 권한 변경
                             if [ -f /opt/redis-certs/redis.crt ]; then sudo chmod 644 /opt/redis-certs/redis.crt; fi
                             if [ -f /opt/redis-certs/redis.key ]; then
-                                sudo chmod 640 /opt/redis-certs/redis.key
-                                # Redis 컨테이너의 그룹 ID(보통 redis=999)가 읽도록 그룹 변경 시도
-                                echo "Attempting to set group ownership for redis.key..."
-                                sudo chgrp redis /opt/redis-certs/redis.key || sudo chgrp 999 /opt/redis-certs/redis.key || echo "WARN: Group 'redis' or GID '999' not found, relying on 640 permissions."
+                                sudo chmod 644 /opt/redis-certs/redis.key
                             fi
                             echo "Redis TLS certificate preparation finished."
                             # --- Redis TLS 인증서 준비 단계 끝 ---
