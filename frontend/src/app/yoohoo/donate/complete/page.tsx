@@ -7,6 +7,11 @@ import Button from '@/components/common/buttons/Button/Button';
 export default function DonationCompletePage() {
   return (
     <div className={styles.completePage}>
+      {/* 전체 화면에 퍼지는 빵빠레 애니메이션 배경 */}
+      <div className={styles.confettiBackground}>
+        <DonateComplete />
+      </div>
+
       {/* 왼쪽 상단 로고 */}
       <Link href='/yoohoo' className={styles.logoWrapper}>
         <Image
@@ -32,11 +37,20 @@ export default function DonationCompletePage() {
         </div>
         <p className={styles.subtitle}>따뜻한 마음이 전달되었어요!</p>
 
-        {/* Lottie 애니메이션과 배경 */}
+        {/* 원형 배경과 강아지 이미지 구조 */}
         <div className={styles.imageWrapper}>
-          <div className={styles.imageBackground}>
-            <DonateComplete />
-            <div className={styles.shadow}></div>
+          {/* 1. 원형 배경 (뒤) */}
+          <div className={styles.imageBackground}></div>
+
+          {/* 2. 강아지 이미지 (앞) */}
+          <div className={styles.dogImageContainer}>
+            <Image
+              src='/images/dog_complete.png'
+              alt='강아지'
+              width={200}
+              height={200}
+              className={styles.dogImage}
+            />
           </div>
         </div>
 

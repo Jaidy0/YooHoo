@@ -128,8 +128,8 @@ export default function DonationsPage() {
             <DonationTracker
               variant='total'
               amount={total || 0}
-              compareDeposit={compareDonationLastWeek || 0}
-              compareWithdraw={compareWitrawLastWeek || 0}
+              compareDeposit={compareWitrawLastWeek || 0}
+              compareWithdraw={compareDonationLastWeek || 0}
             />
           </div>
 

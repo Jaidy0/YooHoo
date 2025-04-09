@@ -5,9 +5,8 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 export default function DonateComplete() {
   return (
     <DotLottieReact
-      src='https://lottie.host/c9d88c3f-8d14-482b-a762-9a5a2afd11d8/fLHnsO7h01.lottie'
+      src='https://lottie.host/33dc7532-af8c-4a97-a0e4-5626d7f5ed20/9T8NiTm0OT.lottie'
       autoplay
-      loop
     />
   );
 }

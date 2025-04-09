@@ -1,13 +1,12 @@
 import { create } from 'zustand';
 import { ShelterDetail } from '@/types/shelter';
 import { getShelterDetail } from '@/api/shelter/shelter';
-import { useAuthStore } from './authStore';
 
 interface ShelterState {
   shelter: ShelterDetail | null;
   isLoading: boolean;
   error: string | null;
-  fetchShelterData: () => Promise<{
+  fetchShelterData: (shelterId: number) => Promise<{
     isShelterExist: boolean;
   }>;
   clearShelterData: () => void;
@@ -19,14 +18,11 @@ export const useShelterStore = create<ShelterState>((set) => ({
   isLoading: false,
   error: null,
 
-  // 쉘터 데이터 가져오기
-  fetchShelterData: async () => {
+  // shelterId를 매개변수로 받도록 수정
+  fetchShelterData: async (shelterId: number) => {
     try {
-      // 현재 로그인된 사용자 정보에서 shelterId 가져오기
-      const { user } = useAuthStore.getState();
-
       // shelterId가 없으면 쉘터가 없는 것으로 처리
-      if (!user?.shelterId) {
+      if (!shelterId) {
         set({
           shelter: null,
           isLoading: false,
@@ -38,7 +34,7 @@ export const useShelterStore = create<ShelterState>((set) => ({
       set({ isLoading: true, error: null });
 
       // shelterId로 쉘터 정보 가져오기
-      const shelterData = await getShelterDetail(user.shelterId);
+      const shelterData = await getShelterDetail(shelterId);
 
       if (!shelterData) {
         set({
@@ -55,6 +51,7 @@ export const useShelterStore = create<ShelterState>((set) => ({
         error: null,
       });
 
+      console.log('쉘터 데이터 로드 성공:', shelterData);
       return { isShelterExist: true };
     } catch (error) {
       console.error('쉘터 정보 로드 실패:', error);
@@ -76,12 +73,3 @@ export const useShelterStore = create<ShelterState>((set) => ({
     });
   },
 }));
-
-// authStore와 shelterStore를 연결하는 이벤트 구독
-// 로그아웃 시 쉘터 데이터 초기화
-useAuthStore.subscribe((state) => {
-  // 인증 상태가 false로 변경되면 쉘터 데이터 초기화
-  if (!state.isAuthenticated) {
-    useShelterStore.getState().clearShelterData();
-  }
-});
