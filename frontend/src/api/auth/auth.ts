@@ -99,7 +99,7 @@ export const createUser = async (
         userId: email,
       },
       {
-        withCredentials: true, // 쿠키를 포함한 인증 정보 전송
+        // withCredentials: true, // 쿠키를 포함한 인증 정보 전송
         headers: {
           'Content-Type': 'application/json',
         },
