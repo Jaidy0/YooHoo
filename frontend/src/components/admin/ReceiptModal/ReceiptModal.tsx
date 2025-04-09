@@ -32,8 +32,8 @@ export default function ReceiptModal({
         const url = await getReceiptFileUrl(withdrawId);
         setReceiptUrl(url);
       } catch (err) {
-        console.error('영수증 이미지 URL 조회 실패:', err);
-        setError('영수증 이미지를 불러올 수 없습니다.');
+        console.error('활동내용 이미지 URL 조회 실패:', err);
+        setError('활동내용 이미지를 불러올 수 없습니다.');
       } finally {
         setIsLoading(false);
       }
@@ -48,13 +48,13 @@ export default function ReceiptModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title='영수증 확인'
+      title='활동내용 확인'
       className={styles.modal}
     >
       <div className={styles.container}>
         {isLoading ? (
           <div className={styles.loadingContainer}>
-            <p>영수증 이미지를 불러오는 중...</p>
+            <p>활동내용 이미지를 불러오는 중...</p>
           </div>
         ) : error ? (
           <div className={styles.errorContainer}>
@@ -64,7 +64,7 @@ export default function ReceiptModal({
           <div className={styles.imageContainer}>
             <Image
               src={receiptUrl}
-              alt='영수증'
+              alt='활동내용'
               fill
               className={styles.image}
               sizes='(max-width: 768px) 100vw, 500px'

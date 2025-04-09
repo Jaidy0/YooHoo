@@ -13,6 +13,7 @@ interface DogSelectModalProps {
   title: string;
   initialDogId?: string;
   withDrawId: number;
+  onSuccess?: (dogId: number, dogName: string) => void; // 성공 콜백 추가
 }
 
 export default function DogSelectModal({
@@ -21,6 +22,7 @@ export default function DogSelectModal({
   title,
   initialDogId = '',
   withDrawId,
+  onSuccess,
 }: DogSelectModalProps) {
   const [selectedDogId, setSelectedDogId] = useState<string>(initialDogId);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
@@ -73,6 +75,12 @@ export default function DogSelectModal({
         parseInt(selectedDogId, 10)
       );
       console.log('강아지 할당 성공:', dogInfo);
+
+      // 성공 시 콜백 호출 (있는 경우)
+      if (onSuccess) {
+        onSuccess(parseInt(selectedDogId, 10), selectedDogName);
+      }
+
       onClose();
     } catch (err) {
       console.error('강아지 할당 중 오류 발생:', err);

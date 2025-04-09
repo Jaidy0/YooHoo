@@ -344,7 +344,9 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
             <ReliabilityChart
               reliability={shelter?.reliability || 0}
-              reliabilityPercentage={shelter?.reliabilityPercentage || 0}
+              dogScore={shelter?.dogScore || 0}
+              foundationScore={shelter?.foundationScore || 0}
+              fileScore={shelter?.fileScore || 0}
             />
             <DonationUsageChart
               categories={categoryPercentages}

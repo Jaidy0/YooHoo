@@ -34,8 +34,9 @@
   flex: 1;
   position: relative;
   width: 100%;
-  /* 기존 높이를 충분히 늘려줍니다 */
   height: 400px;
-  /* 넘치는 내용을 보이게 합니다 */
   overflow: visible;
+
+  // 선 그래프를 위한 추가 스타일
+  margin: 0 $spacing-md;
 }
