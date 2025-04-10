@@ -126,7 +126,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
 
       const formattedItem = {
         withdrawalId: item.withdrawalId || 0,
-        type: `지정(${item.dogName})`,
+        type: `지정(${item.name})`,
         category: item.category || '-',
         content: item.content || '-',
         amount: item.amount || Number(item.transactionBalance) || 0,
