@@ -36,16 +36,18 @@ export default function DonationReportPage() {
     username: user?.nickname || '후원자',
   });
 
+  const handleBackToList = () => {
+    router.push('/yoohoo/profile');
+  };
+
   useEffect(() => {
     const fetchDonations = async () => {
       try {
         setIsLoading(true);
         const donations = await getUserDonations();
 
-        // 데이터가 있는지 확인
         if (donations && donations.length > 0) {
           setHasData(true);
-          // 데이터 처리 후 reportData 상태 업데이트
           const processedData = processDataForReport(
             donations,
             user?.nickname || '후원자'
@@ -65,100 +67,100 @@ export default function DonationReportPage() {
     fetchDonations();
   }, [user]);
 
-  // 목록으로 돌아가기 (후원 내역 페이지로 이동)
-  const handleBackToList = () => {
-    router.push('/yoohoo/profile');
-  };
-
-  if (isLoading) {
-    return <div className={styles.loading}>데이터를 불러오는 중입니다...</div>;
-  }
-
-  if (!hasData) {
-    return (
-      <div className={styles.noDataContainer}>
-        {/* 목록으로 돌아가기 버튼 */}
-        <div className={styles.backButtonContainer}>
-          <RoundButton onClick={handleBackToList} className={styles.backButton}>
-            <IconBox name='arrow' size={16} />
-            프로필로 돌아가기
-          </RoundButton>
-        </div>
-        <div className={styles.noDataMessage}>
-          <p>후원 내역이 없습니다.</p>
-          <p>첫 번째 후원을 통해 의미 있는 변화를 만들어보세요!</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.reportPageContainer}>
-      {/* 첫 번째 섹션 - 후원 유형별 비율 */}
-      <SectionBox
-        title='마이 후원 레포트'
-        subtitle='후원 유형별 비율'
-        className={styles.reportSection}
-        titleRight={
-          <RoundButton
-            onClick={handleBackToList}
-            className={styles.inlineBackButton}
+      {isLoading ? (
+        <div className={styles.loading}>데이터를 불러오는 중입니다...</div>
+      ) : !hasData ? (
+        <div className={styles.noDataContainer}>
+          <div className={styles.backButtonContainer}>
+            <RoundButton
+              onClick={handleBackToList}
+              className={styles.backButton}
+            >
+              <IconBox name='arrow' size={16} />
+              프로필로 돌아가기
+            </RoundButton>
+          </div>
+          <div className={styles.noDataMessage}>
+            <p>후원 내역이 없습니다.</p>
+            <p>첫 번째 후원을 통해 의미 있는 변화를 만들어보세요!</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <SectionBox
+            title='마이 후원 레포트'
+            subtitle='후원 유형별 비율'
+            className={styles.reportSection}
+            titleRight={
+              <RoundButton
+                onClick={handleBackToList}
+                className={styles.inlineBackButton}
+              >
+                <IconBox name='arrow' size={16} />
+                프로필로 돌아가기
+              </RoundButton>
+            }
           >
-            <IconBox name='arrow' size={16} />
-            프로필로 돌아가기
-          </RoundButton>
-        }
-      >
-        <DonutChart
-          data={reportData.donationType}
-          centerText={
-            <div>
-              <strong>총 후원 횟수</strong> <br />
-              {reportData.donationType.values.reduce((a, b) => a + b, 0)}번
-            </div>
-          }
-          description={
-            <div>
-              {reportData.username}님은 지금까지
-              <br />
-              단체 후원을 {reportData.donationType.values[0]}번,
-              <br />
-              지정 후원을 {reportData.donationType.values[1]}번 진행하셨습니다.
-            </div>
-          }
-        />
-      </SectionBox>
+            <DonutChart
+              data={reportData.donationType}
+              centerText={
+                <div>
+                  <strong>총 후원 횟수</strong> <br />
+                  {reportData.donationType.values.reduce((a, b) => a + b, 0)}번
+                </div>
+              }
+              description={
+                <div>
+                  {reportData.username}님은 지금까지
+                  <br />
+                  단체 후원을 {reportData.donationType.values[0]}번,
+                  <br />
+                  지정 후원을 {reportData.donationType.values[1]}번
+                  진행하셨습니다.
+                </div>
+              }
+            />
+          </SectionBox>
 
-      {/* 두 번째 섹션 - 주별 후원 횟수 */}
-      <SectionBox subtitle='주별 후원 횟수' className={styles.reportSection}>
-        <BarChart
-          data={reportData.weeklyDonation}
-          unit='건'
-          highlightIndex={reportData.weeklyDonation.labels.length - 1}
-          description={`${reportData.username}님은 최근 5주 동안 총 ${reportData.weeklyDonation.totalCount}회 후원하셨습니다.`}
-        />
-      </SectionBox>
+          <SectionBox
+            subtitle='주별 후원 횟수'
+            className={styles.reportSection}
+          >
+            <BarChart
+              data={reportData.weeklyDonation}
+              unit='건'
+              highlightIndex={reportData.weeklyDonation.labels.length - 1}
+              description={`${reportData.username}님은 최근 5주 동안 총 ${reportData.weeklyDonation.totalCount}회 후원하셨습니다.`}
+            />
+          </SectionBox>
 
-      {/* 세 번째 섹션 - 단체별 후원 비율 */}
-      <SectionBox subtitle='단체별 후원 비율' className={styles.reportSection}>
-        <DonutChart
-          data={reportData.shelterDonation}
-          centerText={
-            <div>
-              <strong>총 후원 횟수</strong>
-              <br />
-              {reportData.shelterDonation.values.reduce((a, b) => a + b, 0)}번
-            </div>
-          }
-          description={
-            <div>
-              {reportData.username}님이 지금까지
-              <br />
-              후원한 보호 단체의 비율입니다.
-            </div>
-          }
-        />
-      </SectionBox>
+          <SectionBox
+            subtitle='단체별 후원 비율'
+            className={styles.reportSection}
+          >
+            <DonutChart
+              data={reportData.shelterDonation}
+              centerText={
+                <div>
+                  <strong>총 후원 횟수</strong>
+                  <br />
+                  {reportData.shelterDonation.values.reduce((a, b) => a + b, 0)}
+                  번
+                </div>
+              }
+              description={
+                <div>
+                  {reportData.username}님이 지금까지
+                  <br />
+                  후원한 보호 단체의 비율입니다.
+                </div>
+              }
+            />
+          </SectionBox>
+        </>
+      )}
     </div>
   );
 }
