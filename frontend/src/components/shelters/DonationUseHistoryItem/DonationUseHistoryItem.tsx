@@ -14,6 +14,7 @@ interface DonationUseHistoryItemProps {
   name: string;
   onEvidenceClick?: (transactionUniqueNo: number, type: boolean) => void;
   onReceiptClick?: (withdrawalId: number) => void;
+  content?: string;
 }
 
 export default function DonationUseHistoryItem({
@@ -28,13 +29,14 @@ export default function DonationUseHistoryItem({
   name,
   onEvidenceClick,
   onReceiptClick,
+  content,
 }: DonationUseHistoryItemProps) {
   // 금액 포맷팅 (천 단위 콤마)
   const amount = Number(transactionBalance || 0);
   const formattedAmount = amount.toLocaleString();
 
   // category가 'unknown'이면 '기타'로 표시
-  const displayCategory = category === 'Unknown' ? '기타' : category;
+  // const displayCategory = category === 'Unknown' ? '기타' : category;
 
   return (
     <div className={styles.container}>
@@ -43,7 +45,8 @@ export default function DonationUseHistoryItem({
         <div className={styles.nameContainer}>
           {name !== '단체' && <span className={styles.dogName}>{name}</span>}
           <span className={styles.description}>
-            {displayCategory || '내역 없음'}
+            {/* {displayCategory || '내역 없음'} */}
+            {content}
           </span>
         </div>
       </div>

@@ -11,6 +11,10 @@
   flex-direction: column;
   gap: 2rem;
   z-index: 10;
+
+  @media (max-width: 360px) {
+    gap: 0.5rem;
+  }
 }
 
 .textContent {
@@ -70,6 +74,9 @@
   line-height: 1.5;
   color: #333333;
   margin-bottom: 0.5rem;
+  @media (max-width: 360px) {
+    font-size: 0.9rem; // 360px 이하일 때 폰트 크기 줄이기
+  }
 }
 
 .donateButton {
@@ -93,6 +100,10 @@
   position: relative;
   width: 110px;
   height: 110px;
+  @media (max-width: 360px) {
+    width: 84px; // 360px 이하일 때 너비 줄이기
+    height: 84px; // 360px 이하일 때 높이 줄이기
+  }
 }
 
 .dogImage {
@@ -102,6 +113,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 
   img {
     position: relative;
@@ -128,6 +140,7 @@
     border-radius: 100%;
     z-index: 0;
     transform: scale(1.2); // blur 효과가 더 부드럽게 보이도록 약간 확대
+    animation: moveBlur 5s linear infinite; // 애니메이션 추가
   }
 }
 
@@ -153,6 +166,10 @@
     .mainTitle {
       font-size: 2rem;
       font-weight: bold;
+
+      @media (max-width: 360px) {
+        font-size: 1.6rem;
+      }
     }
   }
 
@@ -211,4 +228,39 @@
   justify-content: center;
   align-items: center;
   height: 100dvh;
+}
+
+.dogImageIcon {
+  opacity: 0.5;
+  animation: moveDown 2s ease-in-out infinite;
+}
+
+@keyframes moveBlur {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.9) rotate(90deg);
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+  }
+  75% {
+    transform: scale(0.9) rotate(270deg);
+  }
+  100% {
+    transform: scale(0.8) rotate(360deg);
+  }
+}
+
+@keyframes moveDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(16px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }

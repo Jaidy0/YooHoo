@@ -75,10 +75,7 @@ export default function LoginError() {
         <div className={styles.balloon}>
           <h3 className={styles.subtitle}>
             <em className={styles.highlight}>잠깐 !</em>
-            <i className={styles.subdesc}>
-              즐거운 후원을 위해 <br />
-              부탁드릴게있어요 !
-            </i>
+            <i className={styles.subdesc}>유후가 처음이신가요?</i>
           </h3>
           <p className={styles.desc}>
             후원을 위해서는 먼저 SSAFY 금융망에 통장이 개설되고, 계좌 등록이
@@ -96,7 +93,7 @@ export default function LoginError() {
             {isLoading ? '처리 중...' : '후원할 준비하기 ❤️'}
           </Button>
           <p className={styles.notice}>
-            이 로직은 SSAFY 교육용 금융망 API 구조에 맞춰 별도로 추가된 로직
+            이 과정은 SSAFY 교육용 금융망 API 구조에 맞춰 별도로 추가된 과정
             입니다. 원활한 시연을 위해 소중한 클릭 한번 부탁드려요.
           </p>
         </div>

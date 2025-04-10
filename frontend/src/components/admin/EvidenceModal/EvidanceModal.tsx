@@ -17,9 +17,11 @@ interface EvidanceModalProps {
   transactionUniqueNo: number;
   type: boolean; // false: 카드 증빙, true: 통장 출금 증빙
   shelterId?: number; // 선택적 패러미터로 변경
+  className?: string;
 }
 
 export default function EvidanceModal({
+  className,
   isOpen,
   onClose,
   transactionUniqueNo = 0,
@@ -43,7 +45,12 @@ export default function EvidanceModal({
   });
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title='증빙자료'>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title='증빙자료'
+      className={className}
+    >
       <div className={styles.evidenceContainer}>
         {type ? (
           // 통장 출금 증빙 (type이 true일 때)

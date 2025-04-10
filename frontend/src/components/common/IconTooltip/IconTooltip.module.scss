@@ -19,17 +19,13 @@
   line-height: 0.8rem;
   border: 1px solid #000;
   margin-bottom: 2px;
-
-  @media screen and (max-width: 360px) {
-    margin-bottom: 0;
-  }
 }
 
 .tooltip {
   position: absolute;
   top: 32px;
   left: -10px;
-  width: 300px;
+  width: 220px;
   background-color: #fff; // 베이지 색상
   border: 1px solid #333; // 테두리 색상
   border-radius: 8px; // 모서리 둥글기
@@ -37,10 +33,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // 그림자
   z-index: 100;
   animation: fadeIn 0.2s ease-out;
-
-  @media screen and (max-width: 360px) {
-    width: 220px;
-  }
 
   &::before {
     content: '';
@@ -69,14 +61,10 @@
   }
 
   h4 {
-    margin: 8px 0 4px 0;
+    margin: 8px 0 8px 0;
     font-size: 16px;
     color: #8b4513; // 갈색
     font-weight: bold;
-
-    @media screen and (max-width: 360px) {
-      font-size: 13px;
-    }
   }
 
   p {
@@ -84,26 +72,25 @@
     font-size: 14px;
     color: #555; // 회색
     line-height: 1.5;
-
-    @media screen and (max-width: 360px) {
-      font-size: 12px;
-    }
   }
 
   ul {
     margin: 4px 0 16px 0;
-    padding-left: 8px;
+    padding-left: 16px;
 
     li {
       margin: 4px 0;
       font-size: 14px;
       color: #555; // 회색
-
-      @media screen and (max-width: 360px) {
-        font-size: 12px;
-      }
     }
   }
+}
+
+.tooltipItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #777;
 }
 
 @keyframes fadeIn {

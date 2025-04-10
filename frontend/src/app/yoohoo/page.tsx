@@ -64,7 +64,7 @@ export default function MainPage() {
                   <b>따뜻한 후원</b>을 이어가볼까요?
                 </p>
                 <Link href='/yoohoo/donate' className={styles.donateButton}>
-                  후원하러가기
+                  후원하기
                   <IconBox name='arrow' size={20} rotate={180}></IconBox>
                 </Link>
               </>
@@ -90,6 +90,7 @@ export default function MainPage() {
             <Image
               src='/images/piggy.png'
               alt='돼지 저금통'
+              layout='responsive' // layout 속성을 responsive로 설정
               width={120}
               height={120}
             />
@@ -122,14 +123,22 @@ export default function MainPage() {
               }}
             />
           )}
+          <div className={styles.dogImageIcon}>
+            <IconBox
+              name='chevron'
+              size={30}
+              color='var(--yh-brown)'
+              rotate={90}
+            ></IconBox>
+          </div>
         </div>
       </section>
 
       <section className={styles.supportSection}>
         <div className={styles.textContent}>
           <h2 className={styles.sectionTitle}>
-            <span className={styles.subtitle}>YooHoo와 함께하는</span>
-            <div className={styles.mainTitle}>유기견 후원단체</div>
+            <span className={styles.subtitle}>믿고 후원하는</span>
+            <div className={styles.mainTitle}>YooHoo 보호 단체</div>
           </h2>
           <Link href='/yoohoo/shelters'>
             <MoveButton variant='yellow' className={styles.moreButton}>

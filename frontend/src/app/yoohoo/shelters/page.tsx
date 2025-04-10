@@ -9,6 +9,8 @@ import ShelterCard from '@/components/shelters/ShelterCard/ShelterCard';
 import { useShelterList } from '@/hooks/useShelterList';
 import { Shelter } from '@/types/shelter';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
+import IconTooltip from '@/components/common/IconTooltip/IconTooltip';
+import Button from '@/components/common/buttons/Button/Button';
 
 // 정렬 옵션
 const sortOptions = [
@@ -23,18 +25,41 @@ export default function Shelters() {
   const [selectedSort, setSelectedSort] = useState(sortOptions[0].value);
   const { shelters, isLoading } = useShelterList();
   const [filteredShelters, setFilteredShelters] = useState<Shelter[]>([]);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   // shelters가 변경될 때마다 filteredShelters 초기화
   useEffect(() => {
-    // 신뢰도 순으로 정렬
-    const sortedShelters = [...shelters].sort(
-      (a, b) => b.reliability - a.reliability
-    );
-    setFilteredShelters(sortedShelters);
-  }, [shelters]);
+    let sortedShelters = [...shelters];
+
+    switch (selectedSort) {
+      case 'reliability':
+        sortedShelters.sort((a, b) => b.reliability - a.reliability);
+        break;
+      case 'dogCount':
+        sortedShelters.sort((a, b) => b.dogCount - a.dogCount);
+        break;
+      case 'oldest':
+        sortedShelters.sort((a, b) => {
+          const dateA = new Date(a.foundation_date).getTime();
+          const dateB = new Date(b.foundation_date).getTime();
+          return dateA - dateB;
+        });
+        break;
+      default:
+        break;
+    }
+
+    setFilteredShelters(sortedShelters.slice(0, itemsPerPage * currentPage));
+  }, [shelters, currentPage, selectedSort]);
 
   // 검색어나 정렬이 변경될 때마다 필터링 적용
-  const applyFilters = (query: string, sortValue: string) => {
+  const applyFilters = (
+    query: string,
+    sortValue: string,
+    page: number = currentPage
+  ) => {
     let filteredItems = [...shelters];
 
     // 검색어가 있으면 필터링
@@ -70,7 +95,7 @@ export default function Shelters() {
         break;
     }
 
-    setFilteredShelters(filteredItems);
+    setFilteredShelters(filteredItems.slice(0, itemsPerPage * page));
   };
 
   const handleSearch = (query: string) => {
@@ -80,8 +105,39 @@ export default function Shelters() {
 
   const handleSortChange = (value: string) => {
     setSelectedSort(value);
-    applyFilters(searchQuery, value);
+    setCurrentPage(1);
+    applyFilters(searchQuery, value, 1);
   };
+
+  const toggleTooltip = () => {
+    setIsTooltipOpen((prev) => !prev);
+  };
+
+  const loadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setCurrentPage((prevPage) => prevPage + 1);
+        }
+      },
+      { threshold: 1.0 }
+    );
+
+    const target = document.querySelector('#scrollEnd');
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) {
+        observer.unobserve(target);
+      }
+    };
+  }, []);
 
   return (
     <div className={styles.shelterPage}>
@@ -101,7 +157,10 @@ export default function Shelters() {
       <div className={styles.shelterList}>
         <div className={styles.shelters}>
           <div className={styles.dropdownContainer}>
-            <span>단체 리스트</span>
+            <span className={styles.dropdownTitle}>
+              단체 리스트{' '}
+              <IconTooltip isOpen={isTooltipOpen} onToggle={toggleTooltip} />
+            </span>
             <DropDown
               options={sortOptions}
               value={selectedSort}
@@ -128,6 +187,14 @@ export default function Shelters() {
                 />
               ))
             )}
+            <Button
+              variant='primary'
+              onClick={loadMore}
+              className={styles.loadMoreButton}
+              width='100%'
+            >
+              더보기
+            </Button>
           </div>
         </div>
       </div>
