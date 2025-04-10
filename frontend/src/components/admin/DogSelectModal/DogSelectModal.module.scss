@@ -51,19 +51,13 @@
 }
 
 .content {
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  overflow-y: auto;
-  padding-right: $spacing-xs;
-  min-height: 250px; // 컨텐츠 영역 최소 높이 추가
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: $color-border;
-    border-radius: 4px;
-  }
+  /* 스크롤 제거 - 콘텐츠가 고정 높이를 넘지 않도록 설계 */
+  overflow: visible;
+  min-height: auto;
+  max-height: none;
 }
 
 .label {
@@ -72,51 +66,6 @@
   margin-bottom: $spacing-xs;
   display: block;
   font-weight: $font-weight-medium;
-}
-
-.expenseInfo {
-  margin-bottom: $spacing-lg;
-}
-
-.expenseType {
-  display: inline-block;
-  background-color: $yh-orange;
-  color: white;
-  padding: $spacing-xs $spacing-md;
-  border-radius: $border-radius-full;
-  font-size: $font-size-sm;
-  font-weight: $font-weight-medium;
-  margin-bottom: $spacing-md;
-}
-
-.expenseGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: $spacing-md;
-}
-
-.expenseItem {
-  display: flex;
-  flex-direction: column;
-}
-
-.label {
-  font-size: $font-size-xs;
-  color: $text-777;
-  margin-bottom: 4px;
-}
-
-.value {
-  font-size: $font-size-sm;
-  color: $text-333;
-  font-weight: $font-weight-medium;
-}
-
-.separator {
-  height: 1px;
-  background-color: $color-border;
-  margin: $spacing-md 0;
-  opacity: 0.5;
 }
 
 .dropdownContainer {
@@ -161,7 +110,7 @@
   border: 1px solid $color-border;
   border-radius: $border-radius-md;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 300px; // 드롭다운 최대 높이 증가
+  max-height: 200px; // 드롭다운 최대 높이 조정
   overflow-y: auto;
   z-index: 20;
 
@@ -180,10 +129,10 @@
   cursor: pointer;
   transition: background-color 0.2s;
   font-size: $font-size-md;
-  line-height: 1.5; // 줄 높이 추가로 가독성 향상
-  height: 44px; // 각 항목 높이 증가
-  display: flex; // Flexbox를 사용하여 세로 중앙 정렬
-  align-items: center; // 항목 내용 세로 중앙 정렬
+  line-height: 1.5;
+  height: 44px;
+  display: flex;
+  align-items: center;
 
   &:hover {
     background-color: $yh-ivory;
@@ -211,12 +160,6 @@
   text-align: center;
 }
 
-.buttonGroup {
-  display: flex;
-  gap: $spacing-md;
-  margin-bottom: $spacing-lg;
-}
-
 .footer {
   margin-top: $spacing-md;
   border-top: 1px solid $color-border;
@@ -238,18 +181,5 @@
   .modal {
     width: 95%;
     padding: $spacing-md;
-  }
-
-  .expenseGrid {
-    grid-template-columns: 1fr;
-    gap: $spacing-sm;
-  }
-
-  .buttonGroup {
-    flex-direction: column;
-
-    button {
-      width: 100%;
-    }
   }
 }
