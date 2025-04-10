@@ -1,0 +1,72 @@
+기술 스택
+FE : React, TypeScript, SCSS, next.js, HTML5, Zustand, chart.js
+BE : Java 17, Spring Boot 3.4.3
+DB : MySQL 8.0.41
+Infra: Docker, Jenkins, EC2, S3, NginX
+
+
+---
+환경변수
+# Docker 이미지 접두사 및 태그 (Jenkins에서 사용)
+DOCKER_IMAGE_PREFIX=murhyun2
+STABLE_TAG=stable-latest
+CANARY_TAG=canary-latest
+EC2_PUBLIC_HOST=j12b209.p.ssafy.io
+EC2_BACKEND_HOST=13.209.72.106
+EC2_FRONTEND_HOST=43.201.101.172
+
+# Database 설정
+DB_HOST=j12b209.p.ssafy.io
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=Dleogus
+MYSQL_ROOT_PASSWORD=Dleogus
+MYSQL_DATABASE=yoohoo_db
+MYSQL_PORT=3306
+TZ=Asia/Seoul
+
+# Redis 설정
+REDIS_HOST=j12b209.p.ssafy.io
+REDIS_PORT=6379
+REDIS_PASSWORD=Dleogus
+
+# Backend 포트 (호스트 매핑용)
+STABLE_BACKEND_PORT=8080
+CANARY_BACKEND_PORT=8081
+
+# Frontend 포트 (호스트 매핑용)
+STABLE_FRONTEND_PORT=3000
+CANARY_FRONTEND_PORT=3001
+
+# Jenkins 포트
+JENKINS_PORT=9090
+
+# Prometheus & Grafana 포트
+PROMETHEUS_PORT=9091
+GRAFANA_PORT=3100
+
+# Node Exporter & cAdvisor 포트
+NODE_EXPORTER_PORT=9100
+CADVISOR_PORT=8082
+
+# KAKAO KEY
+KAKAO_CLIENT_ID=0fd06d3411cbcfb4f97b0eb93baedd48
+KAKAO_CLIENT_SECRET=040393afd9b22a68c7d5b722725d9c2a
+KAKAO_REDIRECT_URI=https://j12b209.p.ssafy.io/api/auth/kakao-login
+
+# FRONTEND
+NEXT_PUBLIC_API_URL=https://j12b209.p.ssafy.io
+NEXT_PUBLIC_KAKAO_CLIENT_ID=0fd06d3411cbcfb4f97b0eb93baedd48
+NEXT_PUBLIC_KAKAO_REDIRECT_URI=https://j12b209.p.ssafy.io/api/auth/kakao-login
+
+# SSAFY API KEY
+SSAFY_API_KEY=54cc585638ea49a5b13f7ec7887c7c1b
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY=AKIAWOOXUH5NRWZOJX6U
+AWS_SECRET_KEY=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
+AWS_S3_BUCKET=yoohoo-bucket
+AWS_S3_REGION=ap-southeast-2
+
+# BACK
+DOMAIN_URL=https://j12b209.p.ssafy.io
