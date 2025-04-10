@@ -1,6 +1,7 @@
 @use '../../../assets/styles/abstracts/variables' as *;
 
 .dropdown {
+  height: 30px;
   position: relative;
   display: inline-block;
   font-family: 'NanumSquareNeo', sans-serif;
