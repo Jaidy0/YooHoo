@@ -37,7 +37,7 @@ export function useShelterWithdrawals(
       // 2. 초기화된 데이터 조회
       const response = await fetchAllWithdrawals(shelterId);
 
-      // 날짜 기준 최신순 정렬
+      // 날짜 기준 최신순 정렬 + 날짜가 같으면 ID 역순 정렬
       const sortedWithdrawals = response.sort((a, b) => {
         const dateA = a.withdrawalDate
           ? new Date(a.withdrawalDate).getTime()
@@ -45,6 +45,14 @@ export function useShelterWithdrawals(
         const dateB = b.withdrawalDate
           ? new Date(b.withdrawalDate).getTime()
           : 0;
+
+        // 날짜가 같으면 withdrawalId 역순으로 정렬 (최신 ID가 위로)
+        if (dateA === dateB) {
+          const idA = a.withdrawalId ?? 0;
+          const idB = b.withdrawalId ?? 0;
+          return idB - idA;
+        }
+
         return dateB - dateA;
       });
 

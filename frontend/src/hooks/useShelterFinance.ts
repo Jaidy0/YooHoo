@@ -132,6 +132,16 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
         // 날짜가 undefined인 경우 처리
         const dateA = a.donationDate ? new Date(a.donationDate).getTime() : 0;
         const dateB = b.donationDate ? new Date(b.donationDate).getTime() : 0;
+
+        // 날짜가 같으면 donationId 역순으로 정렬 (최신 ID가 위로)
+        if (dateA === dateB) {
+          // donationId가 없는 경우를 대비해 안전하게 처리
+          const idA = a.donationId ?? 0;
+          const idB = b.donationId ?? 0;
+          return idB - idA;
+        }
+
+        // 날짜가 다르면 날짜 역순으로 정렬 (최신 날짜가 위로)
         return dateB - dateA;
       });
 
@@ -139,6 +149,16 @@ export function useShelterFinance(shelterId: number): UseShelterFinanceResult {
         // withdrawalDate 대신 date 속성을 사용
         const dateA = a.date ? parseYYYYMMDD(a.date) : 0;
         const dateB = b.date ? parseYYYYMMDD(b.date) : 0;
+
+        // 날짜가 같으면 withdrawalId 역순으로 정렬 (최신 ID가 위로)
+        if (dateA === dateB) {
+          // withdrawalId가 없는 경우를 대비해 안전하게 처리
+          const idA = a.withdrawalId ?? 0;
+          const idB = b.withdrawalId ?? 0;
+          return idB - idA;
+        }
+
+        // 날짜가 다르면 날짜 역순으로 정렬 (최신 날짜가 위로)
         return dateB - dateA;
       });
 
