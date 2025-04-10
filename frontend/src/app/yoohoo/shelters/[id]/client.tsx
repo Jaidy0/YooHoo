@@ -21,6 +21,7 @@ import { useShelterTotalAmountResult } from '@/hooks/useShelterTotalAmountResult
 import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
 import { useCategoryPercentages } from '@/hooks/useCategoryPercentages';
 import { useSearchParams } from 'next/navigation';
+import TrustTooltip from '@/components/common/TrustTooltip/TrustTooltip';
 
 interface GroupDetailClientProps {
   groupId: string;
@@ -47,6 +48,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     type: boolean;
     withdrawId?: number;
   } | null>(null);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -241,8 +243,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     };
   });
 
-  // console.log('***!!! withdrawals : ', withdrawals);
-  // console.log('***!!! historyItems : ', historyItems);
+  const toggleTooltip = () => setIsTooltipOpen((prev) => !prev);
 
   // 로딩 상태 체크 수정
   if (
@@ -398,12 +399,17 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
         {activeTab === 2 && (
           <div className={styles.fundsContent}>
             <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
+            <h3 className={styles.sectionSubTitle}>
+              신뢰 지수
+              <TrustTooltip isOpen={isTooltipOpen} onToggle={toggleTooltip} />
+            </h3>
             <ReliabilityChart
               reliability={shelter?.reliability || 0}
               dogScore={shelter?.dogScore || 0}
               foundationScore={shelter?.foundationScore || 0}
               fileScore={shelter?.fileScore || 0}
             />
+            <h3 className={styles.sectionSubTitle}>후원금 운용내역 보고</h3>
             <DonationUsageChart
               categories={categoryPercentages}
               totalIncome={totalIncome}
@@ -412,6 +418,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               month={month}
               day={day}
             />
+            <h3 className={styles.sectionSubTitle}>단체 지출 내역</h3>
             <DonationUseHistoryList histories={historyItems} />
           </div>
         )}

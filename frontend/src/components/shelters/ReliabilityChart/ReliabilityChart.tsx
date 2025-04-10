@@ -39,16 +39,17 @@ export default function ReliabilityChart({
       {/* 메인 차트 영역 */}
       <div className={styles.chartContainer}>
         {/* 사용 현황 정보 표시 */}
-        <div className={styles.usageInfo}>
-          <div className={styles.usageTitle}>
-            <span className={styles.usageTitleText}>신뢰도</span>
-            <span className={styles.reliability}>{reliability || 0}</span>/{' '}
-            {MAX_TOTAL}점
-          </div>
-        </div>
 
         {/* 통합 막대 그래프 (맥 스토리지 스타일) */}
         <div className={styles.combinedBarContainer}>
+          <div className={styles.usageInfo}>
+            <div className={styles.usageTitle}>
+              {/* <span className={styles.usageTitleText}>신뢰도</span> */}
+              <span className={styles.reliability}>
+                {reliability || 0}
+              </span>/ {MAX_TOTAL}점
+            </div>
+          </div>
           <div className={styles.combinedBarWrapper}>
             {/* 강아지 관리 영역 */}
             <div
