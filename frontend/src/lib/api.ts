@@ -75,7 +75,7 @@ export async function logoutUser(): Promise<boolean> {
       return true;
     }
 
-    await fetchWithAxios('/api/auth/kakao-logout', {
+    await fetchWithAxios('/api/auth/logout', {
       method: 'POST',
       withCredentials: true,
     });
