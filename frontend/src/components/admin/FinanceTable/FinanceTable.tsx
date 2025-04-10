@@ -67,7 +67,7 @@ export default function FinanceTable({
             menuItems={menuItems}
             onMenuItemClick={handleTabClick}
             fullWidth={false}
-            size='sm'
+            size='lg'
             className={styles.smallTabMenu}
           />
         </div>
