@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters; 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -153,32 +154,27 @@ public class DonationService {
 
     public Map<String, Integer> getWeeklyDonationSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY); // 이번 주의 시작일 (일요일)
+        
+        // 이전 또는 같은 일요일 계산 (핵심 수정 부분)
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        
         List<Integer> weeklySums = new ArrayList<>();
     
-        // 1. 주간 기부금 합계 계산 (현재 주 + 5주 전까지)
         for (int i = 0; i < 6; i++) {
-            LocalDate weekStart = startOfWeek.minusWeeks(i); // 주 시작일 (일요일)
-            LocalDate weekEnd;
+            LocalDate weekStart = startOfWeek.minusWeeks(i);
+            LocalDate weekEnd = (i == 0) ? today : weekStart.plusDays(6);
     
-            // 현재 주(i=0)인 경우: 오늘까지가 종료일, 이전 주는 토요일까지
-            if (i == 0) {
-                weekEnd = today; 
-            } else {
-                weekEnd = weekStart.plusDays(6); 
-            }
+            System.out.println("Week " + i + ": " + weekStart + " ~ " + weekEnd);
     
-            // 주간 기부 내역 조회 및 합계 계산
             int sum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(
                     shelterId, weekStart, weekEnd
             ).stream()
              .mapToInt(Donation::getDonationAmount)
              .sum();
     
-            weeklySums.add(sum); // [ThisWeek, 1WeeksAgo, ..., 5WeeksAgo] 순서로 저장
+            weeklySums.add(sum);
         }
     
-        // 2. 리스트 순서 뒤집기: [5WeeksAgo, 4WeeksAgo, ..., ThisWeek]
         Collections.reverse(weeklySums);
     
         // 3. 예측값 계산 (최근 5주 데이터: 1WeeksAgo ~ 5WeeksAgo)
