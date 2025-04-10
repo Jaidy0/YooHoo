@@ -138,52 +138,46 @@ public class WithdrawalService {
         return Optional.empty();
     }
 
+
+    private Map<String, Object> mapFromWithdrawal(Withdrawal withdrawal) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("withdrawalId", withdrawal.getWithdrawalId());
+        response.put("category", withdrawal.getCategory());
+        response.put("transactionBalance", withdrawal.getTransactionBalance());
+        response.put("date", withdrawal.getDate());
+        response.put("merchantId", withdrawal.getMerchantId());
+        response.put("shelterId", withdrawal.getShelterId());
+        response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+        response.put("content", withdrawal.getContent());
+        response.put("file_id", withdrawal.getFile() != null ? withdrawal.getFile().getFileId() : null);
+
+        if (withdrawal.getDogId() == null) {
+            response.put("name", "단체");
+        } else {
+            response.put("name", dogRepository.findById(withdrawal.getDogId())
+                    .map(Dog::getName)
+                    .orElse("Unknown"));
+        }
+        return response;
+    }
+
+
     public List<Map<String, Object>> getAllWithdrawals() {
-        List<Withdrawal> withdrawals = withdrawalRepository.findAll();
-        return withdrawals.stream().map(withdrawal -> {
-            Map<String, Object> response = new HashMap<>();
-            response.put("withdrawalId", withdrawal.getWithdrawalId());
-            response.put("category", withdrawal.getCategory());
-            response.put("transactionBalance", withdrawal.getTransactionBalance());
-            response.put("date", withdrawal.getDate());
-            response.put("merchantId", withdrawal.getMerchantId());
-            response.put("shelterId", withdrawal.getShelterId());
-            response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
+        return withdrawalRepository.findAll().stream()
+                .map(this::mapFromWithdrawal)
+                .collect(Collectors.toList());
+    }
 
-            if (withdrawal.getDogId() == null) {
-                response.put("name", "단체");
-            } else {
-                Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
-                response.put("name", optionalDog.map(Dog::getName).orElse("Unknown"));
-            }
-
-            return response;
-        }).collect(Collectors.toList());
+    public List<Map<String, Object>> getWithdrawalsByShelterId(Long shelterId) {
+        return withdrawalRepository.findByShelterId(shelterId).stream()
+                .map(this::mapFromWithdrawal)
+                .collect(Collectors.toList());
     }
 
     public List<Map<String, Object>> getWithdrawalsByDogId(Long dogId) {
-        List<Withdrawal> withdrawals = withdrawalRepository.findByDogId(dogId);
-        return withdrawals.stream().map(withdrawal -> {
-            Map<String, Object> response = new HashMap<>();
-            response.put("withdrawalId", withdrawal.getWithdrawalId());
-            response.put("category", withdrawal.getCategory());
-            response.put("transactionBalance", withdrawal.getTransactionBalance());
-            response.put("date", withdrawal.getDate());
-            response.put("merchantId", withdrawal.getMerchantId());
-            response.put("shelterId", withdrawal.getShelterId());
-            response.put("transactionUniqueNo", withdrawal.getTransactionUniqueNo());
-            response.put("content", withdrawal.getContent());
-            response.put("file_id", withdrawal.getFile() != null ? withdrawal.getFile().getFileId() : null);
-
-            if (withdrawal.getDogId() == null) {
-                response.put("name", "단체");
-            } else {
-                Optional<Dog> optionalDog = dogRepository.findById(withdrawal.getDogId());
-                response.put("name", optionalDog.map(Dog::getName).orElse("Unknown"));
-            }
-
-            return response;
-        }).collect(Collectors.toList());
+        return withdrawalRepository.findByDogId(dogId).stream()
+                .map(this::mapFromWithdrawal)
+                .collect(Collectors.toList());
     }
 
     public Optional<String> getFileUrlByWithdrawalId(Long withdrawalId) {
@@ -266,36 +260,6 @@ public class WithdrawalService {
         result.put("1WeeksAgo", weeklySums.get(4));
         result.put("ThisWeek", weeklySums.get(5));
         result.put("Prediction", prediction);
-
-        return result;
-    }
-
-    public List<Map<String, Object>> getWithdrawalsByShelterId(Long shelterId) {
-        List<WithdrawalProjectionDTO> projections = withdrawalRepository.findAllByShelterIdWithProjection(shelterId);
-
-        List<Map<String, Object>> result = new ArrayList<>();
-        for (WithdrawalProjectionDTO w : projections) {
-            Map<String, Object> map = new HashMap<>();
-            map.put("withdrawalId", w.getWithdrawalId());
-            map.put("category", w.getCategory());
-            map.put("transactionBalance", w.getTransactionBalance());
-            map.put("date", w.getDate());
-            map.put("merchantId", w.getMerchantId());
-            map.put("shelterId", w.getShelterId());
-            map.put("transactionUniqueNo", w.getTransactionUniqueNo());
-            map.put("file_id", w.getFileId()); // ✅ file 전체 로딩 없이 ID만 추출
-
-            if (w.getDogId() == null) {
-                map.put("name", "단체");
-            } else {
-                String dogName = dogRepository.findById(w.getDogId())
-                        .map(d -> d.getName())
-                        .orElse("Unknown");
-                map.put("name", dogName);
-            }
-
-            result.add(map);
-        }
 
         return result;
     }
