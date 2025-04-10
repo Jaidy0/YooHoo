@@ -1,0 +1,102 @@
+@use '../../../../assets/styles/abstracts/variables' as *;
+
+.roundButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 59px;
+  height: 26px;
+  border: 1px solid;
+  border-radius: 50px;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-xs;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  // 채워진 버튼
+  &--fill {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  // 검은색 테두리 버튼
+  &--primary {
+    background-color: transparent;
+    color: #000;
+    border-color: #000;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  // 회색 테두리 버튼
+  &--secondary {
+    background-color: transparent;
+    color: $text-777;
+    border-color: $text-777;
+
+    &:hover {
+      background-color: rgba(119, 119, 119, 0.05);
+    }
+  }
+
+  // 비활성화 스타일
+  &--disabled {
+    background-color: #e0e0e0;
+    color: #999;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+  }
+
+  // 로딩 상태
+  &--loading {
+    .content {
+      visibility: hidden;
+    }
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+
+  .roundButton--primary & {
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #000;
+  }
+
+  .roundButton--secondary & {
+    border: 2px solid rgba(119, 119, 119, 0.1);
+    border-top-color: #777;
+  }
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 4px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

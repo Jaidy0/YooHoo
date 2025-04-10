@@ -1,0 +1,46 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['$EC2_PUBLIC_HOST:$PROMETHEUS_PORT']
+
+  - job_name: 'node'
+    static_configs:
+      - targets: ['$EC2_PUBLIC_HOST:$NODE_EXPORTER_PORT']
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['$EC2_PUBLIC_HOST:$CADVISOR_PORT']
+
+  - job_name: 'backend-stable'
+    metrics_path: '/api/actuator/prometheus'
+    static_configs:
+      - targets: ['$EC2_BACKEND_HOST:$STABLE_BACKEND_PORT']
+
+  - job_name: 'backend-canary'
+    metrics_path: '/api/actuator/prometheus'
+    static_configs:
+      - targets: ['$EC2_BACKEND_HOST:$CANARY_BACKEND_PORT']
+
+  # 백엔드 서버의 node-exporter
+  - job_name: 'node-backend'
+    static_configs:
+      - targets: ['$EC2_BACKEND_HOST:$NODE_EXPORTER_PORT']
+
+  # 백엔드 서버의 cAdvisor
+  - job_name: 'cadvisor-backend'
+    static_configs:
+      - targets: ['$EC2_BACKEND_HOST:$CADVISOR_PORT']
+
+  # 프론트엔드 서버의 node-exporter
+  - job_name: 'node-frontend'
+    static_configs:
+      - targets: ['$EC2_FRONTEND_HOST:$NODE_EXPORTER_PORT']
+
+  # 프론트엔드 서버의 cAdvisor
+  - job_name: 'cadvisor-frontend'
+    static_configs:
+      - targets: ['$EC2_FRONTEND_HOST:$CADVISOR_PORT']

@@ -1,0 +1,89 @@
+.container {
+  width: 100%;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  color: $text-333;
+  margin-bottom: 16px;
+  align-self: flex-start;
+}
+
+.dogGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $spacing-sm;
+  width: 100%;
+  max-width: 480px;
+}
+
+.dogCardWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* 로딩 상태 스타일 */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+}
+
+.loadingText {
+  color: $text-777;
+  font-size: 16px;
+}
+
+/* 에러 상태 스타일 */
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+}
+
+.errorText {
+  color: $yh-orange;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* 빈 데이터 상태 스타일 */
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  width: 100%;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px auto;
+  max-width: 360px;
+}
+
+.emptyTitle {
+  font-size: 16px;
+  font-weight: $font-weight-bold;
+  color: $text-555;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.emptySubtitle {
+  font-size: 14px;
+  color: $text-777;
+  text-align: center;
+  line-height: 1.5;
+  margin: 0;
+}

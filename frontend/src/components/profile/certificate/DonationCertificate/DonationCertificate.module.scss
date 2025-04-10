@@ -1,0 +1,150 @@
+.certificateCard {
+  width: 100%;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 0 7px 7px rgba(0, 0, 0, 0.05);
+  padding: 2.5rem 2rem 2rem;
+  position: relative;
+  overflow: hidden;
+  border: none;
+}
+
+// 내부 테두리를 실제 요소로 구현
+.innerBorder {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  border: 1px solid $yh-orange;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.medalContainer {
+  position: absolute;
+  top: 0;
+  left: 7%;
+  z-index: 2;
+}
+
+.medalImage {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.backgroundDogCertificate {
+  position: absolute;
+  top: 40%;
+  left: 30%;
+  width: 40%;
+  height: 40%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.backgroundImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  aspect-ratio: 1 / 1;
+}
+
+.certificateTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $yh-brown;
+  text-align: center;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.certificateContent {
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.infoLabel {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.infoValue {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000;
+  text-align: right;
+}
+
+.divider {
+  height: 1px;
+  background-color: #e5e5e5;
+  margin: 0.25rem 0;
+}
+
+.certificateMessage {
+  text-align: left;
+  color: black;
+  font-weight: $font-weight-medium;
+  font-size: 0.65rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+
+  p {
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.certificateFooter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 2;
+}
+
+.date {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $yh-orange;
+}
+
+.logoIcon {
+  width: 24px;
+  height: 24px;
+}

@@ -1,0 +1,116 @@
+@use 'sass:color';
+
+.moveButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+  border-radius: 24px;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-md;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  // 기본 스타일 (primary)
+  &--primary {
+    background-color: white;
+    color: $yh-orange;
+    border-color: $yh-orange;
+
+    .leftIcon,
+    .rightIcon,
+    .content {
+      color: $yh-orange;
+    }
+
+    &:hover {
+      background-color: color.adjust(white, $lightness: -3%);
+    }
+  }
+
+  // 색반전 (secondary)
+  &--secondary {
+    background-color: $yh-orange;
+    color: white;
+    border-color: $yh-orange;
+
+    .leftIcon,
+    .rightIcon,
+    .content {
+      color: white;
+    }
+
+    &:hover {
+      background-color: color.adjust($yh-orange, $lightness: 10%);
+    }
+  }
+
+  &--yellow {
+    background-color: $yh-yellow;
+    color: black;
+    border-color: $yh-yellow;
+
+    .leftIcon,
+    .rightIcon,
+    .content {
+      color: black;
+    }
+
+    &:hover {
+      background-color: color.adjust($yh-yellow, $lightness: 10%);
+    }
+  }
+
+  // 로딩 상태
+  &--loading {
+    .content {
+      visibility: hidden;
+    }
+  }
+}
+
+.loader {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+
+  .moveButton--primary & {
+    border: 2px solid rgba($yh-orange, 0.3);
+    border-top-color: $yh-orange;
+  }
+}
+
+.leftIcon,
+.rightIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leftIcon {
+  margin-right: 8px;
+}
+
+.rightIcon {
+  margin-left: 8px;
+}
+
+.content {
+  position: relative;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

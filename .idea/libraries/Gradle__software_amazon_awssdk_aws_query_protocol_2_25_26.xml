@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: software.amazon.awssdk:aws-query-protocol:2.25.26" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="software.amazon.awssdk" artifactId="aws-query-protocol" version="2.25.26" baseVersion="2.25.26" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/software.amazon.awssdk/aws-query-protocol/2.25.26/ce5d15dc8b10c2a4f0d41b7e7b3e81251cd7fbbc/aws-query-protocol-2.25.26.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
