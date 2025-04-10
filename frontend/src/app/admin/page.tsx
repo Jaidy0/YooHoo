@@ -85,7 +85,7 @@ export default function AdminPage() {
             <div className={styles.shelterInfoItem}>
               <div className={styles.shelterSubtitle}>설립연도</div>
               <div className={styles.shelterInfoContent}>
-                {displayData.foundationDate}
+                {displayData.foundationDate}년
               </div>
             </div>
 

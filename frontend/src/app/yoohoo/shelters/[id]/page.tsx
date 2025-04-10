@@ -39,7 +39,6 @@ export default async function GroupDetailPage({
       <div className={styles.groupInfoContainer}>
         <div className={styles.groupInfo}>
           <h2 className={styles.groupName}>{shelter?.name}</h2>
-          <p className={styles.groupDescription}>{shelter?.content}</p>
         </div>
       </div>
 
