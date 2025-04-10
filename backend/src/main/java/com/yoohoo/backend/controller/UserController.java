@@ -158,6 +158,37 @@ public class UserController {
         }
     }
 
+    @PostMapping("/logout")
+    public RedirectView logout(HttpSession session) {
+        try {
+            // 세션에서 사용자 ID 가져오기
+            Long userId = (Long) session.getAttribute("userId");
+            
+            if (userId == null) {
+                logger.error("User not logged in");
+                return new RedirectView("/yoohoo/login/error");
+            }
+
+            // 사용자 정보 삭제
+            userService.unlinkUser(userId);
+            
+            // Redis에서 userKey 삭제
+            userService.deleteUserKeyFromRedis(userId);
+            
+            // Redis에서 사용자 정보 삭제
+            userService.deleteUserInfoFromRedis(userId);
+            
+            // 세션 정보 삭제
+            session.invalidate();
+            
+            // 로그아웃 성공 시 메인 페이지로 리디렉션
+            return new RedirectView("/");
+        } catch (Exception e) {
+            logger.error("Error during logout", e);
+            return new RedirectView("/yoohoo/login/error");
+        }
+    }
+
     @PutMapping("/{userId}/nickname")
     public ResponseEntity<User> updateNickname(@PathVariable Long userId, @RequestBody Map<String, String> requestBody) {
         String newNickname = requestBody.get("newNickname");
