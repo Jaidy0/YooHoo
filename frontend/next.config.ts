@@ -36,8 +36,6 @@ const nextConfig: NextConfig = {
 export default withPWA({
   dest: 'public',
   disable: process.env.NODE_ENV === 'development', // 개발 중에는 꺼두기
-  workboxOptions: {
-    skipWaiting: true,
-    clientsClaim: true,
-  },
+  skipWaiting: true,
+  clientsClaim: true,
 })(nextConfig);
