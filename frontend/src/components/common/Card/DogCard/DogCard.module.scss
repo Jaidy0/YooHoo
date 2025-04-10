@@ -1,0 +1,126 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.dogCard {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1/1;
+  border-radius: 10px;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+  }
+}
+
+.cardLink {
+  display: block;
+  text-decoration: none;
+  color: $text-333;
+  width: 100%;
+  height: 100%;
+}
+
+.contentWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.imageContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.dogImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* 뱃지 컨테이너를 이미지 위에 오버레이로 배치 */
+.badgeContainer {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: 0 0 $spacing-lg $spacing-sm; /* 좌측, 하단 여백 */
+  pointer-events: none; /* 뱃지 아래의 클릭 이벤트를 통과시킴 */
+}
+
+.statusProtected {
+  background-color: $chart-hotpink;
+}
+
+.statusTemporary {
+  background-color: $chart-green;
+}
+
+.statusAdopted {
+  background-color: $text-777;
+}
+
+.statusDeceased {
+  background-color: $text-121212;
+}
+
+/* 개 정보 영역 */
+.dogInfo {
+  position: relative;
+  display: flex; /* flexbox 적용 */
+  flex-direction: column; /* 세로 방향 정렬 */
+  padding: $spacing-sm;
+  background-color: rgba(255, 255, 255, 0.5); /* 50% 투명도 */
+  margin-top: auto; /* 컨테이너 맨 아래에 배치 */
+  z-index: 1;
+  gap: 10px; /* 요소들 사이 간격 */
+}
+
+.dogDetails {
+  width: 100%;
+}
+
+.detailsRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.dogName {
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
+  line-height: 1.2;
+}
+
+.dogAgeGender {
+  font-size: $font-size-sm;
+  color: $text-777;
+}
+
+.badgeContainer {
+  margin-top: auto;
+  align-self: flex-start; /* 좌측 정렬 */
+  padding: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.statusBadge {
+  display: inline-flex;
+  height: 26px;
+  padding: 6px 12px;
+  align-items: center;
+  border-radius: $border-radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: white;
+  z-index: 2;
+}

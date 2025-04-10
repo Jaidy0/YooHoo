@@ -1,0 +1,93 @@
+// styles/globals.scss
+@use './base/reset';
+@use './base/typography';
+@use './base/animations';
+@use './abstracts/variables' as *;
+
+html,
+body,
+input,
+button,
+textarea,
+select,
+div,
+span,
+p,
+a,
+li,
+ul,
+ol,
+nav {
+  // 모든 텍스트 요소 추가
+  padding: 0;
+  margin: 0;
+  font-family:
+    'NanumSquareNeo',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'Malgun Gothic',
+    sans-serif;
+  color: $color-text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: inherit; // 폰트 상속 추가
+}
+
+// 색상 변수 설정
+:root {
+  // Brand Colors
+  --yh-orange: #ff6b00;
+  --yh-brown: #7c514d;
+  --yh-yellow: #fee101;
+  --yh-peach: #fdbaa0;
+  --yh-ivory: #f6f4e8;
+  --yh-beige: #fffdf5;
+  --yh-admin-bg: #fff4cc;
+
+  // Primary Colors
+  --color-primary: #3498db;
+  --color-primary-light: #5dade2;
+  --color-primary-dark: #2980b9;
+
+  // Secondary Colors
+  --color-secondary: #f39c12;
+  --color-secondary-light: #f5b041;
+  --color-secondary-dark: #d35400;
+
+  // Base Colors
+  --color-text: #333333;
+  --color-text-light: #777777;
+  --color-background: #ffffff;
+  --color-background-light: #f8f9fa;
+  --color-border: #e0e0e0;
+
+  // Text Colors
+  --text-333: #333333;
+  --text-121212: #121212;
+  --text-555: #555555;
+  --text-777: #777777;
+  --text-999: #999999;
+
+  // Chart Colors
+  --chart-blue: #7a91e0;
+  --chart-green: #1bb9b3;
+  --chart-yellow: #f4b616;
+  --chart-hotpink: #ee417c;
+  --chart-pink: #f2b2d1;
+  --chart-orange: #f57c17;
+}

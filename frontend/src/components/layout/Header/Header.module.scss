@@ -1,0 +1,83 @@
+// 메인 헤더 스타일
+
+.mainHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  width: 100%;
+  // position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  // background-color: var(--color-background);
+  // 초기 상태: 투명 배경
+  background-color: transparent;
+
+  // 스크롤된 상태에서의 스타일
+  // &.scrolled {
+  //   background-color: white;
+  //   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  // }
+}
+
+// 서브 헤더 스타일
+.subHeader {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  width: 100%;
+  align-items: center;
+  padding: 10px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background-color: var(--color-background);
+  border-bottom: 1px solid #eee;
+}
+
+// 공통 스타일
+.left {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 48px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 48px;
+}
+
+.title {
+  text-align: center;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  margin: 0;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 32px;
+  width: auto;
+}
+
+.placeholder {
+  width: 24px;
+  height: 24px;
+}

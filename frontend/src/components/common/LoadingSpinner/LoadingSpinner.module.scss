@@ -1,0 +1,53 @@
+.spinner {
+  width: 100%;
+  height: 100%;
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: center;
+  > div {
+    border-radius: 100%;
+    animation: bounce 1.4s infinite ease-in-out both;
+  }
+
+  .bounce1 {
+    animation-delay: -0.32s;
+  }
+
+  .bounce2 {
+    animation-delay: -0.16s;
+  }
+}
+
+// 크기 변형
+.small {
+  > div {
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+}
+
+.medium {
+  > div {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+}
+
+.large {
+  > div {
+    width: 1rem;
+    height: 1rem;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}

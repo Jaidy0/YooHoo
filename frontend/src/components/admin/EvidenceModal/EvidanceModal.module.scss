@@ -1,0 +1,84 @@
+.evidenceContainer {
+  padding: 1.5rem;
+  max-width: 500px;
+  width: 100%;
+}
+
+.loadingMessage,
+.errorMessage,
+.noDataMessage {
+  text-align: center;
+  padding: 2rem 0;
+  color: $text-555;
+}
+
+.errorMessage {
+  color: $yh-orange;
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-md;
+  color: $color-primary-dark;
+  border-bottom: 1px solid $color-border;
+  padding-bottom: $spacing-sm;
+}
+
+.dataRow {
+  display: flex;
+  margin-bottom: $spacing-sm;
+
+  &:last-child {
+    margin-bottom: $spacing-lg;
+  }
+}
+
+.label {
+  flex: 0 0 120px;
+  font-weight: $font-weight-medium;
+  color: $text-555;
+}
+
+.value {
+  flex: 1;
+  color: $text-333;
+}
+
+.highlightValue {
+  font-weight: $font-weight-bold;
+  color: $yh-orange;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: $spacing-lg;
+
+  button {
+    min-width: 120px;
+  }
+}
+
+// 카드 증빙 전용 스타일
+.cardData {
+  .cardInfo {
+    background-color: $yh-ivory;
+    border-radius: $border-radius-md;
+    padding: $spacing-md;
+    margin-bottom: $spacing-md;
+  }
+
+  .merchantName {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-bold;
+    margin-bottom: $spacing-sm;
+  }
+
+  .transactionAmount {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: $color-primary-dark;
+    margin-bottom: $spacing-md;
+  }
+}

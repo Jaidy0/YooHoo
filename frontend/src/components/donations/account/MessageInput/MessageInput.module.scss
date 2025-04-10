@@ -1,0 +1,26 @@
+.messageContainer {
+  label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: $font-size-md;
+    font-weight: $font-weight-bold;
+    color: $text-333;
+  }
+
+  .messageTextarea {
+    width: 100%;
+    min-height: 125px;
+    padding: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    resize: none;
+    font-size: $font-size-sm;
+    line-height: 1.5;
+    color: $text-333;
+
+    &::placeholder {
+      color: $text-999;
+      font-size: $font-size-sm;
+    }
+  }
+}

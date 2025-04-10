@@ -1,0 +1,98 @@
+.accountNameRadio {
+  margin-top: 1rem;
+
+  .optionsContainer {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+  }
+
+  .radioGroup {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .radioLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    padding-left: 24px;
+
+    &:hover {
+      font-weight: 500;
+    }
+
+    input[type='radio'] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+
+      // 커스텀 라디오 버튼 스타일
+      & + span::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 2px solid $text-555;
+        background-color: white;
+      }
+
+      // 선택된 상태
+      &:checked + span::before {
+        border-color: $text-333;
+        font-weight: $font-weight-bold;
+        background-color: $yh-yellow;
+      }
+
+      // 호버 상태
+      &:hover + span::before {
+        background-color: $yh-yellow;
+      }
+    }
+
+    span {
+      font-size: $font-size-md;
+      color: $text-333;
+    }
+
+    // 선택된 옵션 텍스트 볼드 처리
+    input[type='radio']:checked + span {
+      font-weight: $font-weight-bold;
+    }
+  }
+
+  // 닉네임 컨테이너
+  .nicknameContainer {
+    margin-top: 0.25rem;
+    padding-left: 24px;
+    margin: 0.825rem 0;
+  }
+
+  // 닉네임 표시 스타일
+  .nicknameDisplay {
+    font-size: $font-size-md;
+    color: $text-555;
+    font-weight: 400;
+    margin-left: 1px;
+  }
+
+  .inputContainer {
+    margin-top: 1rem;
+  }
+
+  .accountNameInput {
+    width: 100%;
+    padding: 0.5rem;
+    border-bottom: 1px solid $text-555;
+    font-size: $font-size-md;
+  }
+}

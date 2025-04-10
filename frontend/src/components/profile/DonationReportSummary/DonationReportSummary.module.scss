@@ -1,0 +1,44 @@
+.reportSection {
+  border-radius: 12px;
+  margin-bottom: 3rem;
+}
+
+.viewAllButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: $text-333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.loading {
+  padding: 24px 16px;
+  text-align: center;
+  color: $text-777;
+  font-size: 14px;
+}
+
+.noDataMessage {
+  padding: 40px 16px;
+  text-align: center;
+
+  p {
+    margin: 8px 0;
+    color: $text-777;
+    font-size: 14px;
+
+    &:first-child {
+      font-weight: 600;
+      font-size: 16px;
+      color: $text-333;
+    }
+  }
+}

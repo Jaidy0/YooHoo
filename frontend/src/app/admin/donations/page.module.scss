@@ -1,0 +1,193 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.donationsPage {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+// 공통 관리자 페이지 카드 스타일
+.adminCard {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-yoohoo;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// 섹션 헤더 스타일
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $spacing-md;
+}
+
+.sectionTitle {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+// 후원금 요약 카드 그리드
+.summaryCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+  min-height: 300px; // 최소 높이 설정 (필요에 따라 조정)
+
+  .leftColumn {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+
+    > * {
+      flex: 1; // 자식 요소가 컨테이너를 채우도록 함
+    }
+  }
+
+  .rightColumn {
+    grid-column: 2;
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+
+    > * {
+      flex: 1; // 각 자식 요소가 같은 비율로 공간을 차지하도록 함
+    }
+  }
+}
+
+// 차트 컨테이너 스타일
+.chartsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+.chartCard {
+  background-color: white;
+  border-radius: $border-radius-md;
+  padding: $spacing-lg;
+  box-shadow: $shadow-sm;
+}
+
+.chartTitle {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $text-555;
+  margin-bottom: $spacing-md;
+  text-align: center;
+}
+
+// 바 차트 스타일
+.barChart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 200px;
+}
+
+.barChartItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 60px;
+}
+
+.barValue {
+  font-size: $font-size-xs;
+  color: $text-777;
+  margin-bottom: $spacing-xs;
+}
+
+.bar {
+  width: 40px;
+  background-color: $yh-peach;
+  border-radius: $border-radius-sm $border-radius-sm 0 0;
+  transition: height 0.3s ease;
+
+  &.barHighlight {
+    background-color: $yh-yellow;
+  }
+}
+
+.barLabel {
+  font-size: $font-size-xs;
+  color: $text-777;
+  margin-top: $spacing-xs;
+  text-align: center;
+}
+
+// 금융 테이블 스타일
+.financeTable {
+  width: 100%;
+  margin-bottom: $spacing-md;
+}
+
+// 로딩 및 에러 상태 스타일
+.loadingState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: $spacing-xl;
+  font-size: $font-size-lg;
+  color: $text-555;
+}
+
+.errorState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: $spacing-xl;
+  font-size: $font-size-lg;
+  color: $text-555;
+}
+
+.retryButton {
+  margin-top: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-primary;
+  color: white;
+  border: none;
+  border-radius: $border-radius-sm;
+  cursor: pointer;
+  font-size: $font-size-md;
+
+  &:hover {
+    background-color: $color-primary-dark;
+  }
+}
+
+// 반응형 스타일
+@media (max-width: $breakpoint-lg) {
+  .summaryCards {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+
+  .chartsContainer {
+    grid-template-columns: 1fr;
+    gap: $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-md) {
+  .barChart {
+    height: 150px;
+  }
+
+  .bar {
+    width: 30px;
+  }
+
+  .adminCard {
+    padding: $spacing-md;
+  }
+}
