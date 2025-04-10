@@ -17,16 +17,10 @@ export default function DogRegisterSuccessPage() {
 
   return (
     <div className={styles.successPage}>
-      {/* 왼쪽 상단 로고 */}
-      <Link href='/admin' className={styles.logoWrapper}>
-        <Image
-          src='/images/admin-logo.svg'
-          alt='관리자 로고'
-          width={120}
-          height={40}
-          className={styles.logo}
-        />
-      </Link>
+      {/* 전체 화면에 퍼지는 빵빠레 애니메이션 배경 */}
+      <div className={styles.confettiBackground}>
+        <DonateComplete />
+      </div>
 
       {/* 콘텐츠 박스 */}
       <div
@@ -49,7 +43,16 @@ export default function DogRegisterSuccessPage() {
         {/* 성공 이미지와 배경 */}
         <div className={styles.imageWrapper}>
           <div className={styles.imageBackground}>
-            <DonateComplete />
+            {/* 강아지 이미지 */}
+            <div className={styles.dogImageContainer}>
+              <Image
+                src='/images/dog_complete.png'
+                alt='강아지'
+                width={200}
+                height={200}
+                className={styles.dogImage}
+              />
+            </div>
             <div className={styles.shadow}></div>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
 import Dashboard from '@/components/profile/Dashboard/Dashboard';
 import styles from './layout.module.scss';
+import AuthInitializer from '@/components/auth/AuthGuard/AuthInitializer';
 
 // 프로필 네비게이션 항목 정의
 const profileTabs: TabMenuItem[] = [
@@ -51,6 +52,8 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.profileLayout}>
+      <AuthInitializer />
+
       <div className={styles.dashboardContainer}>
         {isMainPage && <Dashboard />}
       </div>
