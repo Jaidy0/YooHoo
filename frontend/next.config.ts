@@ -14,11 +14,22 @@ const nextConfig: NextConfig = {
   images: {
     domains: ['yoohoo-bucket.s3.ap-southeast-2.amazonaws.com'],
   },
-  webpack(config) {
+  webpack: (config, { dev, isServer }) => {
+    // SVG 설정 유지
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],
     });
+
+    // 프로덕션 환경에서 console.log 제거
+    if (!dev && !isServer) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      config.optimization.minimizer.forEach((minimizer: any) => {
+        if (minimizer.constructor.name === 'TerserPlugin') {
+          minimizer.options.terserOptions.compress.drop_console = true;
+        }
+      });
+    }
 
     return config;
   },
