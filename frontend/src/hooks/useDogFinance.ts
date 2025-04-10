@@ -65,6 +65,14 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
       const sortedDeposits = [...depositsResult].sort((a, b) => {
         const dateA = a.donationDate ? new Date(a.donationDate).getTime() : 0;
         const dateB = b.donationDate ? new Date(b.donationDate).getTime() : 0;
+
+        // 날짜가 같으면 donationId 역순으로 정렬 (최신 ID가 위로)
+        if (dateA === dateB) {
+          const idA = a.donationId ?? 0;
+          const idB = b.donationId ?? 0;
+          return idB - idA;
+        }
+
         return dateB - dateA; // 최신 날짜가 먼저 오도록 정렬
       });
 
@@ -81,6 +89,14 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
           : b.date
             ? parseYYYYMMDD(b.date)
             : 0;
+
+        // 날짜가 같으면 withdrawalId 역순으로 정렬 (최신 ID가 위로)
+        if (dateA === dateB) {
+          const idA = a.withdrawalId ?? 0;
+          const idB = b.withdrawalId ?? 0;
+          return idB - idA;
+        }
+
         return dateB - dateA; // 최신 날짜가 먼저 오도록 정렬
       });
 
