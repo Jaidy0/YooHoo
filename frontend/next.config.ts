@@ -1,5 +1,6 @@
 import type { NextConfig } from 'next';
 import path from 'path';
+import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
@@ -32,4 +33,11 @@ const nextConfig: NextConfig = {
   // },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development', // 개발 중에는 꺼두기
+  workboxOptions: {
+    skipWaiting: true,
+    clientsClaim: true,
+  },
+})(nextConfig);

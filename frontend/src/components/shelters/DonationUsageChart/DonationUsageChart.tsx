@@ -62,8 +62,8 @@ export default function DonationUsageChart({
         backgroundColor: categories.map((item) => item.color),
         borderColor: '#999',
         borderWidth: 1,
-        minBarLength: 50,
-        borderRadius: 40,
+        // minBarLength: 20,
+        borderRadius: 10,
         barThickness: 40,
         maxBarThickness: 30,
       },
@@ -73,8 +73,8 @@ export default function DonationUsageChart({
         backgroundColor: '#FFFFFF',
         borderColor: '#999',
         borderWidth: 1,
-        minBarLength: 30,
-        borderRadius: 40,
+        // minBarLength: 20,
+        borderRadius: 10,
         barThickness: 30,
         maxBarThickness: 30,
       },
@@ -192,7 +192,6 @@ export default function DonationUsageChart({
 
   return (
     <div className={styles.containerWrap}>
-      <h3 className={styles.title}>후원금 운용내역 보고</h3>
       <div className={styles.container}>
         <div className={styles.summaryContainer}>
           <h4 className={styles.chartTitle}>요약</h4>

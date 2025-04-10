@@ -7,6 +7,14 @@
   min-height: calc(100vh - 120px); // 헤더와 푸터 높이 고려
 }
 
+.sectionSubTitle {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 4px;
+}
+
 // 헤더 이미지 영역
 .headerImage {
   position: relative;
@@ -168,6 +176,33 @@
   line-height: 1.6;
   color: $text-555;
   white-space: pre-line;
+}
+
+.shelterDetails {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: $font-size-md;
+  color: $text-555;
+}
+
+.detailItem {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.detailLabel {
+  width: 120px;
+  font-weight: $font-weight-medium;
+  color: $text-777;
+}
+
+.detailValue {
+  flex: 1;
+  color: $text-333;
+  font-weight: $font-weight-medium;
 }
 
 // 보호 중인 강아지 탭 스타일

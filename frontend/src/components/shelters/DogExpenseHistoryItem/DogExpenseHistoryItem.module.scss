@@ -1,0 +1,47 @@
+.expenseItem {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  // border-bottom: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.data {
+  .category {
+    font-size: 0.875rem;
+    color: #777;
+    margin-bottom: 8px;
+  }
+  .content {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+}
+
+.date {
+  font-size: 0.875rem;
+  color: #777;
+  margin-bottom: 14px;
+}
+
+.date,
+.category,
+.content,
+.amount {
+  text-align: left;
+}
+
+.amount {
+  display: flex;
+  align-items: center;
+  text-align: right;
+  font-weight: 500;
+  span {
+    color: $yh-brown;
+  }
+}

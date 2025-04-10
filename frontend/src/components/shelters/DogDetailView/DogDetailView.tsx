@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { Dog, Gender, DogStatus } from '@/types/dog';
 import styles from './DogDetailView.module.scss';
@@ -7,9 +8,15 @@ import RoundButton from '@/components/common/buttons/RoundButton/RoundButton';
 import IconBox from '@/components/common/IconBox/IconBox';
 import DonationHistoryItem from '@/components/donations/DonationHistoryItem/DonationHistoryItem';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
-import { FormattedDepositItem } from '@/types/adminDonation';
+import {
+  FormattedDepositItem,
+  FormattedWithdrawalItem,
+} from '@/types/adminDonation';
 import { useDogFinance } from '@/hooks/useDogFinance';
 import RatingScale from '@/components/common/RatingScale/RatingScale';
+import DogExpenseHistoryItem from '../DogExpenseHistoryItem/DogExpenseHistoryItem';
+import TabMenu, { TabMenuItem } from '@/components/common/TabMenu/TabMenu';
+import Button from '@/components/common/buttons/Button/Button';
 // import { useDog } from '@/hooks/useDog';
 
 interface DogDetailViewProps {
@@ -31,12 +38,18 @@ export default function DogDetailView({
   // } = useDog(String(dogDetails.dogId));
 
   // 후원 내역 데이터 가져오기
-  const { depositData, isLoading, error } = useDogFinance(
+  const { depositData, withdrawData, isLoading, error } = useDogFinance(
     String(dogDetails.dogId)
     // String(306)
   );
   console.log('### dogDetails : ', dogDetails);
   console.log('******************depositData************** : ', depositData);
+
+  const [activeTab, setActiveTab] = useState<'donation' | 'expense'>(
+    'donation'
+  );
+  const [visibleDonationCount, setVisibleDonationCount] = useState(3);
+  const [visibleExpenseCount, setVisibleExpenseCount] = useState(3);
 
   // 총 후원금액 계산
   const totalDonation = depositData.reduce((sum, item) => sum + item.amount, 0);
@@ -50,6 +63,33 @@ export default function DogDetailView({
         day: 'numeric',
       })
     : '날짜 정보 없음';
+
+  const tabMenuItems: TabMenuItem[] = [
+    { name: '후원 내역', link: '#donation' },
+    { name: '지출 내역', link: '#expense' },
+  ];
+
+  const handleTabClick = (item: TabMenuItem, index: number) => {
+    setActiveTab(index === 0 ? 'donation' : 'expense');
+  };
+
+  // 날짜 최신순으로 정렬된 후원 내역
+  const sortedDepositData = [...depositData].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  // 날짜 최신순으로 정렬된 지출 내역
+  const sortedWithdrawData = [...withdrawData].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
+  const handleLoadMore = () => {
+    if (activeTab === 'donation') {
+      setVisibleDonationCount((prevCount) => prevCount + 3);
+    } else {
+      setVisibleExpenseCount((prevCount) => prevCount + 3);
+    }
+  };
 
   return (
     <div className={styles.dogDetailView}>
@@ -159,14 +199,6 @@ export default function DogDetailView({
                     readOnly={true}
                   />
                 </span>
-                {/* <div className={styles.personalityBar}>
-                  {[1, 2, 3, 4, 5].map((level) => (
-                    <div
-                      key={level}
-                      className={`${styles.personalityLevel} ${level <= (dogDetails.familiarity ?? 0) ? styles.active : ''}`}
-                    />
-                  ))}
-                </div> */}
               </div>
             </div>
             <ul className={styles.tagList}>
@@ -205,33 +237,81 @@ export default function DogDetailView({
                   {formattedTotalDonation}
                 </span>
               </div>
-              <div>
-                <span className={styles.historyLabel}>최근 후원 내역</span>
-                <div className={styles.donationHistory}>
-                  {isLoading ? (
-                    <div className={styles.loadingContainer}>
-                      <LoadingSpinner />
-                    </div>
-                  ) : error ? (
-                    <div className={styles.errorMessage}>{error}</div>
-                  ) : depositData.length === 0 ? (
+
+              <TabMenu
+                className={styles.tabMenu}
+                menuItems={tabMenuItems}
+                onMenuItemClick={handleTabClick}
+                activeIndex={activeTab === 'donation' ? 0 : 1}
+                fullWidth={true}
+              />
+
+              <div className={styles.donationHistory}>
+                {isLoading ? (
+                  <div className={styles.loadingContainer}>
+                    <LoadingSpinner />
+                  </div>
+                ) : error ? (
+                  <div className={styles.errorMessage}>{error}</div>
+                ) : activeTab === 'donation' ? (
+                  sortedDepositData.length === 0 ? (
                     <div className={styles.emptyMessage}>
-                      아직 후원 내역이 없습니다.
+                      아직 후원 내역이 없어요.
                     </div>
                   ) : (
-                    depositData.map(
-                      (donation: FormattedDepositItem, index: number) => (
-                        <DonationHistoryItem
-                          key={index}
-                          date={donation.date}
-                          donorName={donation.depositorName}
-                          amount={`${donation.amount.toLocaleString()}원`}
-                          message={donation.message}
-                        />
-                      )
-                    )
-                  )}
-                </div>
+                    <>
+                      {sortedDepositData
+                        .slice(0, visibleDonationCount)
+                        .map(
+                          (donation: FormattedDepositItem, index: number) => (
+                            <DonationHistoryItem
+                              key={index}
+                              date={donation.date}
+                              donorName={donation.depositorName}
+                              amount={`${donation.amount.toLocaleString()}원`}
+                              message={donation.message}
+                            />
+                          )
+                        )}
+                      {visibleDonationCount < sortedDepositData.length && (
+                        <Button
+                          onClick={handleLoadMore}
+                          className={styles.loadMoreButton}
+                        >
+                          더보기
+                        </Button>
+                      )}
+                    </>
+                  )
+                ) : sortedWithdrawData.length === 0 ? (
+                  <div className={styles.emptyMessage}>
+                    아직 지출 내역이 없어요.
+                  </div>
+                ) : (
+                  <>
+                    {sortedWithdrawData
+                      .slice(0, visibleExpenseCount)
+                      .map(
+                        (expense: FormattedWithdrawalItem, index: number) => (
+                          <DogExpenseHistoryItem
+                            key={index}
+                            date={expense.date}
+                            category={expense.category}
+                            content={expense.content}
+                            amount={`${expense.amount.toLocaleString()}원`}
+                          />
+                        )
+                      )}
+                    {visibleExpenseCount < sortedWithdrawData.length && (
+                      <Button
+                        onClick={handleLoadMore}
+                        className={styles.loadMoreButton}
+                      >
+                        더보기
+                      </Button>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </section>

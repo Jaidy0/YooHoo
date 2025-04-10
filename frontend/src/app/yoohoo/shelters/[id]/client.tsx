@@ -21,6 +21,7 @@ import { useShelterTotalAmountResult } from '@/hooks/useShelterTotalAmountResult
 import ReceiptModal from '@/components/admin/ReceiptModal/ReceiptModal';
 import { useCategoryPercentages } from '@/hooks/useCategoryPercentages';
 import { useSearchParams } from 'next/navigation';
+import TrustTooltip from '@/components/common/TrustTooltip/TrustTooltip';
 
 interface GroupDetailClientProps {
   groupId: string;
@@ -47,6 +48,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     type: boolean;
     withdrawId?: number;
   } | null>(null);
+  const [isTooltipOpen, setIsTooltipOpen] = useState(false);
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -241,8 +243,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
     };
   });
 
-  // console.log('***!!! withdrawals : ', withdrawals);
-  // console.log('***!!! historyItems : ', historyItems);
+  const toggleTooltip = () => setIsTooltipOpen((prev) => !prev);
 
   // 로딩 상태 체크 수정
   if (
@@ -308,6 +309,33 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
           <div className={styles.introContent}>
             <h3 className={styles.sectionTitle}>단체 소개</h3>
             <p className={styles.fullDescription}>{shelter?.content}</p>
+
+            <div className={styles.shelterDetails}>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>설립연도</span>
+                <span className={styles.detailValue}>
+                  {shelter?.foundationDate?.split('-')[0] || '정보 없음'}
+                </span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>주소</span>
+                <span className={styles.detailValue}>{shelter?.address}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>이메일</span>
+                <span className={styles.detailValue}>{shelter?.email}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>전화번호</span>
+                <span className={styles.detailValue}>{shelter?.phone}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>사업자등록번호</span>
+                <span className={styles.detailValue}>
+                  {shelter?.businessNumber}
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -371,12 +399,17 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
         {activeTab === 2 && (
           <div className={styles.fundsContent}>
             <h2 className={styles.sectionTitle}>후원금 운용 내역</h2>
+            <h3 className={styles.sectionSubTitle}>
+              신뢰 지수
+              <TrustTooltip isOpen={isTooltipOpen} onToggle={toggleTooltip} />
+            </h3>
             <ReliabilityChart
               reliability={shelter?.reliability || 0}
               dogScore={shelter?.dogScore || 0}
               foundationScore={shelter?.foundationScore || 0}
               fileScore={shelter?.fileScore || 0}
             />
+            <h3 className={styles.sectionSubTitle}>후원금 운용내역 보고</h3>
             <DonationUsageChart
               categories={categoryPercentages}
               totalIncome={totalIncome}
@@ -385,6 +418,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
               month={month}
               day={day}
             />
+            <h3 className={styles.sectionSubTitle}>단체 지출 내역</h3>
             <DonationUseHistoryList histories={historyItems} />
           </div>
         )}
