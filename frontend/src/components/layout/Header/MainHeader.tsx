@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './Header.module.scss';
-import IconBox from '@/components/common/IconBox/IconBox';
+// import IconBox from '@/components/common/IconBox/IconBox';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface MainHeaderProps {
-  onNotificationClick?: () => void;
-}
+// interface MainHeaderProps {
+// onNotificationClick?: () => void;
+// }
 
-export function MainHeader({ onNotificationClick }: MainHeaderProps) {
+export default function MainHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
 
@@ -53,11 +53,11 @@ export function MainHeader({ onNotificationClick }: MainHeaderProps) {
           />
         </Link>
       </div>
-      <div className={styles.right}>
+      {/* <div className={styles.right}>
         <button onClick={onNotificationClick} className={styles.iconButton}>
           <IconBox name='bell' size={24} color='#555' />
         </button>
-      </div>
+      </div> */}
     </header>
   );
 }

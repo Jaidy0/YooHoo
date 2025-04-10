@@ -3,10 +3,10 @@
 .mainHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 10px 16px;
   width: 100%;
-  position: absolute;
+  // position: absolute;
   left: 0;
   top: 0;
   z-index: 100;
@@ -15,10 +15,10 @@
   background-color: transparent;
 
   // 스크롤된 상태에서의 스타일
-  &.scrolled {
-    background-color: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
+  // &.scrolled {
+  //   background-color: white;
+  //   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  // }
 }
 
 // 서브 헤더 스타일

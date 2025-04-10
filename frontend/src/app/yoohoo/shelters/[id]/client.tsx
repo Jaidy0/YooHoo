@@ -293,6 +293,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
       <div className={styles.tabMenuWrapper}>
         <div className={styles.tabMenuInner}>
           <TabMenu
+            size='sm'
             menuItems={tabMenuItems}
             defaultActiveIndex={activeTab}
             onMenuItemClick={handleTabClick}

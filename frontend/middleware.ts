@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 보호된 경로인지 확인
-  if (protectedPaths.some((path) => pathname.startsWith(path))) {
+  if (protectedPaths.some((path) => pathname?.startsWith(path))) {
     // 쿠키에서 인증 상태 확인
     const isAuthenticated = request.cookies.has('auth_token'); // 실제 사용하는 쿠키 이름으로 변경
 

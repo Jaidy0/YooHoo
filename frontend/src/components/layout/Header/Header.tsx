@@ -1,5 +1,5 @@
-import { MainHeader } from './MainHeader';
-import { SubHeader } from './SubHeader';
+// import MainHeader from './MainHeader';
+import SubHeader from './SubHeader';
 
 export type HeaderType = 'yoohoo' | 'sub';
 
@@ -12,7 +12,8 @@ interface HeaderProps {
 
 export function Header(props: HeaderProps) {
   if (props.type === 'yoohoo') {
-    return <MainHeader onNotificationClick={props.onNotificationClick} />;
+    // return <MainHeader />;
+    return null;
   }
   return (
     <SubHeader title={props.title || ''} onBackClick={props.onBackClick} />

@@ -63,7 +63,7 @@ export default function DogDetailView({
         <div className={styles.dogDetailHeader}>
           <div className={styles.dogImageContainer}>
             <Image
-              src='/images/dummy.jpeg'
+              src={selectedDog.imageUrl ?? '/images/dummy.jpeg'}
               alt={selectedDog.name}
               className={styles.dogDetailImage}
               width={400}

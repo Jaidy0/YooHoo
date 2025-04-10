@@ -12,6 +12,7 @@ import { useShelterList } from '@/hooks/useShelterList';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { useRouter } from 'next/navigation';
 import { Shelter } from '@/types/shelter';
+import MainHeader from '@/components/layout/Header/MainHeader';
 
 export default function MainPage() {
   const router = useRouter();
@@ -41,6 +42,7 @@ export default function MainPage() {
 
   return (
     <div className={styles.container}>
+      <MainHeader />
       <section className={styles.heroSection}>
         <div className={styles.textContent}>
           <h1 className={styles.title}>

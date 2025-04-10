@@ -128,7 +128,7 @@ export default function DogsPage() {
             menuItems={dogStatusTabs}
             defaultActiveIndex={activeTab}
             onMenuItemClick={handleTabClick}
-            size='md'
+            size='lg'
           />
         </div>
 

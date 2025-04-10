@@ -128,13 +128,11 @@ export default function WithdrawTableRow({
             <Badge
               variant='negative'
               className={styles.badge}
-              onClick={type === '단체' ? openDogSelectModal : undefined}
+              onClick={openDogSelectModal}
             >
               <div className={styles.badgeContent}>
                 {badgeText}
-                {type === '단체' && (
-                  <IconBox name='chevron' rotate={90} size={15} />
-                )}
+                <IconBox name='chevron' rotate={90} size={15} />
               </div>
             </Badge>
           </div>

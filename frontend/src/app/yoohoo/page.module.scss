@@ -1,5 +1,5 @@
 .container {
-  padding: 3rem 1.5rem;
+  padding: 0.5rem 1.5rem 3rem 1.5rem;
   min-height: 100vh;
   background-color: $yh-beige;
   position: relative;
@@ -16,7 +16,7 @@
 .textContent {
   display: flex;
   justify-content: space-between;
-  margin-top: 2rem;
+  margin-top: 1rem;
   width: 100%;
   align-items: flex-end;
   .moreButton {

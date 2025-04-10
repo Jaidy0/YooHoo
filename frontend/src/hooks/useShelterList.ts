@@ -4,7 +4,7 @@ import { fetchShelters } from '@/lib/api';
 
 type SortType = 'dogcount' | 'reliability';
 
-export const useShelterList = (sort: SortType = 'dogcount') => {
+export const useShelterList = (sort: SortType = 'reliability') => {
   const [shelters, setShelters] = useState<Shelter[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
