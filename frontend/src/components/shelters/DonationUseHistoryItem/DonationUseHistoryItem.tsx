@@ -37,6 +37,8 @@ export default function DonationUseHistoryItem({
 
   // category가 'unknown'이면 '기타'로 표시
   // const displayCategory = category === 'Unknown' ? '기타' : category;
+  // content가 'Unknown Merchant'이면 '기타 지출'로 표시
+  const displayContent = content === 'Unknown Merchant' ? '기타 지출' : content;
 
   return (
     <div className={styles.container}>
@@ -46,7 +48,7 @@ export default function DonationUseHistoryItem({
           {name !== '단체' && <span className={styles.dogName}>{name}</span>}
           <span className={styles.description}>
             {/* {displayCategory || '내역 없음'} */}
-            {content}
+            {displayContent}
           </span>
         </div>
       </div>
