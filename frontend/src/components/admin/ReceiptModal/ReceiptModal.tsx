@@ -10,12 +10,14 @@ export interface ReceiptModalProps {
   onClose: () => void;
   withdrawId: number;
   canDelete?: boolean;
+  className?: string;
 }
 
 export default function ReceiptModal({
   isOpen,
   onClose,
   withdrawId,
+  className,
 }: ReceiptModalProps) {
   const [receiptUrl, setReceiptUrl] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -49,7 +51,7 @@ export default function ReceiptModal({
       isOpen={isOpen}
       onClose={onClose}
       title='활동내용 확인'
-      className={styles.modal}
+      className={`${styles.modal} ${className}`}
     >
       <div className={styles.container}>
         {isLoading ? (

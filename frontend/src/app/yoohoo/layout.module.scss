@@ -40,14 +40,15 @@
   -webkit-overflow-scrolling: touch;
 
   padding-bottom: 66px; // 기본적으로 padding-bottom 적용
-  // BottomNav가 숨겨질 때 padding 제거
-  :global(.hide-bottom-nav) & {
-    padding-bottom: 0 !important;
-  }
 
-  &.hide-bottom-nav {
-    padding-bottom: 0 !important;
-  }
+  // &.hide-bottom-nav {
+  //   padding-bottom: 0 !important;
+  // }
+}
+
+// BottomNav가 숨겨질 때 padding 제거
+:global(.hide-bottom-nav).main {
+  padding-bottom: 0 !important;
 }
 
 // 헤더와 하단 네비게이션 사이의 컨텐츠 영역

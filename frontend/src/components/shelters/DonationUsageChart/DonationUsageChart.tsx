@@ -223,7 +223,7 @@ export default function DonationUsageChart({
         </div>
 
         <div className={styles.chartContainer}>
-          <h4 className={styles.chartTitle}>전월 후원금 사용 내역별 비율</h4>
+          <h4 className={styles.chartTitle}>후원금 사용 내역별 비율</h4>
           <ChartLegendBox items={legendItems} itemsPerRow={2} />
 
           <div className={styles.chartWrapper}>

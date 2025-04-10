@@ -30,6 +30,11 @@
   min-width: 50px;
   overflow: hidden;
   border-radius: 16px;
+  min-width: 130px;
+
+  @media screen and (max-width: 360px) {
+    min-width: 120px;
+  }
 }
 
 .image {
@@ -72,6 +77,10 @@
   text-overflow: ellipsis;
   max-width: 100%;
   word-break: break-word; // 단어가 너무 길 경우 끊어서 표시
+
+  @media screen and (max-width: 360px) {
+    -webkit-line-clamp: 2; // 표시할 줄 수 (2줄)
+  }
 }
 
 .stats {

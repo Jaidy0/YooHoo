@@ -1,12 +1,13 @@
 import React, { useRef, useEffect } from 'react';
-import styles from './TrustTooltip.module.scss';
+import styles from './IconTooltip.module.scss';
+import IconBox from '../IconBox/IconBox';
 
 interface TrustTooltipProps {
   isOpen: boolean;
   onToggle: () => void;
 }
 
-export default function TrustTooltip({ isOpen, onToggle }: TrustTooltipProps) {
+export default function IconTooltip({ isOpen, onToggle }: TrustTooltipProps) {
   const tooltipRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -44,19 +45,15 @@ export default function TrustTooltip({ isOpen, onToggle }: TrustTooltipProps) {
       </button>
       {isOpen && (
         <div className={styles.tooltip} ref={tooltipRef}>
-          <h4>신뢰 지수란?</h4>
-          <p>
-            단체 신뢰 지수는 보호소의 투명성과 신뢰성을 나타내는 지표입니다.
+          <h4>아이콘은 이런 의미에요 🐶</h4>
+          <p className={styles.tooltipItem}>
+            <IconBox name='dog' size={20} color='var(--yh-brown)' />
+            단체를 거쳐간 강아지 수
           </p>
-
-          <h4>🔍 신뢰 지수는 이렇게 계산해요!</h4>
-          <ul>
-            <li>1. 후원금 중 강아지 관련 지출 비율</li>
-            <li>2. 출금 내역에 활동 자료가 첨부된 비율</li>
-            <li>3. 설립 후 운영된 연수</li>
-          </ul>
-
-          <p>총 100점 만점 기준으로 산정되며, 실시간으로 갱신됩니다</p>
+          <p className={styles.tooltipItem}>
+            <IconBox name='smile' size={20} color='var(--chart-yellow)' />
+            단체의 신뢰 지수
+          </p>
         </div>
       )}
     </div>

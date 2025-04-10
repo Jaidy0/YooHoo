@@ -39,6 +39,7 @@ export default function DonationUseHistoryList({
               withdrawalId={history.withdrawalId}
               onEvidenceClick={history.onEvidenceClick}
               onReceiptClick={history.onReceiptClick}
+              content={history.content}
             />
           ))}
           {visibleItems < histories.length && (

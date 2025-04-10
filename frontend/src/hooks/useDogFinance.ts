@@ -132,6 +132,7 @@ export function useDogFinance(dogId: string): UseDogFinanceResult {
       : '-',
     message: item.cheeringMessage || '-',
     depositorName: item.depositorName || '-',
+    content: item.content || '-',
   }));
 
   // 출금 데이터 포맷 변환

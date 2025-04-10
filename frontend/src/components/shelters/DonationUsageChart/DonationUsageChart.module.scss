@@ -18,6 +18,11 @@
   border-radius: 16px;
   margin-bottom: 30px;
 
+  @media screen and (max-width: 360px) {
+    padding: 16px;
+    gap: 16px;
+  }
+
   .summaryContainer {
     background-color: #fff;
     gap: 12px;

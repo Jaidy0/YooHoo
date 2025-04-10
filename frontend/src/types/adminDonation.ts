@@ -10,6 +10,7 @@ export interface DonationItem {
   userNickname: string | null;
   dogName: string | null;
   shelterName: string;
+  content: string;
 }
 
 // 출금 내역 인터페이스
@@ -74,6 +75,7 @@ export interface FormattedDepositItem {
   date: string;
   message: string;
   depositorName: string;
+  content: string;
 }
 
 // FinanceTable 컴포넌트에서 사용하는 출금 내역 형식

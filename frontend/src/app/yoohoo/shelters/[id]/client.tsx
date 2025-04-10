@@ -428,6 +428,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
       {selectedTransaction && (
         <>
           <EvidanceModal
+            className={styles.evidenceModal}
             isOpen={isEvidenceModalOpen}
             onClose={handleCloseEvidenceModal}
             transactionUniqueNo={selectedTransaction.uniqueNo}
@@ -435,6 +436,7 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
             shelterId={Number(groupId)}
           />
           <ReceiptModal
+            className={styles.ReceiptModal}
             isOpen={isReceiptModalOpen}
             onClose={handleCloseReceiptModal}
             withdrawId={selectedTransaction.withdrawId || 0}
