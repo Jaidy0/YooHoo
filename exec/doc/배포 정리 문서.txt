@@ -4,7 +4,6 @@ BE : Java 17, Spring Boot 3.4.3
 DB : MySQL 8.0.41
 Infra: Docker, Jenkins, EC2, S3, NginX
 
-
 ---
 환경변수
 # Docker 이미지 접두사 및 태그 (Jenkins에서 사용)
