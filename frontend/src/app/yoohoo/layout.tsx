@@ -48,8 +48,19 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const isMainPage = pathname === '/yoohoo';
 
   // 경로에서 페이지 키 추출
-  const pageKey = pathname?.split('/').pop() as keyof typeof PAGE_TITLES;
-  const pageTitle = pageKey ? PAGE_TITLES[pageKey] : PAGE_TITLES.main;
+  // 페이지 키를 경로 기반으로 직접 판단
+  let pageKey: PageKey = 'main';
+  if (pathname.startsWith('/yoohoo/shelters')) {
+    pageKey = 'dogs';
+  } else if (pathname.startsWith('/yoohoo/profile')) {
+    pageKey = 'profile';
+  } else if (pathname.startsWith('/yoohoo/donate')) {
+    pageKey = 'donate';
+  } else if (pathname.startsWith('/yoohoo/login/kakao')) {
+    pageKey = 'kakao';
+  }
+
+  const pageTitle = PAGE_TITLES[pageKey];
 
   // 제외할 페이지
   const hideHeaderForPaths = [
