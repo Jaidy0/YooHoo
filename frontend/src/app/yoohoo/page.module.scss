@@ -1,0 +1,266 @@
+.container {
+  padding: 0.5rem 1.5rem 3rem 1.5rem;
+  min-height: 100vh;
+  background-color: $yh-beige;
+  position: relative;
+  z-index: 0;
+}
+
+.heroSection {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  z-index: 10;
+
+  @media (max-width: 360px) {
+    gap: 0.5rem;
+  }
+}
+
+.textContent {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  width: 100%;
+  align-items: flex-end;
+  .moreButton {
+    background: $yh-yellow;
+    border: none;
+    height: 40px;
+  }
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: #333333;
+  font-weight: 500;
+}
+
+.mainTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+
+  .highlight {
+    color: #ff6b6b;
+  }
+}
+
+.donationCard {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+.cardContent {
+  // display: flex;
+  // flex-direction: column;
+  // gap: 1rem;
+}
+
+.cardText {
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: #333333;
+  margin-bottom: 0.5rem;
+  @media (max-width: 360px) {
+    font-size: 0.9rem; // 360px 이하일 때 폰트 크기 줄이기
+  }
+}
+
+.donateButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ffe600;
+  color: #333333;
+  padding: 0.75rem 1.25rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background-color 0.2s;
+
+  .arrow {
+    font-size: 1.25rem;
+  }
+}
+
+.piggyImage {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  @media (max-width: 360px) {
+    width: 84px; // 360px 이하일 때 너비 줄이기
+    height: 84px; // 360px 이하일 때 높이 줄이기
+  }
+}
+
+.dogImage {
+  width: 100%;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  img {
+    position: relative;
+    z-index: 2; // 이미지를 가장 위로
+    width: 300px;
+    height: auto;
+    overflow: visible;
+    // left: 50%;
+    // transform: translate(-50%, 10%);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 400px;
+    background: linear-gradient(
+      180deg,
+      rgba(244, 182, 22, 0.6),
+      rgba(255, 150, 100, 0.6)
+    );
+    // background-color: $chart-orange;
+    filter: blur(20px);
+    border-radius: 100%;
+    z-index: 0;
+    transform: scale(1.2); // blur 효과가 더 부드럽게 보이도록 약간 확대
+    animation: moveBlur 5s linear infinite; // 애니메이션 추가
+  }
+}
+
+// 메인 페이지
+
+.supportSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 110px;
+
+  .sectionTitle {
+    text-align: start;
+
+    .subtitle {
+      font-size: 1.2rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: $yh-orange;
+    }
+
+    .mainTitle {
+      font-size: 2rem;
+      font-weight: bold;
+
+      @media (max-width: 360px) {
+        font-size: 1.6rem;
+      }
+    }
+  }
+
+  .supportCard {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    z-index: 10;
+
+    .cardContent {
+      text-align: center;
+
+      .cardText {
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+        line-height: 1.6;
+      }
+    }
+  }
+
+  .supportButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    color: white;
+    border-radius: 2rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s;
+
+    .arrow {
+      font-size: 1.2rem;
+    }
+  }
+}
+
+.shelterCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 1200px;
+
+  // @media (max-width: 768px) {
+  //   grid-template-columns: 1fr;
+  //   padding: 0 1.5rem;
+  // }
+}
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+}
+
+.dogImageIcon {
+  opacity: 0.5;
+  animation: moveDown 2s ease-in-out infinite;
+}
+
+@keyframes moveBlur {
+  0% {
+    transform: scale(0.8) rotate(0deg);
+  }
+  25% {
+    transform: scale(0.9) rotate(90deg);
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+  }
+  75% {
+    transform: scale(0.9) rotate(270deg);
+  }
+  100% {
+    transform: scale(0.8) rotate(360deg);
+  }
+}
+
+@keyframes moveDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(16px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

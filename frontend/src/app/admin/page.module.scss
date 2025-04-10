@@ -1,0 +1,475 @@
+@use '@/assets/styles/abstracts/variables' as *;
+@use 'sass:color';
+
+.adminShelter {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.shelterPhoto {
+  width: 345px;
+  height: 345px;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  border-radius: $border-radius-md;
+}
+
+.shelterImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.shelterText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: $spacing-md;
+  flex: 1 0 0;
+  align-self: stretch;
+}
+
+.shelterTitle {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+}
+
+.settingButton {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  position: absolute;
+  right: $spacing-xxl;
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
+}
+
+.shelterInfoText {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: $spacing-md;
+}
+
+.shelterInfoItem {
+  display: flex;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.shelterSubtitle {
+  width: 120px;
+  padding: $spacing-sm 0;
+  color: $text-777;
+}
+
+.shelterInfoContent {
+  flex: 1;
+  padding: $spacing-sm $spacing-md;
+  font-weight: $font-weight-medium;
+  color: $text-121212;
+}
+
+.adminShelterInfo {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-yoohoo;
+  display: flex;
+  padding: $spacing-lg;
+  align-items: center;
+  gap: $spacing-xl;
+  align-self: stretch;
+}
+
+.adminShelterDetail {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between; // 두 컨테이너 사이 공간 균등 분배
+  align-items: stretch; // 두 컨테이너 높이 맞춤
+  gap: 28px;
+  align-self: stretch;
+  width: 100%;
+}
+
+.adminTrust {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-yoohoo;
+  display: flex;
+  width: 33%; // 1:2 비율을 위해 1/3로
+  padding: $spacing-lg;
+  align-items: flex-start; // 왼쪽 정렬
+  flex-direction: column;
+}
+
+.trustContent {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start; // 위에서부터 시작
+  align-items: flex-start; // 왼쪽 정렬
+  gap: 30px;
+}
+
+.trustHeader {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 4px;
+  position: relative; /* 자식 요소 절대 위치 지정을 위한 설정 */
+}
+
+.adminTitle {
+  color: #000;
+  font-family: 'NanumSquare Neo OTF';
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 20px;
+  letter-spacing: 0.1px;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.questionButton {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: $border-radius-full;
+  border: 1px solid $text-121212;
+  background: $yh-yellow;
+  position: absolute;
+  right: 0;
+  cursor: pointer; /* 클릭 가능함을 나타내는 커서 추가 */
+  z-index: 10;
+  font-weight: 900;
+
+  &:hover {
+    background: darken($yh-yellow, 5%);
+  }
+}
+
+.tooltip {
+  position: absolute;
+  top: 40px;
+  right: -8px;
+  width: 300px;
+  background-color: $yh-beige;
+  border: 1px solid $text-333;
+  border-radius: $border-radius-md;
+  padding: $spacing-md;
+  box-shadow: $shadow-md;
+  z-index: 100;
+  animation: fadeIn 0.2s ease-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -9px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid $text-333;
+    z-index: 1;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid $yh-beige;
+    z-index: 2;
+  }
+
+  h4 {
+    margin: $spacing-sm 0 $spacing-xs 0;
+    font-size: $font-size-md;
+    color: $yh-brown;
+    font-weight: $font-weight-bold;
+  }
+
+  p {
+    margin: $spacing-xs 0;
+    font-size: $font-size-sm;
+    color: $text-555;
+    line-height: 1.5;
+  }
+
+  ul {
+    margin: $spacing-xs 0 $spacing-md 0;
+    padding-left: $spacing-md;
+
+    li {
+      margin: $spacing-xs 0;
+      font-size: $font-size-sm;
+      color: $text-555;
+    }
+  }
+}
+
+.tooltipArrow {
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  width: 16px;
+  height: 8px;
+}
+
+.adminFootPrint {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  display: flex;
+  width: 67%; // 1:2 비율을 위해 2/3로
+  padding: $spacing-lg;
+  flex-direction: column;
+}
+
+.footPrintHeader {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+}
+
+.dogManageBtn {
+  background-color: $yh-yellow;
+  color: $text-333;
+  font-weight: $font-weight-bold;
+  padding: $spacing-sm $spacing-lg;
+  border-radius: $border-radius-full;
+  border: none;
+  cursor: pointer;
+  font-size: $font-size-md;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: darken($yh-yellow, 5%);
+  }
+}
+
+.footprintBox {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+// 발자국 배경
+.pawprintBackground {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-image: url('/images/paw-prints.png');
+  background-repeat: repeat-x;
+  background-size: 60px;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+.statsContainer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: $spacing-lg;
+  flex: 1;
+}
+
+.pawContainer {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-bottom: $spacing-sm;
+}
+
+.pawImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.count {
+  position: absolute;
+  top: 65%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $text-333;
+}
+
+.label {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $text-333;
+  margin: 0;
+  text-align: center;
+}
+
+.dogImageContainer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dogImage {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+}
+
+// 신뢰도 표시 관련 스타일
+.trustIndicator {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: $spacing-sm;
+}
+
+.trustBar {
+  width: 100%;
+  height: 10px;
+  background-color: $color-background-light;
+  border-radius: $border-radius-full;
+  overflow: hidden;
+}
+
+.trustFill {
+  height: 100%;
+  background-color: $yh-yellow;
+  border-radius: $border-radius-full;
+}
+
+.trustPercentage {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  text-align: center;
+}
+
+// 로딩 및 에러 메시지 관련 스타일
+.errorMessage {
+  margin-top: $spacing-md;
+  color: $yh-orange;
+  padding: $spacing-md;
+  border-radius: $border-radius-md;
+  background-color: lighten($yh-orange, 35%);
+
+  button {
+    margin-top: $spacing-sm;
+    padding: $spacing-xs $spacing-md;
+    background-color: $yh-orange;
+    color: white;
+    border: none;
+    border-radius: $border-radius-sm;
+    cursor: pointer;
+
+    &:hover {
+      background-color: darken($yh-orange, 10%);
+    }
+  }
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  p {
+    padding: $spacing-md $spacing-lg;
+    background-color: white;
+    border-radius: $border-radius-md;
+    box-shadow: $shadow-md;
+  }
+}
+
+// 반응형 스타일
+@media (max-width: $breakpoint-md) {
+  .statsContainer {
+    flex-wrap: wrap;
+  }
+
+  .statItem {
+    flex: 0 0 33%;
+    margin-bottom: $spacing-lg;
+  }
+
+  .dogImageContainer {
+    width: 100%;
+    justify-content: center;
+    margin-top: $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .statItem {
+    flex: 0 0 50%;
+  }
+
+  .footPrintHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+
+  .dogManageBtn {
+    align-self: flex-end;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

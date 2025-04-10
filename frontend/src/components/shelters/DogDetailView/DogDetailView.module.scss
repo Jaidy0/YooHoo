@@ -1,0 +1,238 @@
+/* DogDetailView.module.scss */
+
+.dogDetailView {
+  width: 100%;
+
+  :global(.global-rating-button) {
+    width: 40px;
+    height: 14px;
+
+    // 특정 조건 하에서 스타일 변경
+    &.some-condition {
+      font-weight: bold;
+    }
+  }
+
+  :global(.global-rating-label) {
+    width: 60px;
+  }
+}
+
+.backButtonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  .backButton {
+    display: flex;
+    align-items: center;
+    color: $color-primary;
+    font-weight: $font-weight-medium;
+  }
+  margin-bottom: 1rem;
+}
+
+.dogDetailContainer {
+  border-radius: $border-radius-lg;
+  background-color: white;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  margin-bottom: 1rem;
+}
+
+.dogDetailHeader {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1.5rem;
+
+  @media (min-width: $breakpoint-md) {
+    flex-direction: row;
+    padding: 2rem;
+  }
+}
+
+.dogImageContainer {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  flex: 1;
+
+  @media (min-width: $breakpoint-md) {
+    width: 40%;
+    margin-bottom: 0;
+    // margin-right: 2rem;
+  }
+}
+
+.dogDetailImage {
+  width: 100%;
+  height: auto;
+  border-radius: $border-radius-md;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+}
+
+.dogInfoContainer {
+  flex: 1;
+}
+
+.dogName {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  margin-bottom: 0.6rem;
+  color: $text-333;
+}
+
+.dogBasicInfo {
+  p {
+    margin-bottom: 0.5rem;
+    font-size: $font-size-md;
+    color: $text-555;
+  }
+}
+
+.infoLabel {
+  font-weight: $font-weight-medium;
+  margin-right: 0.5rem;
+  color: $text-777;
+}
+
+.dogDetailContent {
+  padding: 0 1.5rem 2rem;
+
+  @media (min-width: $breakpoint-md) {
+    padding: 0 2rem 2rem;
+  }
+}
+
+.detailSection {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 1rem;
+    padding-bottom: 0rem;
+  }
+}
+
+.sectionTitle {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-medium;
+  margin-bottom: 0.8rem;
+  color: $yh-brown;
+}
+
+.sectionContent {
+  line-height: 1.6;
+  color: $text-555;
+}
+
+.personalityContainer {
+  margin-bottom: 1rem;
+}
+
+.personalityItem {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.personalityLabel {
+  min-width: 80px;
+  font-size: $font-size-sm;
+  color: $text-777;
+}
+
+.personalityBar {
+  display: flex;
+  gap: 4px;
+}
+
+.personalityLevel {
+  width: 20px;
+  height: 8px;
+  background-color: $color-border;
+  border-radius: 4px;
+
+  &.active {
+    background-color: $yh-brown;
+  }
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.tag {
+  padding: 0.25rem 0.75rem;
+  background-color: $yh-ivory;
+  border-radius: $border-radius-full;
+  font-size: $font-size-sm;
+  color: $yh-brown;
+}
+
+.medicalList {
+  li {
+    margin-bottom: 0.6rem;
+    color: $text-555;
+  }
+}
+
+.donationStatus {
+  background-color: white;
+  border-radius: 12px;
+}
+
+.donationHistory {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.donationAmount {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+
+  .currentAmount {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: $chart-orange;
+  }
+}
+
+.donationLabel,
+.historyLabel {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
+
+.tabMenu {
+  margin-bottom: 1rem;
+  ul {
+    a {
+      flex: 1;
+    }
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .detailValue {
+    min-width: 0;
+  }
+}

@@ -1,0 +1,113 @@
+#docker-compose.develop.yml
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      TZ: ${TZ}
+    ports:
+      - "${MYSQL_PORT}:3306"
+    command: --default-time-zone='Asia/Seoul'
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    ports:
+      - "${REDIS_PORT}:6379"
+    restart: always
+    volumes:
+      - redis_data:/data
+      # redis.conf 파일을 컨테이너 내부 경로에 마운트 (비밀번호 설정 유지)
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - /opt/redis-certs:/etc/redis/certs:ro
+    # 마운트된 설정 파일을 사용하도록 명령어 지정
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_lb
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+  stable_backend:
+    image: ${BACKEND_IMAGE}:latest
+    container_name: stable_backend
+    env_file: .env
+    ports:
+      - "${STABLE_BACKEND_PORT}:8080"
+
+  canary_backend:
+    image: ${BACKEND_IMAGE}:${CANARY_TAG}
+    container_name: canary_backend
+    env_file: .env
+    ports:
+      - "${CANARY_BACKEND_PORT}:8080"
+
+  stable_frontend:
+    image: ${FRONTEND_IMAGE}:latest
+    container_name: stable_frontend
+    env_file: .env
+    ports:
+      - "${STABLE_FRONTEND_PORT}:3000"
+
+  canary_frontend:
+    image: ${FRONTEND_IMAGE}:${CANARY_TAG}
+    container_name: canary_frontend
+    env_file: .env
+    ports:
+      - "${CANARY_FRONTEND_PORT}:3000"
+
+  prometheus:
+    image: prom/prometheus:v2.53.3
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:9090"
+    restart: always
+
+  grafana:
+    image: grafana/grafana:11.5.1
+    container_name: grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "${GRAFANA_PORT}:3000"
+    depends_on:
+      - prometheus
+    restart: always
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: always
+    ports:
+      - "${NODE_EXPORTER_PORT}:9100"
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    privileged: true
+    ports:
+      - "${CADVISOR_PORT}:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/kmsg:/dev/kmsg:ro
+    restart: always
+
+volumes:
+  mysql_data:
+  redis_data:
+  grafana-data:
+  prometheus-data:

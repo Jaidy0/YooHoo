@@ -1,0 +1,99 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  @media (max-width: 768px) {
+    padding: 20px; // 768px 이하일 때 padding 적용
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: $color-background;
+  border-radius: $border-radius-md;
+  padding: $spacing-lg;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: $shadow-lg;
+  animation: modalFadeIn 0.3s ease-out forwards;
+  z-index: 1001;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-sm;
+  border-bottom: 1px solid $color-border;
+}
+
+.title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  margin: 0;
+  color: $text-333;
+}
+
+.closeButton {
+  background: transparent;
+  border: none;
+  font-size: $font-size-2xl;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  color: $text-555;
+
+  &:hover {
+    color: $text-333;
+  }
+}
+
+.content {
+  margin-top: $spacing-md;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
+}
+
+/* 반응형 처리 */
+@media (max-width: $breakpoint-md) {
+  .modal {
+    width: 95%;
+    max-width: 450px;
+    padding: $spacing-md;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .modal {
+    width: 90%;
+    height: auto;
+    max-height: 95vh;
+    border-radius: $border-radius-sm;
+    padding: $spacing-md $spacing-md;
+  }
+}

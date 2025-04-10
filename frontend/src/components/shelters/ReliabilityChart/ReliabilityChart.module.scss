@@ -1,0 +1,182 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.container {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  gap: 20px;
+  width: 100%;
+}
+
+.textStatWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  flex-direction: column;
+  width: 100%;
+
+  .textStatContainer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    gap: 24px;
+    flex-wrap: wrap;
+
+    @media (max-width: $breakpoint-md) {
+      flex-direction: column;
+    }
+  }
+
+  .textWrapper {
+    flex: 1;
+    min-width: 280px;
+  }
+
+  .statWrapper {
+    min-width: 200px;
+    display: flex;
+    flex-direction: column;
+    background: #f7f7f7;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: right;
+
+    .statLabel {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.5;
+      color: #666666;
+      margin-bottom: 0.2rem;
+    }
+
+    .statValue {
+      em {
+        font-size: $font-size-4xl;
+        font-style: normal;
+        font-weight: 700;
+        color: $color-text;
+      }
+    }
+  }
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #333333;
+
+  br {
+    display: block;
+    content: '';
+  }
+}
+
+.descriptionTitle {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.description {
+  margin: 0 0 24px 0;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #666666;
+  word-break: keep-all;
+}
+
+// 새로운 맥 스타일 막대 차트 관련 스타일
+
+.chartContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  // margin-top: 10px;
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  padding: 1.4rem;
+}
+
+.usageInfo {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.usageTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: $color-text;
+}
+
+.usageSubtitle {
+  font-size: 14px;
+  color: $text-777;
+  font-weight: 400;
+}
+
+.reliability {
+  font-size: 40px;
+}
+
+.usageTitleText {
+  margin-right: 6px;
+}
+
+.combinedBarContainer {
+  width: 100%;
+  // margin-bottom: 10px;
+}
+
+.combinedBarWrapper {
+  width: 100%;
+  height: 30px;
+  background-color: #fff; // 기본 배경 (남은 공간)
+  border-radius: 16px;
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.combinedBarSection {
+  height: 100%;
+  transition: width 0.5s ease;
+  background-color: #fff;
+}
+
+.legendContainer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legendText {
+  font-size: 13px;
+  color: $text-555;
+}

@@ -1,0 +1,69 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+// layout.module.scss 수정
+.container {
+  // min-height: 100vh;
+  min-height: 100dvh; // 모바일 브라우저 주소창 고려
+  // min-width: 375px;
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
+  position: relative;
+  overflow: hidden; // 중요: 컨테이너 자체에서는 오버플로우를 숨김
+  // height: 100vh; // 고정 높이 추가
+  height: 100dvh; // 모바일에서는 동적 뷰포트 높이 사용
+
+  @media screen and (max-width: $breakpoint-sm) {
+    max-width: 100%;
+  }
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  // padding: $spacing-md;
+  position: relative;
+
+  // 스크롤바 완전히 숨기기
+  -ms-overflow-style: none; // IE, Edge
+  scrollbar-width: none; // Firefox
+
+  // WebKit 브라우저 (Chrome, Safari 등)에서 스크롤바 숨기기
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  // margin-bottom: 66px;
+
+  // iOS 스크롤 부드럽게
+  -webkit-overflow-scrolling: touch;
+
+  padding-bottom: 66px; // 기본적으로 padding-bottom 적용
+
+  // &.hide-bottom-nav {
+  //   padding-bottom: 0 !important;
+  // }
+}
+
+// BottomNav가 숨겨질 때 padding 제거
+:global(.hide-bottom-nav).main {
+  padding-bottom: 0 !important;
+}
+
+// 헤더와 하단 네비게이션 사이의 컨텐츠 영역
+.content {
+  padding-top: 56px; // 헤더 높이
+  padding-bottom: 64px; // 하단 네비게이션 높이
+  min-height: calc(100vh - 120px); // 헤더와 네비게이션 높이를 제외한 최소 높이
+}
+
+// 관리자 모드일 때 다른 스타일 적용 (필요한 경우)
+.adminMode {
+  background-color: var(--yh-admin-bg);
+}
+
+// 사용자 모드일 때의 스타일
+.userMode {
+  background-color: var(--color-background);
+}

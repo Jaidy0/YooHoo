@@ -1,0 +1,84 @@
+.reportPageContainer {
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 0.5rem;
+}
+
+.reportSection {
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+}
+
+.inlineBackButton {
+  font-size: 0.875rem;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  color: $text-333;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 0.5rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 16px;
+  color: $text-777;
+}
+
+.noDataContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  padding: 24px;
+  text-align: center;
+}
+
+.noDataMessage {
+  padding: 24px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  margin-top: 10px;
+
+  p {
+    margin: 12px 0;
+    color: $text-555;
+
+    &:first-child {
+      font-size: 18px;
+      font-weight: $font-weight-medium;
+      color: $text-333;
+    }
+  }
+}
+
+.dummyNotice {
+  margin-top: 24px;
+  padding: 12px;
+  background-color: $yh-beige;
+  border-radius: 8px;
+  text-align: center;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+    color: #664d00;
+  }
+}
+
+.chartDescription {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: $text-555;
+  font-size: 0.925rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+}

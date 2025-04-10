@@ -1,0 +1,98 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.shelterPage {
+  // display: flex;
+  // padding: $spacing-xl 0 0 0;
+  flex-direction: column;
+  align-items: center;
+  align-self: stretch;
+  background-color: $yh-admin-bg;
+  height: calc(100dvh - 66px);
+}
+
+.header {
+  align-items: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+  width: 100%;
+  flex: 1;
+  padding: 0 $spacing-md;
+  margin-bottom: $spacing-md;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: center; // flex-start에서 center로 변경
+  width: 100%; // 너비 100%로 설정
+  gap: 8px;
+  text-align: center; // 텍스트도 가운데 정렬 유지
+  margin-bottom: $spacing-sm;
+  margin-top: $spacing-lg;
+}
+.subTitle {
+  align-items: center;
+  text-align: center;
+  font-size: $font-size-sm;
+  color: $yh-orange;
+  font-weight: $font-weight-medium;
+}
+
+.mainTitle {
+  font-size: $font-size-3xl;
+  color: $text-333;
+  font-weight: $font-weight-bold;
+}
+
+.searchBar {
+  width: 100%;
+}
+
+.shelterList {
+  // display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+  width: 100%;
+  height: calc(100% - 162px);
+}
+
+.dropdownContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 30px;
+  > span {
+    font-size: $font-size-lg;
+    color: $text-333;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.shelterCards {
+  height: 100%;
+  overflow-y: auto;
+  .shelterCard {
+    margin-bottom: 10px;
+  }
+}
+
+.shelters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  padding: 14px 14px 0 14px;
+  overflow: hidden;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 10px;
+}
+
+.dropdownTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

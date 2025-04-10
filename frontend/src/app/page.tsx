@@ -1,37 +1,21 @@
-import Image from 'next/image';
-import styles from './page.module.scss';
+'use client';
+// import styles from './page.module.scss';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  // const { user, setUser } = useAuthStore();
+  // 클라이언트 측에서만 MSW 초기화
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      import('@/mocks').then((module) => module.default());
+    }
+  }, []);
+  const router = useRouter();
+  // const isAdmin = false; // 추후 로그인 상태에 따라 변경
 
-  // React Query로 사용자 프로필 및 역할 가져오기
-  // const { data: userProfile } = useQuery({
-  //   queryKey: ['userProfile', user?.id],
-  //   queryFn: () => fetchUserProfile(user?.id),
-  //   enabled: !!user?.id,
-  //   onSuccess: (data) => {
-  //     setUser({ ...user, role: data.role });
-  //   },
-  // });
+  useEffect(() => {
+    router.push('/yoohoo');
+  }, [router]);
 
-  // const isAdmin = user?.role === 'admin';
-  const isAdmin = 'user';
-
-  return (
-    <div
-      className={`
-        ${styles.container} 
-        ${isAdmin ? styles.adminMode : styles.userMode}
-      `}
-    >
-      <main>
-        {/* 역할별 다른 컴포넌트 렌더링 */}
-        {isAdmin != 'user' ? (
-          <div className={styles.admin}>관리자용</div>
-        ) : (
-          <div className={styles.user}>사용자용페이지입니다. 안녕하셍요요</div>
-        )}
-      </main>
-    </div>
-  );
+  return null; // 또는 로딩 상태 표시
 }

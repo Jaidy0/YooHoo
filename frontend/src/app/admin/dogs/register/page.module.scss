@@ -1,0 +1,107 @@
+// page.module.scss
+@use '@/assets/styles/abstracts/variables' as *;
+
+// 기본 페이지 레이아웃
+.dogsPage {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+// 헤더 액션 영역 스타일
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.pageTitle {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  margin: 0;
+}
+
+// 공통 관리자 페이지 카드 스타일
+.adminCard {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// 폼 레이아웃 스타일
+.formContent {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: $spacing-xl;
+
+  @media (max-width: $breakpoint-lg) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.imageSection {
+  width: 100%;
+}
+
+.formFields {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-sm;
+}
+
+.groupLabel {
+  font-weight: $font-weight-medium;
+  font-size: $font-size-md;
+  color: $text-555;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-sm;
+}
+
+.optionButton {
+  min-width: 80px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+}
+
+// 반응형 스타일
+@media (max-width: $breakpoint-md) {
+  .adminCard {
+    padding: $spacing-md;
+  }
+
+  .formActions {
+    flex-direction: column-reverse;
+    width: 100%;
+
+    button {
+      width: 100%;
+    }
+  }
+}

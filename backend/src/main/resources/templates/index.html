@@ -1,0 +1,14 @@
+<!-- src/main/resources/templates/index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+<body>
+    <h1>Welcome</h1>
+    <a th:href="'https://kauth.kakao.com/oauth/authorize?client_id=' + ${kakaoClientId} + '&redirect_uri=' + ${kakaoRedirectUri} + '&response_type=code'">
+        <button>카카오 로그인</button>
+    </a>
+</body>
+</html>

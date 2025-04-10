@@ -1,0 +1,171 @@
+// app/admin/dogs/success/page.module.scss
+@use '@/assets/styles/abstracts/variables' as *;
+
+.successPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+  overflow: hidden;
+
+  // 전체 화면 빵빠레 애니메이션 배경
+  .confettiBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 6;
+    pointer-events: none; // 클릭 이벤트가 다른 요소로 전달되도록
+  }
+
+  // 왼쪽 상단 로고
+  .logoWrapper {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+
+    .logo {
+      object-fit: contain;
+    }
+  }
+
+  // 콘텐츠 박스
+  .contentBox {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 500px;
+    padding: 40px 20px;
+    background-color: white;
+    border-radius: $border-radius-lg;
+    box-shadow: $shadow-md;
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s ease;
+    position: relative;
+    z-index: 5; // 빵빠레보다 위에 표시
+
+    &.animateIn {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .titleWrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+
+      .title {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+        color: $yh-brown; // 브랜드 색상으로 조정
+        margin: 0;
+        margin-right: 8px;
+      }
+
+      .pawPrint {
+        height: 28px;
+        width: 28px;
+      }
+    }
+
+    .subtitle {
+      margin-top: 0;
+      font-size: $font-size-md;
+      color: $text-555;
+      margin-bottom: 30px;
+    }
+
+    .imageWrapper {
+      width: 100%;
+      max-width: 300px;
+      margin: 20px 0 40px;
+      position: relative;
+
+      .imageBackground {
+        position: relative;
+        width: 100%;
+        height: 220px;
+        background-color: $yh-beige;
+        border-radius: 50%;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .dogImageContainer {
+          position: relative;
+          z-index: 3; // 강아지 이미지가 그림자보다 위에 보이도록
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          animation: floatAnimation 3s ease-in-out infinite;
+
+          .dogImage {
+            width: auto;
+            height: auto;
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+          }
+        }
+
+        .shadow {
+          position: absolute;
+          bottom: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 70%;
+          height: 15px;
+          border-radius: 50%;
+          background: rgba(0, 0, 0, 0.07);
+          filter: blur(5px);
+          z-index: 1;
+          animation: shadowAnimation 3s ease-in-out infinite;
+        }
+      }
+    }
+
+    .buttonGroup {
+      display: flex;
+      gap: 16px;
+      position: relative;
+      z-index: 5;
+
+      @media (max-width: $breakpoint-sm) {
+        flex-direction: column;
+        width: 100%;
+      }
+    }
+  }
+}
+
+@keyframes floatAnimation {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shadowAnimation {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.85);
+    opacity: 0.4;
+  }
+}

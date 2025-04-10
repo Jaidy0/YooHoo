@@ -1,0 +1,18 @@
+.profileLayout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.dashboardContainer {
+  border-radius: 10px;
+}
+
+.tabMenuWrapper {
+  position: sticky;
+  top: 0; /* 상단에 고정 */
+  z-index: 10;
+  background-color: white;
+  overflow: hidden;
+  border-bottom: 1px solid #eee;
+}

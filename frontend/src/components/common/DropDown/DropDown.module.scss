@@ -1,0 +1,127 @@
+@use '../../../assets/styles/abstracts/variables' as *;
+
+.dropdown {
+  height: 30px;
+  position: relative;
+  display: inline-block;
+  font-family: 'NanumSquareNeo', sans-serif;
+  font-weight: $font-weight-medium;
+
+  &--open {
+    .dropdownToggle {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom: none;
+    }
+
+    .dropdownArrow {
+      transform: rotate(270deg);
+    }
+  }
+}
+
+.dropdownToggle {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 60px;
+  padding: 4px 10px;
+  background-color: #fff;
+  border: 1px solid #333;
+  border-radius: 20px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  color: #333;
+  cursor: pointer;
+  text-align: left;
+
+  .dropdown--open & {
+    border-radius: 20px 20px 0 0;
+  }
+
+  &:hover {
+    border-color: #555;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #555;
+  }
+}
+
+.dropdownText {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.dropdownArrow {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  z-index: 100;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+
+  .dropdown--open & {
+    max-height: 500px;
+    opacity: 1;
+    border: 1px solid #333;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    overflow-y: auto;
+  }
+}
+
+.dropdownOption {
+  padding: 10px 12px;
+  font-size: $font-size-xs;
+  color: #333;
+  cursor: pointer;
+  font-weight: $font-weight-medium;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+
+  &--selected {
+    font-weight: $font-weight-bold;
+  }
+}
+
+.dropdownBackOption {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  font-size: $font-size-xs;
+  color: #555;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+
+  div {
+    display: flex;
+    align-items: center;
+    margin-right: 8px;
+  }
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+}

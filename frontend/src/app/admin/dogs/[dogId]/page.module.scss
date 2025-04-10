@@ -1,0 +1,191 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.dogsDetailPage {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xl;
+}
+
+// 헤더 액션 영역 스타일
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+}
+
+.pageTitle {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $text-121212;
+  margin: 0;
+}
+
+.actionButtons {
+  display: flex;
+  gap: $spacing-md;
+}
+
+// 공통 관리자 페이지 카드 스타일
+.adminCard {
+  background-color: $color-background;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-md;
+  padding: $spacing-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-md;
+}
+
+// 폼 콘텐츠 컨테이너
+.formContent {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-xl;
+
+  @media (max-width: $breakpoint-md) {
+    flex-direction: column;
+  }
+}
+
+// 이미지 섹션
+.imageSection {
+  flex: 0 0 300px;
+
+  @media (max-width: $breakpoint-md) {
+    flex: 1 0 auto;
+  }
+}
+
+.imageContainer {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+}
+
+.dogImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+// 폼 필드 컨테이너
+.formFields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-lg;
+}
+
+// 상세 정보 항목
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-xs;
+}
+
+.detailLabel {
+  font-size: $font-size-md;
+  font-weight: $font-weight-medium;
+  color: $text-555;
+}
+
+.detailValue {
+  font-size: $font-size-lg;
+  color: $text-333;
+  padding: $spacing-sm 0;
+}
+
+// 상태 뱃지 (DogStatus enum 기반)
+.statusBadge {
+  display: inline-block;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: $border-radius-sm;
+  font-weight: $font-weight-medium;
+  font-size: $font-size-md;
+  width: fit-content;
+
+  &.status0 {
+    // PROTECTED
+    background-color: $chart-blue;
+    color: white;
+  }
+
+  &.status1 {
+    // TEMPORARY
+    background-color: $chart-yellow;
+    color: $text-333;
+  }
+
+  &.status2 {
+    // ADOPTED
+    background-color: $chart-green;
+    color: white;
+  }
+
+  &.status3 {
+    // DECEASED
+    background-color: $text-777;
+    color: white;
+  }
+}
+
+// 썸네일 목록
+.thumbnailList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-xs;
+  margin-top: $spacing-md;
+}
+
+.thumbnail {
+  width: 60px;
+  height: 60px;
+  border-radius: $border-radius-sm;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $color-primary-light;
+  }
+
+  &.activeThumb {
+    border-color: $color-primary;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// 로딩 및 에러 상태
+.loading,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  gap: $spacing-md;
+  text-align: center;
+  color: $text-555;
+  font-size: $font-size-lg;
+}
+
+.error {
+  color: $yh-orange;
+}

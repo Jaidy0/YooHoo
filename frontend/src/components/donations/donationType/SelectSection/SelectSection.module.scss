@@ -1,0 +1,35 @@
+.selectSection {
+  margin: 50px 0;
+}
+
+.cardRow {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  margin: 0 1.4rem;
+
+  .selectCard {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.description {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 1rem;
+  margin-left:1.1rem;
+  font-size: $font-size-sm;
+
+  strong {
+    margin-right: 0.5rem;
+    color: $chart-yellow;
+    font-size: $font-size-md;
+  }
+
+  p {
+    margin: 0.4rem 0;
+  }
+}

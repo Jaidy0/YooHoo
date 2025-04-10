@@ -1,0 +1,59 @@
+.cardWrapper {
+  display: flex;
+  width: 352px;
+  max-width: 100%;
+  padding: 14px $spacing-md;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  border-radius: 10px;
+}
+
+.history {
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.alarm {
+  border-left: 3px solid $yh-yellow;
+  background: #fff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  align-self: stretch;
+}
+
+.date {
+  color: #000;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
+  line-height: $font-size-md;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  align-self: stretch;
+  flex-direction: column;
+}
+
+.subText {
+  flex-shrink: 0;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-normal;
+  line-height: $font-size-lg;
+  color: #777;
+}
+
+.mainText {
+  flex-shrink: 0;
+  color: #000;
+  font-family: 'NanumSquare Neo OTF';
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  line-height: $font-size-xl;
+}

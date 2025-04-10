@@ -1,0 +1,131 @@
+events {
+    worker_connections 1024;
+}
+
+http {
+    # HTTP 업그레이드 관련 기본값 처리
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        "" close;
+    }
+
+    # 버전 분할 설정 (같은 IP와 브라우저를 사용하는 경우 항상 동일한 버전을 배정)
+    split_clients "${remote_addr}${http_user_agent}" $version_key {
+        $STABLE_WEIGHT% "stable";
+        * "canary";
+    }
+
+    # 쿠키가 존재하면 쿠키의 값을, 없으면 split_clients 결과($version_key)를 사용
+    map $cookie_service_version $final_version {
+        "" $version_key;
+        default $cookie_service_version;
+    }
+
+    # 업스트림 그룹 정의
+    upstream frontend_stable {
+        server $EC2_FRONTEND_HOST:$STABLE_FRONTEND_PORT;
+    }
+    upstream frontend_canary {
+        server $EC2_FRONTEND_HOST:$CANARY_FRONTEND_PORT;
+    }
+    upstream backend_stable {
+        server $EC2_BACKEND_HOST:$STABLE_BACKEND_PORT;
+    }
+    upstream backend_canary {
+        server $EC2_BACKEND_HOST:$CANARY_BACKEND_PORT;
+    }
+
+    # 최종 버전 값($final_version)에 따른 프론트엔드/백엔드 매핑
+    map $final_version $frontend_group {
+        "stable" "frontend_stable";
+        "canary" "frontend_canary";
+    }
+    map $final_version $backend_group {
+        "stable" "backend_stable";
+        "canary" "backend_canary";
+    }
+
+    # HTTP 접근을 HTTPS로 리다이렉트
+    server {
+        listen 80;
+        server_name j12b209.p.ssafy.io;
+        return 301 https://$host$request_uri;
+    }
+
+    # HTTPS 서버 블록
+    server {
+        listen 443 ssl http2;
+        server_name j12b209.p.ssafy.io;
+
+        # SSL 인증서 설정
+        ssl_certificate /etc/letsencrypt/live/j12b209.p.ssafy.io/fullchain.pem;
+        ssl_certificate_key /etc/letsencrypt/live/j12b209.p.ssafy.io/privkey.pem;
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        client_max_body_size 20m;
+
+        # Next.js 서버로 프록시
+        location / {
+            proxy_pass http://$frontend_group;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            # 버전 쿠키 설정 (최초 요청시만 : 이후 동일한 클라이언트가 재방문할 때 같은 버전을 계속 사용하도록 하게)
+            if ($cookie_service_version = "") {
+                add_header Set-Cookie "service_version=$final_version; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax";
+            }
+        }
+
+        # 정적 파일 제공 (Next.js 빌드된 파일)
+        location /_next/ {
+            proxy_pass http://$frontend_group;
+            proxy_cache_valid 200 1h;
+            proxy_set_header Cache-Control "public, max-age=31536000, immutable";
+        }
+
+        # /images/ 경로 fallback 설정
+        location /images/ {
+            proxy_intercept_errors on;
+            proxy_pass http://frontend_stable;
+            error_page 404 = @canary_images;
+        }
+
+        location @canary_images {
+            proxy_pass http://frontend_canary;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            # 만약 stable 버전에 파일이 없으면 error_page를 통해 @canary로 요청 전달
+            error_page 404 = @canary;
+        }
+
+        location @canary {
+            proxy_pass http://frontend_canary;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # API 요청은 백엔드 그룹으로 전달
+        location /api/ {
+            proxy_pass http://$backend_group;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_cache_bypass $http_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}

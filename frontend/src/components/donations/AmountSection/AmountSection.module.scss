@@ -1,0 +1,125 @@
+.amountSection {
+  display: flex;
+  flex-direction: column;
+
+  .amountInputContainer {
+    padding: 0 30px;
+
+    .amountInputHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+
+      h3 {
+        font-size: $font-size-md;
+        font-weight: $font-weight-bold;
+        color: $text-333;
+        margin: 0;
+      }
+
+      .resetButton {
+        background: none;
+        border: none;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: #999;
+        padding: 0;
+        cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        text-decoration-color: #ccc;
+
+        &:hover {
+          color: $text-333;
+          text-decoration-color: $text-333;
+        }
+      }
+    }
+
+    .inputWrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      font-weight: $font-weight-bold;
+      padding: 0.75rem;
+
+      &:focus-within {
+        border-bottom: 2px solid $text-333;
+      }
+
+      .amountInput {
+        outline: none;
+        width: 100%;
+        border: none;
+        text-align: right;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-bold;
+        color: $text-333;
+      }
+
+      .wonText {
+        color: $text-333;
+        font-size: $font-size-lg;
+        margin-left: 0.5rem;
+      }
+    }
+  }
+
+  .amountButtons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 10px 30px;
+    flex-wrap: nowrap;
+
+    @media (max-width: 480px) {
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 380px) {
+      gap: 0.25rem;
+    }
+  }
+
+  .amountButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.25rem;
+    min-width: 90px;
+    border: none;
+    border-radius: 8px;
+    background-color: $yh-ivory;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-bold;
+    font-family: $font-family-base;
+    color: $text-333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    @media (max-width: 480px) {
+      min-width: 70px;
+      font-size: $font-size-xs;
+    }
+
+    @media (max-width: 380px) {
+      min-width: 60px;
+      padding: 0.15rem;
+    }
+
+    span {
+      font-size: $font-size-lg;
+      transform: translateY(-1px);
+
+      @media (max-width: 480px) {
+        font-size: $font-size-md;
+      }
+    }
+
+    &:hover {
+      background-color: $yh-yellow;
+    }
+  }
+}

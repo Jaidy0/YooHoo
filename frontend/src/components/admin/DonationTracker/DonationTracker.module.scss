@@ -1,0 +1,123 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.trackerCard {
+  position: relative;
+  width: 100%;
+  padding: $spacing-lg;
+  border-radius: $border-radius-md;
+  border: 1px solid $color-border;
+  background-color: $color-background;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  &:hover {
+    box-shadow: $shadow-yoohoo;
+  }
+}
+
+.total {
+  height: 100%;
+  padding: $spacing-xl;
+  align-items: center;
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $spacing-lg;
+    width: 100%;
+    text-align: center;
+
+    .label {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-medium;
+      color: $text-555;
+      margin-right: $spacing-sm;
+    }
+  }
+
+  .amount {
+    font-size: 48px;
+    font-weight: $font-weight-bold;
+    color: $text-121212;
+  }
+
+  .subText {
+    font-size: $font-size-xl;
+    margin-left: $spacing-xs;
+  }
+
+  .totalContent {
+    width: 100%;
+    text-align: right;
+    margin-top: $spacing-md;
+  }
+
+  .compareWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: $spacing-md;
+
+    .plainText {
+      font-size: $font-size-md;
+      color: $text-555;
+      margin-right: $spacing-xs;
+    }
+
+    .incomeText {
+      color: #0099ff;
+      font-weight: $font-weight-medium;
+      margin-right: $spacing-xs;
+    }
+
+    .expenseText {
+      color: #ff544c;
+      font-weight: $font-weight-medium;
+      margin-right: $spacing-xs;
+    }
+
+    .incomeValue {
+      color: #0099ff;
+      font-weight: $font-weight-medium;
+      margin: 0 $spacing-xs;
+    }
+
+    .expenseValue {
+      color: #ff544c;
+      font-weight: $font-weight-medium;
+      margin: 0 $spacing-xs;
+    }
+  }
+}
+
+// 입금 및 출금 카드에 높이 100% 설정
+.deposit,
+.withdraw {
+  height: 100%; // 부모 컨테이너의 높이를 채우도록 함
+}
+
+.simple {
+  display: flex;
+  padding: $spacing-lg;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%; // 높이를 100%로 설정하여 부모 컨테이너를 채우도록 함
+
+  .badge {
+    flex-shrink: 0;
+  }
+
+  .amountWrapper {
+    display: flex;
+    align-items: center; // 수직 가운데 정렬
+  }
+
+  .amount {
+    font-size: $font-size-3xl;
+    font-weight: $font-weight-bold;
+    color: $text-121212;
+    margin: 0 $spacing-xs;
+  }
+}

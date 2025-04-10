@@ -1,0 +1,126 @@
+.containerWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  background-color: #fff4cc;
+}
+
+.container {
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3rem;
+  //   animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+.dogImage {
+  opacity: 0;
+  width: 50%;
+  aspect-ratio: 1/1;
+  background: #fff;
+  border-radius: 100%;
+  padding: 1rem;
+  position: relative;
+  animation: fadeIn 0.5s ease-in-out forwards;
+  animation-delay: 0.5s; // 강아지가 두 번째로 나타남
+
+  img {
+    position: absolute;
+    bottom: -34px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 100;
+  }
+}
+
+.subtitle {
+  text-align: center;
+  font-size: 2rem;
+  .highlight {
+    display: block;
+    color: $yh-orange;
+    margin-bottom: 10px;
+  }
+
+  .subdesc {
+    display: block;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+}
+
+.desc {
+  line-height: 1.3;
+}
+
+.notice {
+  margin-top: 1rem;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.3;
+}
+
+.balloon {
+  opacity: 0;
+  position: relative;
+  background-color: #fff; // 말풍선의 배경색
+  border-radius: 10%; // 동그란 모양
+  padding: 2rem; // 내부 여백
+  //   width: 200px; // 말풍선의 너비
+  //   height: 200px; // 말풍선의 높이
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in-out forwards;
+  animation-delay: 1s; // 말풍선이 먼저 나타남
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; // 말풍선 꼬리의 위치
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid #fff; // 말풍선의 배경색과 동일
+  }
+}
+
+.button {
+  margin: 16px 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+  // blink 0.5s infinite alternate;
+  //   animation: fadeIn 0.5s ease-in-out forwards;
+  //   animation-delay: 1s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes blink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.5;
+  }
+}

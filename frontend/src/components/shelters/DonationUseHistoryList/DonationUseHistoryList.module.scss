@@ -1,0 +1,47 @@
+// src/components/shelters/DonationUseHistoryList/DonationUseHistoryList.module.scss
+.containerWrap {
+  height: auto;
+}
+
+.container {
+  padding: 24px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+}
+
+.title {
+  margin: 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333333;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  // overflow-y: auto;
+}
+
+.observerTarget {
+  padding: 12px 0;
+  text-align: center;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.loadingMore {
+  color: #666666;
+  font-size: 14px;
+  padding: 8px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: #e0e0e0;
+  }
+}

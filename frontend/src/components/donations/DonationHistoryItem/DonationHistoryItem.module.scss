@@ -1,0 +1,79 @@
+.historyItem {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  // border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.historyItemContainer {
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.historyDate {
+  font-size: 0.875rem;
+  color: $text-777;
+  margin-bottom: 0.5rem;
+}
+
+.historyContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.donorName {
+  font-weight: $font-weight-medium;
+  color: $text-333;
+}
+
+.donationValue {
+  color: $yh-brown;
+  font-weight: $font-weight-medium;
+}
+
+.historyMessage {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.875rem;
+  color: $text-555;
+  line-height: 1.4;
+  padding: 0.7rem 0;
+}
+
+.historyMessageContent {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
+  line-height: 1.4;
+  max-height: 2.8em;
+  position: relative;
+  transition: max-height 0.3s ease-out;
+
+  &.expanded {
+    -webkit-line-clamp: unset;
+    max-height: none;
+  }
+}
+
+.moreButton {
+  background: none;
+  border: none;
+  color: $text-777;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

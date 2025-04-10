@@ -1,0 +1,73 @@
+# redis.conf.template
+
+# ## 보안 설정 ##
+# 비밀번호 설정
+requirepass $REDIS_PASSWORD
+
+# ## 기본 설정 ##
+# Non-TLS 포트 비활성화 (TLS 포트만 사용)
+port 0
+# TLS 포트 활성화
+tls-port 6379
+
+# TCP keepalive 설정 (네트워크 불안정 시 연결 유지)
+tcp-keepalive 300
+
+# Docker 환경에서는 보통 stdout/stderr 사용 (로깅)
+# logfile ""
+
+bind 0.0.0.0
+
+# 데이터베이스 개수
+databases 16
+
+# ## TLS/SSL 설정 ##
+# 서버 인증서 파일 경로
+tls-cert-file /etc/redis/certs/redis.crt
+# 서버 개인 키 파일 경로
+tls-key-file /etc/redis/certs/redis.key
+
+# 클라이언트 인증서 요구 안 함 (단방향 TLS)
+tls-auth-clients no
+# 허용할 TLS 프로토콜 버전
+tls-protocols "TLSv1.2 TLSv1.3"
+# 서버가 선호하는 암호화 스위트 사용
+tls-prefer-server-ciphers yes
+
+# ## RDB 스냅샷 설정 ##
+# 900초(15분) 동안 1개 이상의 키 변경 시 저장
+save 900 1
+# 300초(5분) 동안 10개 이상의 키 변경 시 저장
+save 300 10
+# 60초 동안 10000개 이상의 키 변경 시 저장
+save 60 10000
+
+# RDB 파일 이름
+dbfilename dump.rdb
+
+# RDB 파일 저장 경로
+dir /data
+
+# ## 복제 관련 설정 (현재는 단일 인스턴스이므로 주석 처리) ##
+# replicaof <masterip> <masterport>
+# masterauth <master-password>
+
+# ## 고급 설정 (필요시 주석 해제 및 수정) ##
+# 최대 클라이언트 연결 수
+# maxclients 10000
+
+# 최대 메모리 제한 (예: 1GB) 및 정책
+maxmemory 1gb
+maxmemory-policy allkeys-lru
+
+# ## 위험 명령어 이름 변경 (보안 강화) ##
+# CONFIG 명령어 비활성화
+rename-command CONFIG ""
+# 복제 관련 명령어 비활성화
+# rename-command SLAVEOF ""
+# rename-command REPLICAOF ""
+# 전체 삭제 명령어 비활성화
+rename-command FLUSHALL ""
+rename-command FLUSHDB ""
+# KEYS 명령어 비활성화 (성능 이슈 방지)
+rename-command KEYS ""

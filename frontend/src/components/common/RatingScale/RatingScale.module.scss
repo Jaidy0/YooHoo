@@ -1,0 +1,55 @@
+@use '@/assets/styles/abstracts/variables' as *;
+
+.ratingScale {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+
+  @media screen and (max-width: 360px) {
+    display: flex;
+    width: 100%;
+  }
+}
+
+.ratingButton {
+  width: 52px;
+  height: 24px;
+  border-radius: 50px;
+  border: none;
+  background-color: #f5f5dc; // 연한 베이지색
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+
+  &.active {
+    background-color: $yh-yellow; // 노란색 활성화 상태
+  }
+
+  &:hover:not(:disabled) {
+    border-color: $yh-yellow;
+  }
+
+  &:disabled {
+    cursor: default;
+  }
+  @media screen and (max-width: 360px) {
+    flex: 1;
+  }
+}
+
+// 첫 번째 버튼은 항상 활성화 (기본값)
+.ratingButton:first-child {
+  background-color: $yh-yellow;
+}
+
+// 크기 변형
+.small .ratingButton {
+  width: 36px;
+  height: 16px;
+}
+
+.large .ratingButton {
+  width: 68px;
+  height: 32px;
+}

@@ -1,0 +1,89 @@
+.selectCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 30px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  box-sizing: border-box;
+  background-color: #fff;
+  width: 100%;
+  min-height: 46px;
+  position: relative;
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.defaultBorder {
+    border-color: $text-121212;
+
+    .iconContainer {
+      color: $text-121212;
+    }
+  }
+
+  &.grayBorder {
+    border: 1px solid #ddd;
+
+    .iconContainer {
+      color: $text-999;
+    }
+  }
+
+  &.noBorder {
+    .iconContainer {
+      color: $text-121212;
+    }
+  }
+
+  &.selected {
+    background-color: $yh-yellow;
+    color: $text-121212;
+
+    .description {
+      color: $text-333;
+    }
+
+    .iconContainer {
+      color: $yh-orange;
+    }
+
+    &.noBorderOnSelect {
+      border-color: transparent;
+    }
+  }
+}
+
+.iconContainer {
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  margin-bottom: 3px;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+}
+
+.description {
+  margin: 5px 0;
+  font-size: $font-size-xs;
+  color: $text-333;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+  width: 100%;
+}
