@@ -26,7 +26,11 @@ export default function Shelters() {
 
   // shelters가 변경될 때마다 filteredShelters 초기화
   useEffect(() => {
-    setFilteredShelters(shelters);
+    // 신뢰도 순으로 정렬
+    const sortedShelters = [...shelters].sort(
+      (a, b) => b.reliability - a.reliability
+    );
+    setFilteredShelters(sortedShelters);
   }, [shelters]);
 
   // 검색어나 정렬이 변경될 때마다 필터링 적용
@@ -53,27 +57,28 @@ export default function Shelters() {
       case 'newest':
         filteredItems.sort((a, b) => {
           // 명시적으로 날짜 파싱
-          const dateA = new Date(a.foundationDate).getTime();
-          const dateB = new Date(b.foundationDate).getTime();
+          const dateA = new Date(a.foundation_date).getTime();
+          const dateB = new Date(b.foundation_date).getTime();
 
           // 유효한 날짜인지 확인
           console.log(
-            `날짜 비교: ${a.name} (${a.foundationDate}) = ${dateA}, ${b.name} (${b.foundationDate}) = ${dateB}`
+            `날짜 비교: ${a.name} (${a.foundation_date}) = ${dateA}, ${b.name} (${b.foundation_date}) = ${dateB}`
           );
 
           return dateB - dateA; // 내림차순 (최신 날짜부터)
         });
         console.log(
           '[shelters] 최신순 정렬 완료:',
-          filteredItems.map((i) => `${i.name}: ${i.foundationDate}`)
+          filteredItems.map((i) => `${i.name}: ${i.foundation_date}`)
         );
         break;
       case 'oldest':
-        filteredItems.sort(
-          (a, b) =>
-            new Date(a.foundationDate).getTime() -
-            new Date(b.foundationDate).getTime()
-        );
+        filteredItems.sort((a, b) => {
+          const dateA = new Date(a.foundation_date).getTime();
+          const dateB = new Date(b.foundation_date).getTime();
+
+          return dateA - dateB; // 오름차순 (오래된 날짜부터)
+        });
         console.log('[shelters] 오래된순 정렬 완료:', filteredItems);
         break;
       default:

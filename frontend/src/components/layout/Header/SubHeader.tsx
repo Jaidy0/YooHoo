@@ -7,7 +7,7 @@ interface SubHeaderProps {
   onBackClick?: () => void;
 }
 
-export function SubHeader({ title, onBackClick }: SubHeaderProps) {
+export default function SubHeader({ title, onBackClick }: SubHeaderProps) {
   return (
     <header className={styles.subHeader}>
       <div className={styles.left}>

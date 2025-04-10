@@ -2,7 +2,7 @@
 
 // layout.module.scss 수정
 .container {
-  min-height: 100vh;
+  // min-height: 100vh;
   min-height: 100dvh; // 모바일 브라우저 주소창 고려
   // min-width: 375px;
   max-width: 500px;
@@ -12,7 +12,7 @@
   background-color: var(--color-background);
   position: relative;
   overflow: hidden; // 중요: 컨테이너 자체에서는 오버플로우를 숨김
-  height: 100vh; // 고정 높이 추가
+  // height: 100vh; // 고정 높이 추가
   height: 100dvh; // 모바일에서는 동적 뷰포트 높이 사용
 
   @media screen and (max-width: $breakpoint-sm) {
