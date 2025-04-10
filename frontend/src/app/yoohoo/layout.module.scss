@@ -42,7 +42,11 @@
   padding-bottom: 66px; // 기본적으로 padding-bottom 적용
   // BottomNav가 숨겨질 때 padding 제거
   :global(.hide-bottom-nav) & {
-    padding-bottom: 0;
+    padding-bottom: 0 !important;
+  }
+
+  &.hide-bottom-nav {
+    padding-bottom: 0 !important;
   }
 }
 

@@ -58,6 +58,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     '/yoohoo/shelters',
     '/yoohoo/login/choice',
     '/yoohoo/donate/complete',
+    '/yoohoo/login/error',
   ];
   const shouldHideHeader = pathname
     ? hideHeaderForPaths.includes(pathname)
@@ -67,6 +68,7 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     '/yoohoo/login/callback',
     '/yoohoo/login/kakao',
     '/yoohoo/login/choice',
+    '/yoohoo/login/error',
   ];
   const shouldHideBottomNav = pathname
     ? hideBottomNavForPaths.includes(pathname)
