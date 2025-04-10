@@ -9,8 +9,8 @@ http {
         "" close;
     }
 
-    # 버전 분할 설정 (같은 IP와 브라우저를 사용하는 경우 항상 동일한 버전을 배정, ${msec}을 추가해 테스트)
-    split_clients "${remote_addr}${http_user_agent}${msec}" $version_key {
+    # 버전 분할 설정 (같은 IP와 브라우저를 사용하는 경우 항상 동일한 버전을 배정)
+    split_clients "${remote_addr}${http_user_agent}" $version_key {
         $STABLE_WEIGHT% "stable";
         * "canary";
     }
@@ -78,9 +78,9 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
 
             # 버전 쿠키 설정 (최초 요청시만 : 이후 동일한 클라이언트가 재방문할 때 같은 버전을 계속 사용하도록 하게)
-            #if ($cookie_service_version = "") {
-            #    add_header Set-Cookie "service_version=$final_version; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax";
-            #}
+            if ($cookie_service_version = "") {
+                add_header Set-Cookie "service_version=$final_version; Path=/; Max-Age=86400; HttpOnly; SameSite=Lax";
+            }
         }
 
         # 정적 파일 제공 (Next.js 빌드된 파일)

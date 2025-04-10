@@ -550,6 +550,14 @@ pipeline {
         }
         always {
 			node('public-dev') {
+				sh """
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${BACKEND_IMAGE}:canary-" | xargs -r docker rmi || true
+                """
+                sh """
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:stable-[0-9]\\+" | sort -t- -k3 -n | head -n -3 | xargs -r docker rmi || true
+                    docker images --format "{{.Repository}}:{{.Tag}}" | grep "${FRONTEND_IMAGE}:canary-" | xargs -r docker rmi || true
+                """
 				withCredentials([sshUserPrivateKey(credentialsId: "${EC2_BACKEND_SSH_CREDENTIALS_ID}", keyFileVariable: 'SSH_KEY')]) {
 					sh """
                         ssh -o StrictHostKeyChecking=no -i \$SSH_KEY ${EC2_USER}@${EC2_BACKEND_HOST} "
