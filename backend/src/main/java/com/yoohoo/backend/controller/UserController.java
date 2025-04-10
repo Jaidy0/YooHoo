@@ -1,6 +1,7 @@
 package com.yoohoo.backend.controller;
 
 import com.yoohoo.backend.service.UserService;
+import com.yoohoo.backend.service.SsafyFinService;
 import com.yoohoo.backend.dto.KakaoLoginDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SsafyFinService ssafyFinService;
+
 
     @GetMapping("/kakao-login")
     public RedirectView kakaoLogin(@RequestParam("code") String code, HttpSession session) {
@@ -177,5 +182,11 @@ public class UserController {
         userInfo.put("createdAt", user.getCreatedAt());
 
         return ResponseEntity.ok(userInfo);
+    }
+
+    @PostMapping("/ssafyfin/create")
+    public Map<String, Object> initializeFund(@RequestBody Map<String, String> requestBody) {
+        String email = requestBody.get("email");
+        return ssafyFinService.initializeFund(email);
     }
 }

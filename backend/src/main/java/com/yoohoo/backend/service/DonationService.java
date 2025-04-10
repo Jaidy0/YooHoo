@@ -153,39 +153,53 @@ public class DonationService {
 
     public Map<String, Integer> getWeeklyDonationSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
+        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY); // 이번 주의 시작일 (일요일)
         List<Integer> weeklySums = new ArrayList<>();
     
-        // ThisWeek부터 5주 전까지 계산
-        for (int i = 5; i >= 0; i--) {
-            LocalDate weekStart = startOfWeek.minusWeeks(i);
-            LocalDate weekEnd = weekStart.plusDays(6);
+        // 1. 주간 기부금 합계 계산 (현재 주 + 5주 전까지)
+        for (int i = 0; i < 6; i++) {
+            LocalDate weekStart = startOfWeek.minusWeeks(i); // 주 시작일 (일요일)
+            LocalDate weekEnd;
     
-            int sum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, weekStart, weekEnd)
-                    .stream()
-                    .mapToInt(Donation::getDonationAmount)
-                    .sum();
-            weeklySums.add(sum);
+            // 현재 주(i=0)인 경우: 오늘까지가 종료일, 이전 주는 토요일까지
+            if (i == 0) {
+                weekEnd = today; 
+            } else {
+                weekEnd = weekStart.plusDays(6); 
+            }
+    
+            // 주간 기부 내역 조회 및 합계 계산
+            int sum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(
+                    shelterId, weekStart, weekEnd
+            ).stream()
+             .mapToInt(Donation::getDonationAmount)
+             .sum();
+    
+            weeklySums.add(sum); // [ThisWeek, 1WeeksAgo, ..., 5WeeksAgo] 순서로 저장
         }
     
-        // 예측값 계산 (최근 5주 데이터 사용)
-        double alpha = 0.3;
-        double smoothedValue = weeklySums.get(0); // 가장 오래된 주 (5WeeksAgo)
+        // 2. 리스트 순서 뒤집기: [5WeeksAgo, 4WeeksAgo, ..., ThisWeek]
+        Collections.reverse(weeklySums);
     
-        for (int i = 1; i < 5; i++) {
+        // 3. 예측값 계산 (최근 5주 데이터: 1WeeksAgo ~ 5WeeksAgo)
+        double alpha = 0.3; // 평활화 계수
+        double smoothedValue = weeklySums.get(4); // 1WeeksAgo 데이터로 초기화
+    
+        // 2WeeksAgo(3) → 5WeeksAgo(0) 순서로 반복
+        for (int i = 3; i >= 0; i--) {
             smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
         }
     
         int prediction = (int) Math.round(smoothedValue);
     
-        // 결과 맵 생성 (순서 유지)
+        // 4. 결과 맵 생성 (순서 유지)
         Map<String, Integer> result = new LinkedHashMap<>();
-        result.put("5WeeksAgo", weeklySums.get(0));
-        result.put("4WeeksAgo", weeklySums.get(1));
-        result.put("3WeeksAgo", weeklySums.get(2));
-        result.put("2WeeksAgo", weeklySums.get(3));
-        result.put("1WeeksAgo", weeklySums.get(4));
-        result.put("ThisWeek", weeklySums.get(5));
+        result.put("5WeeksAgo", weeklySums.get(0)); // 5주 전
+        result.put("4WeeksAgo", weeklySums.get(1));  // 4주 전
+        result.put("3WeeksAgo", weeklySums.get(2));  // 3주 전
+        result.put("2WeeksAgo", weeklySums.get(3));  // 2주 전
+        result.put("1WeeksAgo", weeklySums.get(4));  // 1주 전
+        result.put("ThisWeek", weeklySums.get(5));   // 현재 주
         result.put("Prediction", prediction);
     
         return result;
