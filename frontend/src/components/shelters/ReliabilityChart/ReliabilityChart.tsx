@@ -41,7 +41,9 @@ export default function ReliabilityChart({
         {/* 사용 현황 정보 표시 */}
         <div className={styles.usageInfo}>
           <div className={styles.usageTitle}>
-            신뢰도: {reliability || 0} / {MAX_TOTAL}점
+            <span className={styles.usageTitleText}>신뢰도</span>
+            <span className={styles.reliability}>{reliability || 0}</span>/{' '}
+            {MAX_TOTAL}점
           </div>
         </div>
 
@@ -53,7 +55,7 @@ export default function ReliabilityChart({
               className={styles.combinedBarSection}
               style={{
                 width: `${dogActualWidth}%`,
-                backgroundColor: '#FF6058', // 빨강
+                backgroundColor: 'var(--chart-hotpink)', // 빨강
               }}
               title={`강아지 관리: ${dogScore}/${MAX_DOG_SCORE}점`}
             />
@@ -63,7 +65,7 @@ export default function ReliabilityChart({
               className={styles.combinedBarSection}
               style={{
                 width: `${fileActualWidth}%`,
-                backgroundColor: '#FFBD2E', // 주황/노랑
+                backgroundColor: 'var(--chart-yellow)', // 주황/노랑
               }}
               title={`서류 증빙률: ${fileScore}/${MAX_FILE_SCORE}점`}
             />
@@ -73,7 +75,7 @@ export default function ReliabilityChart({
               className={styles.combinedBarSection}
               style={{
                 width: `${foundationActualWidth}%`,
-                backgroundColor: '#28CA42', // 초록
+                backgroundColor: 'var(--chart-green)', // 초록
               }}
               title={`재단 운영: ${foundationScore}/${MAX_FOUNDATION_SCORE}점`}
             />
@@ -83,7 +85,6 @@ export default function ReliabilityChart({
               className={styles.combinedBarSection}
               style={{
                 width: `${100 - totalPercentage}%`,
-                backgroundColor: '#E4E4E4', // 회색
               }}
             />
           </div>
@@ -94,7 +95,7 @@ export default function ReliabilityChart({
           <div className={styles.legendItem}>
             <div
               className={styles.legendColor}
-              style={{ backgroundColor: '#FF6058' }}
+              style={{ backgroundColor: 'var(--chart-hotpink)' }}
             ></div>
             <div className={styles.legendText}>
               강아지 관리 ({dogScore}/{MAX_DOG_SCORE}점)
@@ -103,7 +104,7 @@ export default function ReliabilityChart({
           <div className={styles.legendItem}>
             <div
               className={styles.legendColor}
-              style={{ backgroundColor: '#FFBD2E' }}
+              style={{ backgroundColor: 'var(--chart-yellow)' }}
             ></div>
             <div className={styles.legendText}>
               서류 증빙률 ({fileScore}/{MAX_FILE_SCORE}점)
@@ -112,7 +113,7 @@ export default function ReliabilityChart({
           <div className={styles.legendItem}>
             <div
               className={styles.legendColor}
-              style={{ backgroundColor: '#28CA42' }}
+              style={{ backgroundColor: 'var(--chart-green)' }}
             ></div>
             <div className={styles.legendText}>
               재단 운영 ({foundationScore}/{MAX_FOUNDATION_SCORE}점)
