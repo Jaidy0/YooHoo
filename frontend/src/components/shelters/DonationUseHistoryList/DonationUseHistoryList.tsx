@@ -23,10 +23,6 @@ export default function DonationUseHistoryList({
 
   return (
     <div className={styles.containerWrap}>
-      <h3 className={styles.title}>
-        지출 내역
-        {/* ({histories.length}건) */}
-      </h3>
       <div className={styles.container}>
         <div className={styles.list}>
           {histories.slice(0, visibleItems).map((history) => (

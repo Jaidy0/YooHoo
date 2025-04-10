@@ -192,7 +192,6 @@ export default function DonationUsageChart({
 
   return (
     <div className={styles.containerWrap}>
-      <h3 className={styles.title}>후원금 운용내역 보고</h3>
       <div className={styles.container}>
         <div className={styles.summaryContainer}>
           <h4 className={styles.chartTitle}>요약</h4>

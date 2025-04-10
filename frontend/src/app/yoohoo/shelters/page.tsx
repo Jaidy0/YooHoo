@@ -13,7 +13,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 // 정렬 옵션
 const sortOptions = [
   { value: 'reliability', label: '신뢰도순' },
-  { value: 'newest', label: '최신순' },
+  { value: 'dogCount', label: '강아지 수' },
   { value: 'oldest', label: '오래된순' },
 ];
 
@@ -54,29 +54,14 @@ export default function Shelters() {
         filteredItems.sort((a, b) => b.reliability - a.reliability);
         console.log('[shelters] 신뢰도순 정렬 완료:', filteredItems);
         break;
-      case 'newest':
-        filteredItems.sort((a, b) => {
-          // 명시적으로 날짜 파싱
-          const dateA = new Date(a.foundation_date).getTime();
-          const dateB = new Date(b.foundation_date).getTime();
-
-          // 유효한 날짜인지 확인
-          console.log(
-            `날짜 비교: ${a.name} (${a.foundation_date}) = ${dateA}, ${b.name} (${b.foundation_date}) = ${dateB}`
-          );
-
-          return dateB - dateA; // 내림차순 (최신 날짜부터)
-        });
-        console.log(
-          '[shelters] 최신순 정렬 완료:',
-          filteredItems.map((i) => `${i.name}: ${i.foundation_date}`)
-        );
+      case 'dogCount':
+        filteredItems.sort((a, b) => b.dogCount - a.dogCount);
+        console.log('[shelters] 강아지 수 정렬 완료:', filteredItems);
         break;
       case 'oldest':
         filteredItems.sort((a, b) => {
           const dateA = new Date(a.foundation_date).getTime();
           const dateB = new Date(b.foundation_date).getTime();
-
           return dateA - dateB; // 오름차순 (오래된 날짜부터)
         });
         console.log('[shelters] 오래된순 정렬 완료:', filteredItems);

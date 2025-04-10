@@ -101,10 +101,10 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin-top: 10px;
+  // margin-top: 10px;
   background-color: #f7f7f7;
   border-radius: 8px;
-  padding: 15px;
+  padding: 1.4rem;
 }
 
 .usageInfo {
@@ -112,7 +112,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .usageTitle {
@@ -137,7 +137,7 @@
 
 .combinedBarContainer {
   width: 100%;
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
 }
 
 .combinedBarWrapper {

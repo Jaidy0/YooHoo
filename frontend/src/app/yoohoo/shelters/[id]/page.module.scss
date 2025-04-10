@@ -7,6 +7,14 @@
   min-height: calc(100vh - 120px); // 헤더와 푸터 높이 고려
 }
 
+.sectionSubTitle {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 4px;
+}
+
 // 헤더 이미지 영역
 .headerImage {
   position: relative;

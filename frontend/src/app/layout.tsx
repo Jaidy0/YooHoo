@@ -7,36 +7,38 @@ import ClientMswInitializer from '@/components/ClientMswInitializer/ClientMswIni
 
 export const metadata: Metadata = {
   title: '유후',
-  description: '즐겁고 투명한 유기견 후원',
+  description: '손쉽고 편리한 유기견 후원🐶',
+  themeColor: '#fee101',
+  manifest: '/manifest.json',
   icons: {
-    // 기본 favicon
     icon: '/favicon.ico',
-    // Apple 기기용 아이콘
     apple: '/icon.png',
-    // PWA용 아이콘들
     shortcut: ['/favicon.ico'],
     other: [
       {
         rel: 'icon',
         type: 'image/png',
         sizes: '192x192',
-        url: '/icon.png',
+        url: '/icon512_rounded.png',
       },
       {
         rel: 'icon',
         type: 'image/png',
         sizes: '512x512',
-        url: '/icon.png',
+        url: '/icon512_rounded.png',
+      },
+      {
+        rel: 'mask-icon',
+        type: 'image/png',
+        sizes: '512x512',
+        url: '/icon512_maskable.png',
       },
     ],
   },
-  // PWA 매니페스트
-  manifest: '/manifest.json',
-  // 모바일 웹앱 설정
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
     title: '유후',
+    statusBarStyle: 'black-translucent', // 또는 'default'
   },
 };
 
