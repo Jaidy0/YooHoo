@@ -154,40 +154,31 @@ public class DonationService {
     public Map<String, Integer> getWeeklyDonationSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
         LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
-        List<Integer> weeklySums = new ArrayList<>(Collections.nCopies(6, 0)); // Initialize with zeros
-
-        // Calculate sums for the last 5 weeks and this week
-        for (int i = 0; i < 6; i++) {
-            LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일 (일요일)
-            LocalDate currentEndOfWeek = currentStartOfWeek.plusDays(6); // 현재 주의 종료일 (토요일)
-
-            // 주간 합계 초기화
-            int weeklySum = 0;
-
-            // 기부 내역 조회
-            List<Donation> donations = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, currentStartOfWeek, currentEndOfWeek);
-            weeklySum = donations.stream()
+        List<Integer> weeklySums = new ArrayList<>();
+    
+        // ThisWeek부터 5주 전까지 계산
+        for (int i = 5; i >= 0; i--) {
+            LocalDate weekStart = startOfWeek.minusWeeks(i);
+            LocalDate weekEnd = weekStart.plusDays(6);
+    
+            int sum = donationRepository.findByShelter_ShelterIdAndDonationDateBetween(shelterId, weekStart, weekEnd)
+                    .stream()
                     .mapToInt(Donation::getDonationAmount)
                     .sum();
-
-            // 주간 합계 저장
-            weeklySums.set(i, weeklySum);
+            weeklySums.add(sum);
         }
-
-        // Reverse the list to have the most recent week last
-        Collections.reverse(weeklySums);
-
-        // Exponential Smoothing for prediction
-        double alpha = 0.3; // Smoothing factor
-        double smoothedValue = weeklySums.get(0); // Initialize with the first week's value
-
+    
+        // 예측값 계산 (최근 5주 데이터 사용)
+        double alpha = 0.3;
+        double smoothedValue = weeklySums.get(0); // 가장 오래된 주 (5WeeksAgo)
+    
         for (int i = 1; i < 5; i++) {
             smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
         }
-
+    
         int prediction = (int) Math.round(smoothedValue);
-
-        // Create a map with named keys and maintain order
+    
+        // 결과 맵 생성 (순서 유지)
         Map<String, Integer> result = new LinkedHashMap<>();
         result.put("5WeeksAgo", weeklySums.get(0));
         result.put("4WeeksAgo", weeklySums.get(1));
@@ -196,7 +187,7 @@ public class DonationService {
         result.put("1WeeksAgo", weeklySums.get(4));
         result.put("ThisWeek", weeklySums.get(5));
         result.put("Prediction", prediction);
-
+    
         return result;
     }
 
