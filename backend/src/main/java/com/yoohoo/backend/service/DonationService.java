@@ -177,15 +177,15 @@ public class DonationService {
     
         Collections.reverse(weeklySums);
     
-        // 3. 예측값 계산 (최근 5주 데이터: 1WeeksAgo ~ 5WeeksAgo)
-        double alpha = 0.3; // 평활화 계수
-        double smoothedValue = weeklySums.get(4); // 1WeeksAgo 데이터로 초기화
-    
-        // 2WeeksAgo(3) → 5WeeksAgo(0) 순서로 반복
-        for (int i = 3; i >= 0; i--) {
+        // 3. 예측값 계산 (최근 5주 데이터: 5WeeksAgo ~ 1WeeksAgo)
+        double alpha = 0.3;
+        double smoothedValue = weeklySums.get(0); // 5WeeksAgo로 초기화
+
+        // 4WeeksAgo(1) → 1WeeksAgo(4) 순서로 반복
+        for (int i = 1; i <= 4; i++) {
             smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
         }
-    
+
         int prediction = (int) Math.round(smoothedValue);
     
         // 4. 결과 맵 생성 (순서 유지)
