@@ -308,6 +308,33 @@ export default function GroupDetailClient({ groupId }: GroupDetailClientProps) {
           <div className={styles.introContent}>
             <h3 className={styles.sectionTitle}>단체 소개</h3>
             <p className={styles.fullDescription}>{shelter?.content}</p>
+
+            <div className={styles.shelterDetails}>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>설립연도</span>
+                <span className={styles.detailValue}>
+                  {shelter?.foundationDate?.split('-')[0] || '정보 없음'}
+                </span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>주소</span>
+                <span className={styles.detailValue}>{shelter?.address}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>이메일</span>
+                <span className={styles.detailValue}>{shelter?.email}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>전화번호</span>
+                <span className={styles.detailValue}>{shelter?.phone}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <span className={styles.detailLabel}>사업자등록번호</span>
+                <span className={styles.detailValue}>
+                  {shelter?.businessNumber}
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
