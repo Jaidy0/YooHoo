@@ -11,6 +11,7 @@ interface DonationUseHistoryItemProps {
   type?: string;
   transactionUniqueNo: string;
   withdrawalId: number;
+  name: string;
   onEvidenceClick?: (transactionUniqueNo: number, type: boolean) => void;
   onReceiptClick?: (withdrawalId: number) => void;
 }
@@ -20,10 +21,11 @@ export default function DonationUseHistoryItem({
   category = '기타',
   transactionBalance,
   file_id = '1',
-  dogName = '미분류',
-  type,
+  // dogName = '미분류',
+  // type,
   transactionUniqueNo,
   withdrawalId,
+  name,
   onEvidenceClick,
   onReceiptClick,
 }: DonationUseHistoryItemProps) {
@@ -38,10 +40,12 @@ export default function DonationUseHistoryItem({
     <div className={styles.container}>
       <div className={styles.leftContent}>
         <span className={styles.date}>{date}</span>
-        {type === 'DOG' && <span>{dogName}</span>}
-        <span className={styles.description}>
-          {displayCategory || '내역 없음'}
-        </span>
+        <div className={styles.nameContainer}>
+          {name !== '단체' && <span className={styles.dogName}>{name}</span>}
+          <span className={styles.description}>
+            {displayCategory || '내역 없음'}
+          </span>
+        </div>
       </div>
       <div className={styles.rightContent}>
         <span
