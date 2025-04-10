@@ -1,15 +1,16 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/buttons/Button/Button';
 // import { useProcessUserAccount } from '@/hooks/userAccount/useProcessUserAccount';
 import { useAuthStore } from '@/store/authStore';
-import { useEffect } from 'react';
 import LoadingSpinner from '@/components/common/LoadingSpinner/LoadingSpinner';
 import { useCreateSsafyFinAccount } from '@/hooks/userAccount/createSsafyFinAccount';
 import { KAKAO_AUTH_URL } from '@/lib/constants/auth';
 import styles from './page.module.scss';
 import Image from 'next/image';
+import AccountSuccessModal from '@/components/auth/AccountSuccessModal/AccountSuccessModal';
 
 export default function LoginError() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export default function LoginError() {
     logout,
   } = useAuthStore();
   const { createAccount, isLoading, error } = useCreateSsafyFinAccount();
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     console.log('[LoginError] 컴포넌트 마운트, 인증 상태 확인 시작');
@@ -42,12 +44,14 @@ export default function LoginError() {
 
     try {
       await createAccount(user.kakaoEmail);
-      alert('계좌 생성 성공 ! 이제 즐겁고 투명하게 YooHoo~🐶');
+      setIsModalOpen(true);
 
-      // 로그아웃 & 로그인 후 페이지로 리다이렉트
-      await logout();
-      window.location.href = KAKAO_AUTH_URL;
-      router.push('/yoohoo');
+      setTimeout(async () => {
+        setIsModalOpen(false);
+        await logout();
+        window.location.href = KAKAO_AUTH_URL;
+        router.push('/yoohoo');
+      }, 3000);
     } catch (err) {
       console.error('[LoginError] 계좌 생성 실패:', err);
       alert('계좌 생성 실패 ! 다시 시도해주세요.');
@@ -72,6 +76,7 @@ export default function LoginError() {
   return (
     <div className={styles.containerWrapper}>
       <div className={styles.container}>
+        <AccountSuccessModal isOpen={isModalOpen} />
         <div className={styles.balloon}>
           <h3 className={styles.subtitle}>
             <em className={styles.highlight}>잠깐 !</em>

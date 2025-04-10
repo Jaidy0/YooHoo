@@ -1,0 +1,56 @@
+// src/components/common/AccountSuccessModal/AccountSuccessModal.module.scss
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  text-align: center;
+  animation: slideUp 0.5s ease-out; // 애니메이션 추가
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.desc {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.3;
+  margin-bottom: 0.5rem;
+}
+
+.subDesc {
+  font-size: 14px;
+  color: $yh-orange;
+}
+
+.emoji {
+  display: block;
+  font-size: 42px;
+  margin-bottom: 1rem;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
