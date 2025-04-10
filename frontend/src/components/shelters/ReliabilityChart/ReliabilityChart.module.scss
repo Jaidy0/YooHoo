@@ -127,6 +127,14 @@
   font-weight: 400;
 }
 
+.reliability {
+  font-size: 40px;
+}
+
+.usageTitleText {
+  margin-right: 6px;
+}
+
 .combinedBarContainer {
   width: 100%;
   margin-bottom: 10px;
@@ -134,16 +142,18 @@
 
 .combinedBarWrapper {
   width: 100%;
-  height: 24px;
-  background-color: #e4e4e4; // 기본 배경 (남은 공간)
-  border-radius: 6px;
+  height: 30px;
+  background-color: #fff; // 기본 배경 (남은 공간)
+  border-radius: 16px;
   display: flex;
   overflow: hidden;
+  border: 1px solid #eee;
 }
 
 .combinedBarSection {
   height: 100%;
   transition: width 0.5s ease;
+  background-color: #fff;
 }
 
 .legendContainer {

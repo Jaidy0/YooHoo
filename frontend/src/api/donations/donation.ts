@@ -132,6 +132,7 @@ export const fetchAllWithdrawals = async (
     const response = await axios.get<WithdrawalItem[]>(
       `${API_BASE_URL}/api/withdrawal/shelter/${shelterId}/all`
     );
+    console.log('***>< response.data : ', response.data);
     return response.data;
   } catch (error) {
     console.error('출금 내역 조회 실패:', error);

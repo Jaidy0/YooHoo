@@ -14,6 +14,7 @@ export default function DonationUseHistoryList({
 }: DonationUseHistoryListProps) {
   const [visibleItems, setVisibleItems] = useState(3);
 
+  console.log('***>< histories : ', histories);
   const handleLoadMore = () => {
     setVisibleItems((prev) => Math.min(prev + 5, histories.length));
   };
@@ -32,6 +33,7 @@ export default function DonationUseHistoryList({
             <DonationUseHistoryItem
               key={history.withdrawalId}
               date={history.date}
+              name={history.name}
               category={history.category}
               transactionBalance={history.transactionBalance}
               file_id={history.file_id}

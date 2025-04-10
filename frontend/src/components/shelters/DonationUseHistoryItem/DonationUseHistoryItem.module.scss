@@ -14,6 +14,16 @@
   gap: 8px;
 }
 
+.nameContainer {
+  display: flex;
+  gap: 6px;
+
+  .dogName {
+    color: $chart-hotpink;
+    font-weight: $font-weight-medium;
+  }
+}
+
 .rightContent {
   display: flex;
   flex-direction: column;
