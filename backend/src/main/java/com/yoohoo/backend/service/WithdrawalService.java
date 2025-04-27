@@ -28,6 +28,7 @@ import java.time.DayOfWeek;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 
 @Service
 @RequiredArgsConstructor
@@ -201,64 +202,45 @@ public class WithdrawalService {
 
     public Map<String, Integer> getWeeklyExpenditureSumsAndPrediction(Long shelterId) {
         LocalDate today = LocalDate.now();
-        LocalDate startOfWeek = today.with(DayOfWeek.SUNDAY);
+        
+        // 이전 또는 같은 일요일 계산 (핵심 수정 부분)
+        LocalDate startOfWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+        
         List<Integer> weeklySums = new ArrayList<>();
 
-        
-        // Calculate sums for the last 5 weeks and this week
         for (int i = 0; i < 6; i++) {
-            LocalDate currentStartOfWeek = startOfWeek.minusWeeks(i); // 현재 주의 시작일
-            LocalDate currentEndOfWeek = (i == 0) ? today : currentStartOfWeek.plusDays(6); // 이번 주는 오늘까지 포함
+            LocalDate weekStart = startOfWeek.minusWeeks(i);
+            LocalDate weekEnd = (i == 0) ? today : weekStart.plusDays(6);
 
-            // String으로 변환
-            String startDateStr = currentStartOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            String endDateStr = currentEndOfWeek.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-
-            // 쿼리 실행: 5주 전부터 1주 전까지의 합계 계산
-            List<Withdrawal> withdrawals = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, startDateStr, endDateStr);
-
-            // 데이터가 없을 경우, 이번 주의 경우 각 날짜별로 조회하여 합산
-            if (i == 0) {
-                int weeklySum = 0;
-                for (int j = 0; j <= today.getDayOfMonth() - 1; j++) {
-                    LocalDate currentDate = today.minusDays(j);
-                    String currentDateStr = currentDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-                    List<Withdrawal> dailyWithdrawals = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, currentDateStr, currentDateStr);
-                    weeklySum += dailyWithdrawals.stream()
-                            .mapToInt(withdrawal -> Integer.parseInt(withdrawal.getTransactionBalance()))
-                            .sum();
-                }
-                weeklySums.add(weeklySum);
-            } else {
-                // 데이터가 여전히 없으면 0으로 설정
-                int weeklySum = withdrawals.stream()
-                        .mapToInt(withdrawal -> Integer.parseInt(withdrawal.getTransactionBalance()))
-                        .sum();
-                weeklySums.add(weeklySum);
-            }
+            // 쿼리 실행: 주간 지출 합계 계산
+            List<Withdrawal> withdrawals = withdrawalRepository.findByShelterIdAndDateBetween(shelterId, weekStart.format(DateTimeFormatter.ofPattern("yyyyMMdd")), weekEnd.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            int sum = withdrawals.stream()
+                    .mapToInt(withdrawal -> Integer.parseInt(withdrawal.getTransactionBalance()))
+                    .sum();
+            weeklySums.add(sum);
         }
 
-        // Reverse the list to have the most recent week last
         Collections.reverse(weeklySums);
 
-        // Exponential Smoothing for prediction
-        double alpha = 0.3; // Smoothing factor
-        double smoothedValue = weeklySums.get(0); // Initialize with the first week's value
+        // 예측값 계산 (최근 5주 데이터: 5WeeksAgo ~ 1WeeksAgo)
+        double alpha = 0.3;
+        double smoothedValue = weeklySums.get(0); // 5WeeksAgo로 초기화
 
-        for (int i = 1; i < 5; i++) {
+        // 4WeeksAgo(1) → 1WeeksAgo(4) 순서로 반복
+        for (int i = 1; i <= 4; i++) {
             smoothedValue = alpha * weeklySums.get(i) + (1 - alpha) * smoothedValue;
         }
 
         int prediction = (int) Math.round(smoothedValue);
 
-        // Create a map with named keys and maintain order
+        // 결과 맵 생성 (순서 유지)
         Map<String, Integer> result = new LinkedHashMap<>();
-        result.put("5WeeksAgo", weeklySums.get(0));
-        result.put("4WeeksAgo", weeklySums.get(1));
-        result.put("3WeeksAgo", weeklySums.get(2));
-        result.put("2WeeksAgo", weeklySums.get(3));
-        result.put("1WeeksAgo", weeklySums.get(4));
-        result.put("ThisWeek", weeklySums.get(5));
+        result.put("5WeeksAgo", weeklySums.get(0)); // 5주 전
+        result.put("4WeeksAgo", weeklySums.get(1));  // 4주 전
+        result.put("3WeeksAgo", weeklySums.get(2));  // 3주 전
+        result.put("2WeeksAgo", weeklySums.get(3));  // 2주 전
+        result.put("1WeeksAgo", weeklySums.get(4));  // 1주 전
+        result.put("ThisWeek", weeklySums.get(5));   // 현재 주
         result.put("Prediction", prediction);
 
         return result;

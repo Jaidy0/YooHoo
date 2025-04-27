@@ -156,7 +156,5 @@
 [ERD 문서](https://dbdiagram.io/d/%ED%8A%B9%ED%99%94%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-67bd0b4b263d6cf9a0507acd)
 
 ### 아키텍쳐
+![아키텍쳐](./exec/doc/yoohoo_아키텍처.png)
 
-![아키텍쳐]()
-
-Test 
