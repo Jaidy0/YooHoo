@@ -4,6 +4,7 @@ import styles from './layout.module.scss';
 import '@/assets/styles/globals.scss';
 import { Metadata } from 'next';
 import ClientMswInitializer from '@/components/ClientMswInitializer/ClientMswInitializer';
+import QueryProvider from '@/components/Providers/QueryProvider';
 
 export const metadata: Metadata = {
   title: '유후',
@@ -47,8 +48,10 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     <html lang='ko'>
       <head></head>
       <body className={styles.body} suppressHydrationWarning>
-        {process.env.NODE_ENV === 'development' && <ClientMswInitializer />}
-        <main className={styles.main}>{children}</main>
+        <QueryProvider>
+          {process.env.NODE_ENV === 'development' && <ClientMswInitializer />}
+          <main className={styles.main}>{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

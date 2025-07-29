@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -29,15 +29,15 @@ ChartJS.register(
   ChartDataLabels
 );
 
-interface DonationCategory {
+interface CategoryPercentage {
   name: string;
-  color: string;
   actualPercentage: number;
   averagePercentage: number;
+  color: string;
 }
 
 interface DonationUsageChartProps {
-  categories: DonationCategory[];
+  categories: CategoryPercentage[];
   totalIncome: number;
   totalExpense: number;
   year: number;
@@ -45,7 +45,7 @@ interface DonationUsageChartProps {
   day: number;
 }
 
-export default function DonationUsageChart({
+const DonationUsageChart = React.memo(function DonationUsageChart({
   categories,
   totalIncome,
   totalExpense,
@@ -53,7 +53,8 @@ export default function DonationUsageChart({
   month,
   day,
 }: DonationUsageChartProps) {
-  const chartData = {
+  // chartData를 useMemo로 메모이제이션
+  const chartData = useMemo(() => ({
     labels: categories.map((item) => item.name),
     datasets: [
       {
@@ -79,38 +80,30 @@ export default function DonationUsageChart({
         maxBarThickness: 30,
       },
     ],
-  };
+  }), [categories]);
 
-  const options: ChartOptions<'bar'> = {
-    indexAxis: 'y',
+  // options를 useMemo로 메모이제이션
+  const options: ChartOptions<'bar'> = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    font: {
-      family: "'NanumSquareNeo', sans-serif", // 기본 폰트 설정
+    indexAxis: 'y' as const,
+    layout: {
+      padding: {
+        top: 20,
+        right: 20, // 라벨이 잘리지 않도록 여백 증가
+      },
     },
     scales: {
       x: {
-        type: 'linear',
-        beginAtZero: true,
-        max: 100,
+        display: false,
         grid: {
           display: false,
         },
-        ticks: {
-          callback: function (tickValue: number | string) {
-            return `${tickValue}%`;
-          },
-          font: {
-            family: "'NanumSquareNeo', sans-serif",
-            size: 12,
-            style: 'normal',
-          },
-        },
+        beginAtZero: true,
+        max: 100,
       },
       y: {
-        ticks: {
-          display: false,
-        },
+        display: false,
         grid: {
           display: false,
         },
@@ -170,21 +163,16 @@ export default function DonationUsageChart({
         },
       },
     },
-    layout: {
-      padding: {
-        top: 20,
-        right: 20, // 라벨이 잘리지 않도록 여백 증가
-      },
-    },
-  };
+  }), [categories]);
 
-  const legendItems = [
+  // legendItems를 useMemo로 메모이제이션
+  const legendItems = useMemo(() => [
     { label: '항목별 전체 평균', color: '#FFFFFF' },
     ...categories.map((item) => ({
       label: item.name,
       color: item.color,
     })),
-  ];
+  ], [categories]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ko-KR').format(amount);
@@ -237,4 +225,6 @@ export default function DonationUsageChart({
       </div>
     </div>
   );
-}
+});
+
+export default DonationUsageChart;
