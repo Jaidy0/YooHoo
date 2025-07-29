@@ -4,13 +4,13 @@ import React from 'react';
 import styles from './ReliabilityChart.module.scss';
 
 interface ReliabilityChartProps {
-  reliability: number;
-  dogScore: number;
-  fileScore: number;
-  foundationScore: number;
+  dogScore?: number;
+  fileScore?: number;
+  foundationScore?: number;
+  reliability?: number;
 }
 
-export default function ReliabilityChart({
+const ReliabilityChart = React.memo(function ReliabilityChart({
   dogScore = 0,
   fileScore = 0,
   foundationScore = 0,
@@ -125,4 +125,6 @@ export default function ReliabilityChart({
       </div>
     </div>
   );
-}
+});
+
+export default ReliabilityChart;

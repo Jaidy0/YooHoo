@@ -1,5 +1,5 @@
 // src/hooks/useShelterTotalAmount.ts
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import {
   fetchShelterTotalAmount,
   fetchShelterTotalWithdrawal,
@@ -15,41 +15,40 @@ interface UseShelterTotalAmountResult {
 export const useShelterTotalAmountResult = (
   shelterId: number
 ): UseShelterTotalAmountResult => {
-  const [totalIncome, setTotalIncome] = useState<number>(0);
-  const [totalExpense, setTotalExpense] = useState<number>(0);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: totalIncome = 0,
+    isLoading: isIncomeLoading,
+    error: incomeError,
+  } = useQuery({
+    queryKey: ['shelterTotalIncome', shelterId],
+    queryFn: async () => {
+      const data = await fetchShelterTotalAmount(shelterId);
+      return data.totalAmount;
+    },
+    enabled: !!shelterId,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!shelterId) return;
-
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const [incomeData, expenseData] = await Promise.all([
-          fetchShelterTotalAmount(shelterId),
-          fetchShelterTotalWithdrawal(shelterId),
-        ]);
-
-        setTotalIncome(incomeData.totalAmount);
-        setTotalExpense(expenseData.totalAmount);
-      } catch (err) {
-        setError('금액 정보를 불러오는데 실패했습니다.');
-        console.error('금액 데이터 로딩 에러:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [shelterId]);
+  const {
+    data: totalExpense = 0,
+    isLoading: isExpenseLoading,
+    error: expenseError,
+  } = useQuery({
+    queryKey: ['shelterTotalExpense', shelterId],
+    queryFn: async () => {
+      const data = await fetchShelterTotalWithdrawal(shelterId);
+      return data.totalAmount;
+    },
+    enabled: !!shelterId,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
 
   return {
     totalIncome,
     totalExpense,
-    isLoading,
-    error,
+    isLoading: isIncomeLoading || isExpenseLoading,
+    error: incomeError?.message || expenseError?.message || null,
   };
 };

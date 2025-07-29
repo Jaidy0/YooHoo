@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchAllWithdrawals,
   initializeAndSaveWithdrawal,
@@ -20,17 +20,20 @@ interface UseShelterWithdrawalsResult {
 export function useShelterWithdrawals(
   shelterId: number
 ): UseShelterWithdrawalsResult {
-  const [withdrawals, setWithdrawals] = useState<WithdrawalItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchData = useCallback(async () => {
-    if (!shelterId) return;
+  const {
+    data: withdrawals = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['shelterWithdrawals', shelterId],
+    queryFn: async () => {
+      if (!shelterId) {
+        throw new Error('보호소 ID가 필요합니다.');
+      }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
       // 1. 먼저 초기화 및 동기화 수행
       await initializeAndSaveWithdrawal({ shelterId });
 
@@ -38,7 +41,7 @@ export function useShelterWithdrawals(
       const response = await fetchAllWithdrawals(shelterId);
 
       // 날짜 기준 최신순 정렬 + 날짜가 같으면 ID 역순 정렬
-      const sortedWithdrawals = response.sort((a, b) => {
+      return response.sort((a, b) => {
         const dateA = a.withdrawalDate
           ? new Date(a.withdrawalDate).getTime()
           : 0;
@@ -55,34 +58,23 @@ export function useShelterWithdrawals(
 
         return dateB - dateA;
       });
-
-      setWithdrawals(sortedWithdrawals);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err
-          : new Error('지출 내역을 불러오는 중 오류가 발생했습니다.')
-      );
-      console.error('지출 내역 로드 오류:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [shelterId]);
-
-  // 컴포넌트 마운트 시 데이터 조회
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    },
+    enabled: !!shelterId,
+    staleTime: 5 * 60 * 1000, // 5분
+    gcTime: 10 * 60 * 1000, // 10분
+  });
 
   // 데이터 갱신 함수
-  const refetch = useCallback(async () => {
-    await fetchData();
-  }, [fetchData]);
+  const handleRefetch = async () => {
+    await queryClient.invalidateQueries({
+      queryKey: ['shelterWithdrawals', shelterId],
+    });
+  };
 
   return {
     withdrawals,
     isLoading,
-    error,
-    refetch,
+    error: error as Error | null,
+    refetch: handleRefetch,
   };
 }
